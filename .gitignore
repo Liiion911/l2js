@@ -35,3 +35,12 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+.ntvs_analysis.dat
+obj/
+packages/
+X!l2ph.exe - Ярлык.lnk
+X1l2.exe - Ярлык.lnk
+X2FileEdit.exe - Ярлык.lnk
+Wireshark.lnk
+*.pcap
+RSAgenerator/
