@@ -198,21 +198,39 @@ loginPacketController.onRecivePacket = function (data, sock) {
                             connection.release();
                         } else {
 
-                            console.log(result);
 
-                            //var servers = _.extend(result, {
-                            //    AgeLimit: 0,
-                            //    IsPvpServer: 0,
-                            //    PlayerCount: 99,
-                            //    MaxPlayerCount: 100,
-                            //    IsOnline: 1,
-                            //    ShowClock: 0,
-                            //    ServerBrackets: 0,
-                            //});
+                            var servers = [];
 
-                            //sock.client.status = 5;
+                            _.each(result, (res) => {
 
-                            //helper.sendLoginPacket('ServerList', sock, servers);
+                                var server = {
+                                    AgeLimit: 0,
+                                    IsPvpServer: 0,
+                                    PlayerCount: 99,
+                                    MaxPlayerCount: 100,
+                                    IsOnline: 1,
+                                    ShowClock: 0,
+                                    ServerBrackets: 0,
+                                };
+                                
+                                server.Id = res.server_id
+                                server.Port = res.port;
+
+                                var ipStr = res.ip.split('.');
+                                var ipInt = [];
+                                _.each(ipStr, (ip) => {
+                                    ipInt.pish(parseInt(ip));
+                                });
+
+                                server.IP = ipInt;
+
+                                servers.push(server);
+
+                            });
+                            
+                            sock.client.status = 5;
+
+                            helper.sendLoginPacket('ServerList', sock, servers);
 
                             console.log('[LS] Send packet ServerList');
                         }
