@@ -7,15 +7,45 @@ var helper = {
     autoCreate: true
 };
 
+helper.getPlanDistanceSq = function(x, y)
+{
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+};
+
+helper.setIntention = function (sock, intention, args) {
+
+    // TODO: Stop the follow mode if necessary
+    //if ((intention != "AI_INTENTION_FOLLOW") && (intention != "AI_INTENTION_ATTACK"))
+    // sock.client.char.intention
+
+    switch (intention) {
+        case "AI_INTENTION_MOVE_TO":
+
+            if (sock.client.char.intention == "AI_INTENTION_REST") {
+                helper.sendGamePacket('ActionFailed', sock);
+            }
+
+            // TODO: isAllSkillsDisabled -> ActionFailed
+
+            // changeIntention(AI_INTENTION_MOVE_TO, pos, null);
+
+            // clientStopAutoAttack();
+
+
+
+            break;
+    }
+
+};
+
 helper.uncnownLoginPacket = function (sock, packetId, packetsArrayParse) {
     console.log('[LS] UNKNOWN PACKET - ' + packetId);
-    sock.end();
+    sock.destroy();
 };
 
 helper.uncnownGamePacket = function (sock, packetId, packetsArrayParse) {
     console.log('[GS] UNKNOWN PACKET - ' + packetId);
 };
-
 
 helper.sendLoginPacket = function (packetName, sock) {
     try {

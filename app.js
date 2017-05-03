@@ -19,6 +19,7 @@ var gamePacketController = require('./packets/gamePacketController.js');
 
 
 helper.allServerData = [];
+helper.ip = [192, 168, 0, 100];
 
 //-----------------------------------------------//
 // LoginServer                                   //
@@ -32,10 +33,18 @@ helper.poolLoginServer = mysql.createPool({
     host: process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',
     port: process.env.OPENSHIFT_MYSQL_DB_PORT || 3306,
     user: process.env.PRODUCTION ? 'adminBqKe6Qy' : 'root',
-    password: process.env.PRODUCTION ? 'yH7ykk4DHNNS' : '',
+    password: process.env.PRODUCTION ? 'yH7ykk4DHNNS' : 'iPRyRKu2',
     database: process.env.PRODUCTION ? 'l2jls' : 'l2jls'
 });
 
+helper.poolGameServer = mysql.createPool({
+    connectionLimit: 100,
+    host: process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',
+    port: process.env.OPENSHIFT_MYSQL_DB_PORT || 3306,
+    user: process.env.PRODUCTION ? 'adminBqKe6Qy' : 'root',
+    password: process.env.PRODUCTION ? 'yH7ykk4DHNNS' : 'iPRyRKu2',
+    database: process.env.PRODUCTION ? 'l2jls' : 'l2jgs'
+});
 
 loginServer.server = net.createServer();
 loginServer.server.listen(2106);
@@ -59,7 +68,7 @@ loginServer.server.on('connection', function (sock) {
         console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
-    sock.on('end', () => {
+    sock.on('end', function () {
         console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
@@ -71,7 +80,7 @@ loginServer.server.on('connection', function (sock) {
 
     var pubKey = new Buffer(crypto.newPubKey());
 
-    var keygen = execFile(__dirname + "\\RSAgenerator\\RSAGenerator.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
+    var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], function (error, stdout, stderr) {
         if (error) {
             console.log(error);
         }

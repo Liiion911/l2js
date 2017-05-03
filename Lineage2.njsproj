@@ -20,6 +20,7 @@
     <Compile Include="blowfish.js" />
     <Compile Include="db\db.js" />
     <Compile Include="db\models\base.js" />
+    <Compile Include="db\skills.js" />
     <Compile Include="packets\game\client.js" />
     <Compile Include="packets\game\server.js" />
     <Compile Include="packets\helper.js" />

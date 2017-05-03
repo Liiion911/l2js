@@ -3,6 +3,7 @@
 var sqlModels = require('./models/base.js');
 
 var db = {};
+db.skills = require('./skills.js');
 
 db.getAccountByLoginPassword = function (login, pass) {
     return sqlModels.accounts

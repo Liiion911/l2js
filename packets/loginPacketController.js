@@ -41,13 +41,13 @@ loginPacketController.onRecivePacket = function (data, sock) {
 
             if (sock.client.status != 1) {
                 console.log('[LS] Wrong status 1');
-                sock.end();
+                sock.destroy();
             }
 
             var pack = clientLoginPackets.RequestGGAuth(new Buffer(packetsArrayParse));
             if (sock.client.sessionId != pack.sessionId) {
                 console.log('[LS] Wrong sessionId');
-                sock.end();
+                sock.destroy();
             }
 
 
@@ -64,7 +64,7 @@ loginPacketController.onRecivePacket = function (data, sock) {
 
             if (sock.client.status != 2) {
                 console.log('[LS] Wrong status 2');
-                sock.end();
+                sock.destroy();
             }
 
             var pack = clientLoginPackets.RequestAuthLogin(new Buffer(packetsArrayParse));
@@ -76,7 +76,7 @@ loginPacketController.onRecivePacket = function (data, sock) {
 
             fs.writeFileSync(__dirname + "/../RSAgenerator/keys/" + sock.client.sessionId + ".json", util.inspect(sock.client.rsaKeyPairs), 'utf-8');
 
-            var decoder = execFile(__dirname + "\\..\\RSAgenerator\\RSAGenerator.exe", ["decode", sock.client.sessionId.toString()], (error, stdout, stderr) => {
+            var decoder = execFile(__dirname + "/../RSAgenerator/RSAGenerator.exe", ["decode", sock.client.sessionId.toString()], function (error, stdout, stderr) {
                 if (error) {
                     console.log(error);
                 }
@@ -173,20 +173,20 @@ loginPacketController.onRecivePacket = function (data, sock) {
 
             if (sock.client.status != 4) {
                 console.log('[LS] Wrong status 4');
-                sock.end();
+                sock.destroy();
             }
 
             var pack = clientLoginPackets.RequestServerList(new Buffer(packetsArrayParse));
             if (pack.session1_1 != sock.client.session1_1 || pack.session1_2 != sock.client.session1_2) {
                 console.log('[LS] Wrong session1 on RequestServerList');
-                sock.end();
+                sock.destroy();
             }
 
 
             var servers = [
                 {
                     Id: 1,
-                    IP: [127, 0, 0, 1],
+                    IP: helper.ip,
                     Port: 7777,
                     AgeLimit: 0,
                     IsPvpServer: 0,
@@ -211,13 +211,13 @@ loginPacketController.onRecivePacket = function (data, sock) {
 
             if (sock.client.status != 5) {
                 console.log('[LS] Wrong status 5');
-                sock.end();
+                sock.destroy();
             }
 
             var pack = clientLoginPackets.RequestServerLogin(new Buffer(packetsArrayParse));
             if (pack.session1_1 != sock.client.session1_1 || pack.session1_2 != sock.client.session1_2) {
                 console.log('[LS] Wrong session1 on RequestServerLogin');
-                sock.end();
+                sock.destroy();
             }
 
             if (1 == 1) { //check server players/maxPlayers etc.
