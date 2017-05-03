@@ -219,7 +219,7 @@ loginPacketController.onRecivePacket = function (data, sock) {
                                 var ipStr = res.ip.split('.');
                                 var ipInt = [];
                                 _.each(ipStr, (ip) => {
-                                    ipInt.pish(parseInt(ip));
+                                    ipInt.push(parseInt(ip));
                                 });
 
                                 server.IP = ipInt;
