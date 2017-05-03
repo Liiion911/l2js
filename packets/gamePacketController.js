@@ -60,7 +60,7 @@ gamePacketController.onRecivePacket = function (data, sock) {
             var pack = clientGamePackets.AuthLogin(new Buffer(packetsArrayParse));
 
             var query = db.getAuthDataByLogin(pack.login);
-            helper.poolLoginServer.getConnection(function (err_con, connection) {
+            helper.poolGameServer.getConnection(function (err_con, connection) {
 
                 if (err_con) {
                     console.log(err_con);
