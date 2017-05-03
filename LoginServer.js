@@ -1,4 +1,4 @@
-var net = require("net");
+﻿var net = require("net");
 var fs = require("fs");
 var execFile = require('child_process').execFile;
 var util = require('util');
@@ -13,38 +13,33 @@ var clientLoginPackets = require('./packets/login/client.js');
 var serverLoginPackets = require('./packets/login/server.js');
 var loginPacketController = require('./packets/loginPacketController.js');
 
-var clientGamePackets = require('./packets/game/client.js');
-var serverGamePackets = require('./packets/game/server.js');
-var gamePacketController = require('./packets/gamePacketController.js');
-
-
-helper.allServerData = [];
-helper.ip = [192, 168, 0, 100];
 
 //-----------------------------------------------//
 // LoginServer                                   //
 //-----------------------------------------------//
+
 var loginServer = {
     sessionId: 0
 };
 
 helper.poolLoginServer = mysql.createPool({
     connectionLimit: 100,
-    host: process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',
-    port: process.env.OPENSHIFT_MYSQL_DB_PORT || 3306,
-    user: process.env.PRODUCTION ? 'adminBqKe6Qy' : 'root',
-    password: process.env.PRODUCTION ? 'yH7ykk4DHNNS' : 'iPRyRKu2',
-    database: process.env.PRODUCTION ? 'l2jls' : 'l2jls'
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'iPRyRKu2',
+    database: 'l2jls'
 });
 
-helper.poolGameServer = mysql.createPool({
-    connectionLimit: 100,
-    host: process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',
-    port: process.env.OPENSHIFT_MYSQL_DB_PORT || 3306,
-    user: process.env.PRODUCTION ? 'adminBqKe6Qy' : 'root',
-    password: process.env.PRODUCTION ? 'yH7ykk4DHNNS' : 'iPRyRKu2',
-    database: process.env.PRODUCTION ? 'l2jls' : 'l2jgs'
+helper.poolLoginGameServer = mysql.createPool({
+    connectionLimit: 10,
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'iPRyRKu2',
+    database: 'l2jgs'
 });
+
 
 loginServer.server = net.createServer();
 loginServer.server.listen(2106);
@@ -76,7 +71,7 @@ loginServer.server.on('connection', function (sock) {
         console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
-    sock.client.blowFish = require('./blowfish.js');
+    sock.client.blowFish = require('./packets/blowfish.js');
 
     var pubKey = new Buffer(crypto.newPubKey());
 
@@ -104,41 +99,6 @@ loginServer.server.on('connection', function (sock) {
 
         console.log('[LS] Send packet Init');
 
-    });
-
-});
-
-
-//-----------------------------------------------//
-// GameServer                                    //
-//-----------------------------------------------//
-var gameServer = {};
-
-gameServer.server = net.createServer();
-gameServer.server.listen(7777);
-console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
-gameServer.server.on('connection', function (sock) {
-
-    sock.client = {
-        status: 0
-    };
-
-    console.log('[GS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
-
-    sock.on('data', function (data) {
-        gamePacketController.onRecivePacket(data, sock)
-    });
-
-    sock.on('close', function (had_error) {
-        console.log('[GS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
-
-    sock.on('end', () => {
-        console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
-
-    sock.on('error', function (err) {
-        console.log('[GS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
 });

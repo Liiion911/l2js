@@ -12,6 +12,35 @@ db.getAccountByLoginPassword = function (login, pass) {
         .toQuery();
 }
 
+db.updateAuthData = function (login, session1_1, session1_2, session2_1, session2_2) {
+    return sqlModels.auth_data
+        .update({
+            session1_1: session1_1,
+            session1_2: session1_2,
+            session2_1: session2_1,
+            session2_2: session2_2
+        })
+        .where(sqlModels.auth_data.login.equals(login))
+        .toQuery();
+};
+
+db.insertAuthData = function (login, session1_1, session1_2, session2_1, session2_2) {
+    return sqlModels.auth_data
+        .insert({
+            login: login,
+            session1_1: session1_1,
+            session1_2: session1_2,
+            session2_1: session2_1,
+            session2_2: session2_2
+        }).toQuery();
+};
+
+db.getAuthDataByLogin = function (login) {
+    return sqlModels.auth_data
+        .where(sqlModels.auth_data.login.equals(login))
+        .toQuery();
+}
+
 db.createAccount = function (login, password, accessLevel) {
     return sqlModels.accounts
         .insert({
