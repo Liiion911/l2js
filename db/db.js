@@ -37,6 +37,7 @@ db.insertAuthData = function (login, session1_1, session1_2, session2_1, session
 
 db.getServers = function () {
     return sqlModels.gameservers
+        .select(sqlModels.gameservers.star())
         .toQuery();
 };
 
