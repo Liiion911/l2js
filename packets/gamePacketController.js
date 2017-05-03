@@ -77,7 +77,7 @@ gamePacketController.onRecivePacket = function (data, sock) {
                             sock.client.data = result[0];
                             if (result.length != 1 || !sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
 
-                                console.log('[GS] No allServerData login or wrong session keys');
+                                console.log('[GS] No allServerData login or wrong session keys'); 
                                 sock.destroy();
 
                             } else {
@@ -91,7 +91,6 @@ gamePacketController.onRecivePacket = function (data, sock) {
                     });
                 }
             });
-
 
             break;
 
