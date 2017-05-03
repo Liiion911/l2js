@@ -59,17 +59,39 @@ gamePacketController.onRecivePacket = function (data, sock) {
 
             var pack = clientGamePackets.AuthLogin(new Buffer(packetsArrayParse));
 
-            sock.client.data = _.findWhere(helper.allServerData, { login: pack.login });
-            if (!sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
+            var query = db.getAuthDataByLogin(pack.login);
+            helper.poolLoginServer.getConnection(function (err_con, connection) {
 
-                console.log('[GS] No allServerData login or wrong session keys');
-                sock.destroy();
+                if (err_con) {
+                    console.log(err_con);
+                } else {
 
-            } else {
+                    connection.query(query.text, query.values, function (err, result) {
 
-                gamePacketController.sendCharList(sock);
+                        connection.release();
 
-            }
+                        if (err) {
+                            console.log(err);
+                        } else {
+
+                            sock.client.data = result[0];
+                            if (result.length != 1 || !sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
+
+                                console.log('[GS] No allServerData login or wrong session keys');
+                                sock.destroy();
+
+                            } else {
+
+                                gamePacketController.sendCharList(sock);
+
+                            }
+
+                        }
+
+                    });
+                }
+            });
+
 
             break;
 
