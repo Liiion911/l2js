@@ -10,7 +10,7 @@ db.getAccountByLoginPassword = function (login, pass) {
         .where(sqlModels.accounts.login.equals(login))
         .and(sqlModels.accounts.password.equals(pass))
         .toQuery();
-}
+};
 
 db.updateAuthData = function (login, session1_1, session1_2, session2_1, session2_2) {
     return sqlModels.auth_data
@@ -35,11 +35,16 @@ db.insertAuthData = function (login, session1_1, session1_2, session2_1, session
         }).toQuery();
 };
 
+db.getServers = function () {
+    return sqlModels.gameservers
+        .toQuery();
+};
+
 db.getAuthDataByLogin = function (login) {
     return sqlModels.auth_data
         .where(sqlModels.auth_data.login.equals(login))
         .toQuery();
-}
+};
 
 db.createAccount = function (login, password, accessLevel) {
     return sqlModels.accounts
@@ -48,6 +53,6 @@ db.createAccount = function (login, password, accessLevel) {
             password: password,
             accessLevel: 0
         }).toQuery();
-}
+};
 
 module.exports = db;
