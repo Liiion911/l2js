@@ -151,28 +151,28 @@ loginDomain.run(() => {
                     case "0": // game server info
                         var game_server_id = data[1];
                         var online = data[2];
-                        if (!gameServers[game_server_id]) {
-                            gameServers[game_server_id] = {
+                        if (!loginServer.gameServers[game_server_id]) {
+                            loginServer.gameServers[game_server_id] = {
                                 logins: []
                             };
                         }
-                        gameServers[game_server_id].sock = sock;
-                        gameServers[game_server_id].online = online;
+                        loginServer.gameServers[game_server_id].sock = sock;
+                        loginServer.gameServers[game_server_id].online = online;
                         break;
                     case "1": // player attempted to connect
                         var game_server_id = data[1];
                         var username = data[2];
 
-                        if (!gameServers[game_server_id]) {
-                            gameServers[game_server_id] = {
+                        if (!loginServer.gameServers[game_server_id]) {
+                            loginServer.gameServers[game_server_id] = {
                                 logins: []
                             };
                         }
 
-                        if (!gameServers[game_server_id].logins[username]) gameServers[game_server_id].logins[username] = {};
+                        if (!loginServer.gameServers[game_server_id].logins[username]) loginServer.gameServers[game_server_id].logins[username] = {};
 
-                        if (gameServers[server_id].logins[sock.client.login]["1"]) {
-                            gameServers[server_id].logins[sock.client.login]["1"].cb(true);
+                        if (loginServer.gameServers[server_id].logins[sock.client.login]["1"]) {
+                            loginServer.gameServers[server_id].logins[sock.client.login]["1"].cb(true);
                         }
 
                         break;
@@ -199,12 +199,12 @@ loginDomain.run(() => {
 
     loginServer.attemptToLoginOnGameServer = (sock, server_id, cb) => {
         try {
-            if (gameServers[server_id]) {
-                if (!gameServers[server_id].logins[sock.client.login]) gameServers[server_id].logins[sock.client.login] = {};
-                gameServers[server_id].logins[sock.client.login]["1"] = {
+            if (loginServer.gameServers[server_id]) {
+                if (!loginServer.gameServers[server_id].logins[sock.client.login]) loginServer.gameServers[server_id].logins[sock.client.login] = {};
+                loginServer.gameServers[server_id].logins[sock.client.login]["1"] = {
                     cb: cb
                 };
-                gameServers[server_id].sock.write('1|' + sock.client.login);
+                loginServer.gameServers[server_id].sock.write('1|' + sock.client.login);
             } else {
                 cb(false);
             }
