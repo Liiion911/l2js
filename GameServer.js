@@ -163,13 +163,13 @@ gameDomain.run(() => {
                 instanceId: 0,
                 name: "World",
                 players: [],
-                removePlayer: (sock) => {
+                removePlayer: function (sock) {
                     this.players.splice(this.players.indexOf(sock), 1);
                 },
-                addPlayer: (sock) => {
+                addPlayer: function (sock) {
                     this.players.push(sock);
                 },
-                getPlayers: () => {
+                getPlayers: function () {
                     return this.players;
                 }
             }
