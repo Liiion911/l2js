@@ -79,7 +79,7 @@ gameServer.connectToMaster = () => {
     });
 
     gameServer.client.on('data', (data) => {
-        var dataArray = data.slpit('|');
+        var dataArray = data.split('|');
         switch (data[0]) {
             case "0": // disconnect player
                 var username = data[1];
@@ -93,6 +93,11 @@ gameServer.connectToMaster = () => {
         setTimeout(() => {
             gameServer.connectToMaster();
         }, 10000)
+    });
+
+
+    gameServer.client.on('error', (err) => {
+        console.log('[GS] Error connection to Login Server Master');
     });
 
 };
