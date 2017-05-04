@@ -112,7 +112,7 @@ loginServer.master.on('connection', (sock) => {
     console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 
     sock.on('data', (data) => {
-        var dataArray = data.split('|');
+        var dataArray = data.toString('utf8').split('|');
         switch (data[0]) {
             case "0": // game server info
                 var game_server_id = data[1];

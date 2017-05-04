@@ -79,7 +79,7 @@ gameServer.connectToMaster = () => {
     });
 
     gameServer.client.on('data', (data) => {
-        var dataArray = data.split('|');
+        var dataArray = data.toString('utf8').split('|');
         switch (data[0]) {
             case "0": // disconnect player
                 var username = data[1];
