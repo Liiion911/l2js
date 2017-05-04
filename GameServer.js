@@ -167,9 +167,7 @@ gameDomain.run(() => {
                     this.players.splice(this.players.indexOf(sock), 1);
                 },
                 addPlayer: function (sock) {
-                    console.log(sock.client.char.Instance);
                     this.players.push(sock);
-                    console.log(this.players);
                 },
                 getPlayers: function () {
                     return this.players;
