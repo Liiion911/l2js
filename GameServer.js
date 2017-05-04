@@ -72,7 +72,7 @@ gameDomain.run(() => {
 
         sock.on('data', (data) => {
             try {
-                gamePacketController.onRecivePacket(data, sock);
+                gamePacketController.onRecivePacket(data, sock, gameServer);
             } catch (ex) {
                 gameServer.exceptionHandler(ex);
             }
@@ -85,8 +85,14 @@ gameDomain.run(() => {
         sock.on('end', () => {
             console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
             try {
+
+                // TODO: all check and operations in one - helper.playerDIsconnected();
+
+                gameServer.World.getInstance(sock).removePlayer(sock);
+
                 gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
                 helper.syncPlayersCount(gameServer);
+
             } catch (ex) {
                 gameServer.exceptionHandler(ex);
             }
@@ -149,6 +155,30 @@ gameDomain.run(() => {
             gameServer.exceptionHandler(ex);
         }
 
+    };
+
+    gameServer.World = {
+        instances: [
+            {
+                instanceId: 0,
+                name: "World",
+                players: [],
+                removePlayer: (sock) => {
+                    this.players.splice(this.players.indexOf(sock), 1);
+                },
+                addPlayer: (sock) => {
+                    this.players.push(sock);
+                },
+                getPlayers: () => {
+                    return this.players;
+                }
+            }
+        ],
+        getInstance: (sock) => {
+            var instanceId = 0;
+            if (gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
+            return gameServer.World.instances[instanceId];
+        }
     };
 
     gameServer.connectToMaster();

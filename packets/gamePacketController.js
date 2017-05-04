@@ -8,7 +8,7 @@ var db = require('../db/db.js');
 
 var gamePacketController = {};
 
-gamePacketController.onRecivePacket = function (data, sock) {
+gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
     var packetLength = data[0] - 2;
     var packetsArray = new Uint8Array(data.length - 2);
@@ -42,80 +42,6 @@ gamePacketController.onRecivePacket = function (data, sock) {
     console.log('[GS] Recive packet: ' + packetId);
 
     switch (packetId) {
-        case 0x07:
-
-            console.log('[GS] Recive packet 0x07 - Ping');
-
-            break;
-
-        case 0x08:
-
-            if (sock.client.status != 1) {
-                console.log('[GS] Wrong status 1');
-                sock.destroy();
-            }
-
-            console.log('[GS] Recive packet AuthLogin');
-
-            var pack = clientGamePackets.AuthLogin(new Buffer(packetsArrayParse));
-
-            var query = db.getAuthDataByLogin(pack.login);
-            helper.poolGameServer.getConnection(function (err_con, connection) {
-
-                if (err_con) {
-                    console.log(err_con);
-                } else {
-
-                    connection.query(query.text, query.values, function (err, result) {
-
-                        connection.release();
-
-                        if (err) {
-                            console.log(err);
-                        } else {
-
-                            sock.client.data = result[0];
-                            if (result.length != 1 || !sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
-
-                                console.log('[GS] No allServerData login or wrong session keys'); 
-                                sock.destroy();
-
-                            } else {
-
-                                gamePacketController.sendCharList(sock);
-
-                            }
-
-                        }
-
-                    });
-                }
-            });
-
-            break;
-
-        case 0x0d:
-
-            if (sock.client.status != 2) {
-                console.log('[GS] Wrong status 2');
-                sock.destroy();
-            }
-
-            var pack = clientGamePackets.CharacterSelected(new Buffer(packetsArrayParse));
-
-            if (sock.client.chars.length > pack.charIndex) {
-
-                sock.client.status = 3;
-                sock.client.char = sock.client.chars[pack.charIndex];
-                helper.sendGamePacket('CharSelected', sock, sock.client.data.session2_1, sock.client.char);
-                console.log('[GS] Send packet: CharSelected');
-
-            } else {
-                sock.destroy();
-            }
-
-
-            break;
 
         case 0x00:
 
@@ -154,6 +80,65 @@ gamePacketController.onRecivePacket = function (data, sock) {
 
             break;
 
+        case 0x01:
+
+            console.log('[GS] Recive packet MoveBackwardToLocation');
+
+
+            var pack = clientGamePackets.MoveBackwardToLocation(new Buffer(packetsArrayParse));
+
+            // TODO: check boat, teleport, attacking + BOW, GEODATA + cursor, siting (SystemMessage.SystemMessageId.CantMoveSitting)
+            // isInBoat, getTeleMode, isAttackingNow + getActiveWeaponItem().getItemType() == L2WeaponType.BOW, _moveMovement + GEODATA, IsSittingInProgress/IsSitting
+
+            // TODO: char.Obsx = -1
+
+            var curX = sock.client.char.X;
+            var curY = sock.client.char.Y;
+            var curZ = sock.client.char.Z;
+
+            var dx = pack.toX - curX;
+            var dy = pack.toY - curY;
+
+            // TODO:  Can't move if character is confused
+            // activeChar.isOutOfControl() || 
+
+
+
+            var distance = helper.getPlanDistanceSq(dx, dy);
+
+            var spy = dy / distance
+            var spx = dx / distance;
+
+            var heading = ((Math.atan2(-spx, -spy) * 10430.378) + 32767); // ? short.MaxValue 
+
+
+            if (sock.client.char.UpdatePosition) {
+                sock.client.char.UpdatePosition = false;
+                sock.client.char.Heading = heading;
+                helper.sendGamePacket('StopMove', sock, sock.client.char);
+            }
+
+            // or trying to move a huge distance
+            if (((dx * dx) + (dy * dy)) > 98010000 || distance > 9900) // 9900*9900 
+            {
+                helper.sendGamePacket('ActionFailed', sock);
+            } else {
+
+                sock.client.char.UpdatePosition = true;
+
+                helper.sendGamePacket('MoveToLocation', sock, sock.client.char, { X: pack.toX, Y: pack.toY, Z: pack.toZ });
+                console.log('[GS] Send packet: MoveToLocation');
+
+
+                //helper.setIntention(sock, "AI_INTENTION_MOVE_TO", { x: pack.toX, y: pack.toY, z: pack.toZ, h: heading });
+
+
+                // TODO: broadcastToPartyMembers
+
+            }
+
+            break;
+
         case 0x03:
 
             console.log('[GS] Recive packet EnterWorld');
@@ -168,6 +153,8 @@ gamePacketController.onRecivePacket = function (data, sock) {
             if (1 == 2) {// TODO: isGM
 
             }
+
+            gameServer.World.getInstance(sock).addPlayer(sock);
 
             // TODO: add spawn protection
             // setProtection();
@@ -238,71 +225,114 @@ gamePacketController.onRecivePacket = function (data, sock) {
 
             break;
 
-        case 0x48:
+        case 0x07:
 
-            console.log('[GS] Recive packet ValidatePosition');
-
-            helper.sendGamePacket('UserInfo', sock, sock.client.char);
-            console.log('[GS] Send packet: UserInfo');
+            console.log('[GS] Recive packet 0x07 - Ping');
 
             break;
 
-        case 0x01:
+        case 0x08:
 
-            console.log('[GS] Recive packet MoveBackwardToLocation');
-
-
-            var pack = clientGamePackets.MoveBackwardToLocation(new Buffer(packetsArrayParse));
-
-            // TODO: check boat, teleport, attacking + BOW, GEODATA + cursor, siting (SystemMessage.SystemMessageId.CantMoveSitting)
-            // isInBoat, getTeleMode, isAttackingNow + getActiveWeaponItem().getItemType() == L2WeaponType.BOW, _moveMovement + GEODATA, IsSittingInProgress/IsSitting
-
-            // TODO: char.Obsx = -1
-
-            var curX = sock.client.char.X;
-            var curY = sock.client.char.Y;
-            var curZ = sock.client.char.Z;
-
-            var dx = pack.toX - curX;
-            var dy = pack.toY - curY;
-
-            // TODO:  Can't move if character is confused
-            // activeChar.isOutOfControl() || 
-
-
-
-            var distance = helper.getPlanDistanceSq(dx, dy);
-
-            var spy = dy / distance
-            var spx = dx / distance;
-
-            var heading = ((Math.atan2(-spx, -spy) * 10430.378) + 32767); // ? short.MaxValue 
-
-
-            if (sock.client.char.UpdatePosition) {
-                sock.client.char.UpdatePosition = false;
-                sock.client.char.Heading = heading;
-                helper.sendGamePacket('StopMove', sock, sock.client.char);
+            if (sock.client.status != 1) {
+                console.log('[GS] Wrong status 1');
+                sock.destroy();
             }
 
-            // or trying to move a huge distance
-            if (((dx * dx) + (dy * dy)) > 98010000 || distance > 9900) // 9900*9900 
-            {
-                helper.sendGamePacket('ActionFailed', sock);
+            console.log('[GS] Recive packet AuthLogin');
+
+            var pack = clientGamePackets.AuthLogin(new Buffer(packetsArrayParse));
+
+            var query = db.getAuthDataByLogin(pack.login);
+            helper.poolGameServer.getConnection(function (err_con, connection) {
+
+                if (err_con) {
+                    console.log(err_con);
+                } else {
+
+                    connection.query(query.text, query.values, function (err, result) {
+
+                        connection.release();
+
+                        if (err) {
+                            console.log(err);
+                        } else {
+
+                            sock.client.data = result[0];
+                            if (result.length != 1 || !sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
+
+                                console.log('[GS] No allServerData login or wrong session keys'); 
+                                sock.destroy();
+
+                            } else {
+
+                                gamePacketController.sendCharList(sock);
+
+                            }
+
+                        }
+
+                    });
+                }
+            });
+
+            break;
+
+        case 0x09:
+
+            console.log('[GS] Recive packet Logout');
+
+            helper.sendGamePacket('LeaveWorld', sock);
+
+            console.log('[GS] Send packet LeaveWorld');
+
+            break;
+
+        case 0x0d:
+
+            if (sock.client.status != 2) {
+                console.log('[GS] Wrong status 2');
+                sock.destroy();
+            }
+
+            var pack = clientGamePackets.CharacterSelected(new Buffer(packetsArrayParse));
+
+            if (sock.client.chars.length > pack.charIndex) {
+
+                sock.client.status = 3;
+                sock.client.char = sock.client.chars[pack.charIndex];
+                helper.sendGamePacket('CharSelected', sock, sock.client.data.session2_1, sock.client.char);
+                console.log('[GS] Send packet: CharSelected');
+
             } else {
-
-                sock.client.char.UpdatePosition = true;
-
-                helper.sendGamePacket('MoveToLocation', sock, sock.client.char, { X: pack.toX, Y: pack.toY, Z: pack.toZ });
-                console.log('[GS] Send packet: MoveToLocation');
-
-
-                //helper.setIntention(sock, "AI_INTENTION_MOVE_TO", { x: pack.toX, y: pack.toY, z: pack.toZ, h: heading });
-
-
-                // TODO: broadcastToPartyMembers
-
+                sock.destroy();
             }
+
+            break;
+
+        case 0x38:
+
+            console.log('[GS] Recive packet Say2'); 
+
+            var pack = clientGamePackets.Say2(new Buffer(packetsArrayParse));
+
+            // TODO: check player can use chat
+            // TODO: flood protection
+            // TODO: check BOTs etc.  https://xp-dev.com/sc/186542/3/%2Ftrunk%2FL2J_Server_BETA%2Fjava%2Fcom%2Fl2jserver%2Fgameserver%2Fnetwork%2Fclientpackets%2FSay2.java
+
+            switch (pack.type) {
+                case 0: // CHAT_NORMAL ?
+
+                    _.each(gameServer.World.getInstance(sock).getPlayers(), (player) => { // TODO: get players in radius
+
+                        // TODO: check radius
+
+                        helper.sendGamePacket('CreatureSay', player, pack.type, pack.text);
+
+                    });
+
+                    break;
+            }
+
 
             break;
 
@@ -336,13 +366,14 @@ gamePacketController.onRecivePacket = function (data, sock) {
             sock.client.status = 1;
             gamePacketController.sendCharList(sock);
 
-        case 0x09:
+            break;
 
-            console.log('[GS] Recive packet Logout');
+        case 0x48:
 
-            helper.sendGamePacket('LeaveWorld', sock);
+            console.log('[GS] Recive packet ValidatePosition');
 
-            console.log('[GS] Send packet LeaveWorld');
+            helper.sendGamePacket('UserInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: UserInfo');
 
             break;
 
@@ -454,7 +485,8 @@ gamePacketController.sendCharList = function (sock) {
             FlyRunSpd: 150,
             FlyWalkSpd: 100,
             MoveMultiplier: 1,
-            AttackSpeedMultiplier: 1
+            AttackSpeedMultiplier: 1,
+            Instance: 0
         }
     ];
 

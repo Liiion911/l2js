@@ -7,6 +7,20 @@ var serverGamePackets = {};
 // Game Server packets                          //
 //-----------------------------------------------//
 
+serverGamePackets.CreatureSay = function (sock, type, text, target) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x4a);
+
+    p.writeD(sock.client.char.ObjectId);
+    p.writeD(type);
+    p.writeS(target ? target : char.Name);
+    p.writeS(char.Name);
+
+    return p;
+}
+
+
 serverGamePackets.StopMove = function (char) {
     var p = new protocol.BasePacket();
 
