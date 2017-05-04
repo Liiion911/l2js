@@ -8,6 +8,7 @@ var mysql = require('mysql');
 var protocol = require('./packets/protocol.js');
 var crypto = require('./packets/crypto.js');
 var helper = require('./packets/helper.js');
+var db = require('../db/db.js');
 
 var clientGamePackets = require('./packets/game/client.js');
 var serverGamePackets = require('./packets/game/server.js');
@@ -31,6 +32,8 @@ helper.poolGameServer = mysql.createPool({
     database: 'l2jgs'
 });
 
+gameServer.clients = [];
+gameServer.onlineSyncCount = -1;
 
 gameServer.server = net.createServer();
 gameServer.server.listen(7777);
@@ -43,6 +46,9 @@ gameServer.server.on('connection', function (sock) {
 
     console.log('[GS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
 
+    gameServer.clients.push(sock);
+    helper.syncPlayersCount(gameServer);
+
     sock.on('data', function (data) {
         gamePacketController.onRecivePacket(data, sock)
     });
@@ -53,6 +59,8 @@ gameServer.server.on('connection', function (sock) {
 
     sock.on('end', () => {
         console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+        gameServer.clients.splice(gameServer.clients.indexOf(socket), 1);
+        helper.syncPlayersCount(gameServer);
     });
 
     sock.on('error', function (err) {
@@ -60,3 +68,9 @@ gameServer.server.on('connection', function (sock) {
     });
 
 });
+
+setInterval(() => {
+
+    helper.syncPlayersCount(gameServer);
+
+}, 30000);

@@ -7,6 +7,41 @@ var helper = {
     autoCreate: true
 };
 
+helper.syncPlqyersCount = function (gameServer) {
+    var playersCount = gameServer.clients.length;
+
+    if (playersCount != gameServer.onlineSyncCount) {
+
+        var query = db.updateServerData(playersCount);
+        helper.poolGameServer.getConnection(function (err_con, connection) {
+
+            if (err_con) {
+                console.log(err_con);
+            } else {
+
+                connection.query(query.text, query.values, function (err, result) {
+
+                    connection.release();
+
+                    if (err) {
+                        console.log(err);
+                    } else {
+
+                        gameServer.onlineSyncCount = playersCount;
+                        console.log('[GS] Online Players counter - synchronized: ' + playersCount);
+
+                    }
+
+                });
+
+            }
+
+        });
+
+    }
+};
+
+
 helper.getPlanDistanceSq = function(x, y)
 {
     return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));

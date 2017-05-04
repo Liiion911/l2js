@@ -13,7 +13,6 @@ var clientLoginPackets = require('./packets/login/client.js');
 var serverLoginPackets = require('./packets/login/server.js');
 var loginPacketController = require('./packets/loginPacketController.js');
 
-
 //-----------------------------------------------//
 // LoginServer                                   //
 //-----------------------------------------------//

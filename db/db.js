@@ -47,6 +47,20 @@ db.getAuthDataByLogin = function (login) {
         .toQuery();
 };
 
+db.updateServerData = function (online) {
+    return sqlModels.server_data
+        .update({
+            online: online,
+        })
+        .toQuery();
+};
+
+db.getServerData = function () {
+    return sqlModels.server_data
+        .select(sqlModels.server_data.star())
+        .toQuery();
+};
+
 db.createAccount = function (login, password, accessLevel) {
     return sqlModels.accounts
         .insert({
