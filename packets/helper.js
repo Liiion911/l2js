@@ -8,6 +8,19 @@ var helper = {
     autoCreate: true
 };
 
+helper.disconnectPlayer = (login, clients, error, sock) => {
+
+    if (!sock) {
+        sock = _.find(clients, (s) => {
+            var username = sock.client.data ? sock.client.data.login : "";
+            return username == login
+        });
+    }
+
+    // send disconnect packet
+
+};
+
 helper.syncPlayersCount = function (gameServer) {
     var playersCount = gameServer.clients.length;
 

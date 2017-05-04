@@ -18,7 +18,9 @@ var loginPacketController = require('./packets/loginPacketController.js');
 //-----------------------------------------------//
 
 var loginServer = {
-    sessionId: 0
+    sessionId: 0,
+    loginServerMasterPort: 5555,
+    gameServers: {}
 };
 
 helper.poolLoginServer = mysql.createPool({
@@ -43,7 +45,7 @@ helper.poolLoginGameServer = mysql.createPool({
 loginServer.server = net.createServer();
 loginServer.server.listen(2106);
 console.log('LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
-loginServer.server.on('connection', function (sock) {
+loginServer.server.on('connection', (sock) => {
 
     loginServer.sessionId++;
 
@@ -54,19 +56,19 @@ loginServer.server.on('connection', function (sock) {
 
     console.log('[LS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
 
-    sock.on('data', function (data) {
+    sock.on('data', (data) => {
         loginPacketController.onRecivePacket(data, sock)
     });
 
-    sock.on('close', function (had_error) {
+    sock.on('close', (had_error) => {
         console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
-    sock.on('end', function () {
+    sock.on('end', () => {
         console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
-    sock.on('error', function (err) {
+    sock.on('error', (err) => {
         console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
@@ -74,7 +76,7 @@ loginServer.server.on('connection', function (sock) {
 
     var pubKey = new Buffer(crypto.newPubKey());
 
-    var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], function (error, stdout, stderr) {
+    var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
         if (error) {
             console.log(error);
         }
@@ -99,5 +101,41 @@ loginServer.server.on('connection', function (sock) {
         console.log('[LS] Send packet Init');
 
     });
+
+});
+
+loginServer.master = net.createServer();
+loginServer.master.listen(loginServer.loginServerMasterPort);
+console.log('LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
+loginServer.master.on('connection', (sock) => {
+
+    console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
+
+    sock.on('data', (data) => {
+        var dataArray = data.slpit('|');
+        switch (data[0]) {
+            case "0": // game server info
+                var game_server_id = data[1];
+                var online = data[2];
+                gameServers[game_server_id] = {
+                    sock: sock,
+                    online: online
+                }
+                break;
+        }
+    });
+
+    sock.on('close', (had_error) => {
+        console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+    });
+
+    sock.on('end', () => {
+        console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+    });
+
+    sock.on('error', (err) => {
+        console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+    });
+    
 
 });

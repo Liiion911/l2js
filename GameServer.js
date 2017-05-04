@@ -20,7 +20,11 @@ var gamePacketController = require('./packets/gamePacketController.js');
 //-----------------------------------------------//
 
 var gameServer = {
-
+    server_id: 1,
+    clients: [],
+    onlineSyncCount: -1,
+    loginServerMasterIP: '127.0.0.1',
+    loginServerMasterPort: 5555
 };
 
 helper.poolGameServer = mysql.createPool({
@@ -32,13 +36,10 @@ helper.poolGameServer = mysql.createPool({
     database: 'l2jgs'
 });
 
-gameServer.clients = [];
-gameServer.onlineSyncCount = -1;
-
 gameServer.server = net.createServer();
 gameServer.server.listen(7777);
 console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
-gameServer.server.on('connection', function (sock) {
+gameServer.server.on('connection', (sock) => {
 
     sock.client = {
         status: 0
@@ -49,11 +50,11 @@ gameServer.server.on('connection', function (sock) {
     gameServer.clients.push(sock);
     helper.syncPlayersCount(gameServer);
 
-    sock.on('data', function (data) {
+    sock.on('data', (data) => {
         gamePacketController.onRecivePacket(data, sock)
     });
 
-    sock.on('close', function (had_error) {
+    sock.on('close', (had_error) => {
         console.log('[GS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
@@ -63,11 +64,40 @@ gameServer.server.on('connection', function (sock) {
         helper.syncPlayersCount(gameServer);
     });
 
-    sock.on('error', function (err) {
+    sock.on('error', (err) => {
         console.log('[GS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 
 });
+
+gameServer.connectToMaster = () => {
+
+    gameServer.client = new net.Socket();
+    gameServer.client.connect(loginServerMasterPort, loginServerMasterIP, () => {
+        console.log('[GS] Connected to Login Server Master');
+        gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length);
+    });
+
+    gameServer.client.on('data', (data) => {
+        var dataArray = data.slpit('|');
+        switch (data[0]) {
+            case "0": // disconnect player
+                var username = data[1];
+                helper.disconnectPlayer(username, gameServer.clients, 0)
+                break;
+        }
+    });
+
+    gameServer.client.on('close', () => {
+        console.log('[GS] Closed connection to Login Server Master');
+        setTimeout(() => {
+            gameServer.connectToMaster();
+        }, 10000)
+    });
+
+};
+
+gameServer.connectToMaster();
 
 setInterval(() => {
 
