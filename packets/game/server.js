@@ -17,6 +17,8 @@ serverGamePackets.CreatureSay = function (sock, type, text, targetName) {
     if (targetName) p.writeS(targetName);
     p.writeS(sock.client.char.Name);
 
+    return p;
+
     /*
 	    public static final int ALL = 0;
 	    public static final int SHOUT = 1; // !
@@ -43,8 +45,6 @@ serverGamePackets.CreatureSay = function (sock, type, text, targetName) {
 	    public static final int NPC_ALL = 22;
 	    public static final int NPC_SHOUT = 23;
     */
-
-    return p;
 }
 
 
