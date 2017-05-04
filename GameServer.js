@@ -73,7 +73,7 @@ gameServer.server.on('connection', (sock) => {
 gameServer.connectToMaster = () => {
 
     gameServer.client = new net.Socket();
-    gameServer.client.connect(loginServerMasterPort, loginServerMasterIP, () => {
+    gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
         console.log('[GS] Connected to Login Server Master');
         gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length);
     });
