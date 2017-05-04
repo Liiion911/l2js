@@ -17,6 +17,33 @@ serverGamePackets.CreatureSay = function (sock, type, text, targetName) {
     if (targetName) p.writeS(targetName);
     p.writeS(sock.client.char.Name);
 
+    /*
+	    public static final int ALL = 0;
+	    public static final int SHOUT = 1; // !
+	    public static final int TELL = 2;
+	    public static final int PARTY = 3; // #
+	    public static final int CLAN = 4; // @
+	    public static final int GM = 5;
+	    public static final int PETITION_PLAYER = 6; // used for petition
+	    public static final int PETITION_GM = 7; // * used for petition
+	    public static final int TRADE = 8; // +
+	    public static final int ALLIANCE = 9; // $
+	    public static final int ANNOUNCEMENT = 10;
+	    public static final int BOAT = 11;
+	    public static final int L2FRIEND = 12;
+	    public static final int MSNCHAT = 13;
+	    public static final int PARTYMATCH_ROOM = 14;
+	    public static final int PARTYROOM_COMMANDER = 15; // (Yellow)
+	    public static final int PARTYROOM_ALL = 16; // (Red)
+	    public static final int HERO_VOICE = 17;
+	    public static final int CRITICAL_ANNOUNCE = 18;
+	    public static final int SCREEN_ANNOUNCE = 19;
+	    public static final int BATTLEFIELD = 20;
+	    public static final int MPCC_ROOM = 21;
+	    public static final int NPC_ALL = 22;
+	    public static final int NPC_SHOUT = 23;
+    */
+
     return p;
 }
 
