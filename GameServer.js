@@ -59,7 +59,7 @@ gameServer.server.on('connection', function (sock) {
 
     sock.on('end', () => {
         console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
-        gameServer.clients.splice(gameServer.clients.indexOf(socket), 1);
+        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
         helper.syncPlayersCount(gameServer);
     });
 
