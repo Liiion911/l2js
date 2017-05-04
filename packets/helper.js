@@ -134,8 +134,6 @@ helper.sendLoginPacket = function (packetName, sock) {
 
 helper.sendGamePacket = function (packetName, sock) {
     try {
-        console.log(arguments[2] ? "yes" : "no");
-        console.log(arguments[2]);
         var packet = serverGamePackets[packetName](arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10]);
         var packetArray = helper.preSendGame(packet.getContent(), sock);
         sock.write(new Buffer(packetArray));
