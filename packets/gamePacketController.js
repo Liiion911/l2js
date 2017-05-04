@@ -326,7 +326,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                         // TODO: check radius
 
-                        helper.sendGamePacket('CreatureSay', player, pack.type, pack.text);
+                        helper.sendGamePacket('CreatureSay', player, player, pack.type, pack.text);
 
                     });
 
