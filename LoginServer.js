@@ -1,141 +1,175 @@
-﻿var net = require("net");
-var fs = require("fs");
-var execFile = require('child_process').execFile;
-var util = require('util');
-var _ = require('underscore');
-var mysql = require('mysql');
+﻿// TODO: RTFM http://stackoverflow.com/questions/7310521/node-js-best-practice-exception-handling
+process.on('uncaughtException', function (err) {
+    console.log('uncaughtException');
+    console.log(err);
+})
 
-var protocol = require('./packets/protocol.js');
-var crypto = require('./packets/crypto.js');
-var helper = require('./packets/helper.js');
+var loginDomain = require('domain').create();
 
-var clientLoginPackets = require('./packets/login/client.js');
-var serverLoginPackets = require('./packets/login/server.js');
-var loginPacketController = require('./packets/loginPacketController.js');
-
-//-----------------------------------------------//
-// LoginServer                                   //
-//-----------------------------------------------//
-
-var loginServer = {
-    sessionId: 0,
-    loginServerMasterPort: 5555,
-    gameServers: {}
-};
-
-helper.poolLoginServer = mysql.createPool({
-    connectionLimit: 100,
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'iPRyRKu2',
-    database: 'l2jls'
+loginDomain.on('error', (err) => {
+    console.log('domain error');
+    console.log(err);
 });
 
-helper.poolLoginGameServer = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'iPRyRKu2',
-    database: 'l2jgs'
-});
+loginDomain.run(() => {
 
+    var net = require("net");
+    var fs = require("fs");
+    var execFile = require('child_process').execFile;
+    var util = require('util');
+    var _ = require('underscore');
+    var mysql = require('mysql');
 
-loginServer.server = net.createServer();
-loginServer.server.listen(2106);
-console.log('LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
-loginServer.server.on('connection', (sock) => {
+    var protocol = require('./packets/protocol.js');
+    var crypto = require('./packets/crypto.js');
+    var helper = require('./packets/helper.js');
 
-    loginServer.sessionId++;
+    var clientLoginPackets = require('./packets/login/client.js');
+    var serverLoginPackets = require('./packets/login/server.js');
+    var loginPacketController = require('./packets/loginPacketController.js');
 
-    sock.client = {
-        status: 0,
-        sessionId: loginServer.sessionId
+    //-----------------------------------------------//
+    // LoginServer                                   //
+    //-----------------------------------------------//
+
+    var loginServer = {
+        sessionId: 0,
+        loginServerMasterPort: 5555,
+        gameServers: {}
     };
 
-    console.log('[LS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
+    loginServer.exceptionHandler = helper.exceptionHandler;
 
-    sock.on('data', (data) => {
-        loginPacketController.onRecivePacket(data, sock)
+    helper.poolLoginServer = mysql.createPool({
+        connectionLimit: 100,
+        host: 'localhost',
+        port: 3306,
+        user: 'root',
+        password: 'iPRyRKu2',
+        database: 'l2jls'
     });
 
-    sock.on('close', (had_error) => {
-        console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+    helper.poolLoginGameServer = mysql.createPool({
+        connectionLimit: 10,
+        host: 'localhost',
+        port: 3306,
+        user: 'root',
+        password: 'iPRyRKu2',
+        database: 'l2jgs'
     });
 
-    sock.on('end', () => {
-        console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
 
-    sock.on('error', (err) => {
-        console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
+    loginServer.server = net.createServer();
+    loginServer.server.listen(2106);
+    console.log('LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
+    loginServer.server.on('connection', (sock) => {
 
-    sock.client.blowFish = require('./packets/blowfish.js');
+        loginServer.sessionId++;
 
-    var pubKey = new Buffer(crypto.newPubKey());
+        sock.client = {
+            status: 0,
+            sessionId: loginServer.sessionId
+        };
 
-    var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
-        if (error) {
-            console.log(error);
-        }
-        console.log(stdout);
+        console.log('[LS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
 
-        delete require.cache[require.resolve("./RSAgenerator/keys/" + sock.client.sessionId + ".json")];
-        var rsaKeyPairs;
-        sock.client.rsaKeyPairs = rsaKeyPairs = require("./RSAgenerator/keys/" + sock.client.sessionId + ".json");
-        var buf = new Buffer(rsaKeyPairs._scrambledModulus, 'base64');
-        sock.client.rsaKeyPairs._old_scrambledModulus = rsaKeyPairs._scrambledModulus;
-        sock.client.rsaKeyPairs._scrambledModulus = buf;
+        sock.on('data', (data) => {
+            try {
+                loginPacketController.onRecivePacket(data, sock);
+            } catch (ex) {
+                loginServer.exceptionHandler(ex);
+            }
+        });
 
-        var buff = serverLoginPackets.Init(pubKey, rsaKeyPairs._scrambledModulus, sock);
+        sock.on('close', (had_error) => {
+            console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
 
-        var array = new Buffer(buff.getContent());
+        sock.on('end', () => {
+            console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
 
-        array = helper.initPreSendLogin(array, pubKey, sock);
+        sock.on('error', (err) => {
+            console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
 
-        sock.client.status = 1;
-        sock.write(new Buffer(array));
+        sock.client.blowFish = require('./packets/blowfish.js');
 
-        console.log('[LS] Send packet Init');
+        try {
 
-    });
+            var pubKey = new Buffer(crypto.newPubKey());
 
-});
-
-loginServer.master = net.createServer();
-loginServer.master.listen(loginServer.loginServerMasterPort);
-console.log('LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
-loginServer.master.on('connection', (sock) => {
-
-    console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
-
-    sock.on('data', (data) => {
-        var dataArray = data.toString('utf8').split('|');
-        switch (data[0]) {
-            case "0": // game server info
-                var game_server_id = data[1];
-                var online = data[2];
-                gameServers[game_server_id] = {
-                    sock: sock,
-                    online: online
+            var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
+                if (error) {
+                    console.log(error);
                 }
-                break;
+                console.log(stdout);
+
+                try {
+                    delete require.cache[require.resolve("./RSAgenerator/keys/" + sock.client.sessionId + ".json")];
+                    var rsaKeyPairs;
+                    sock.client.rsaKeyPairs = rsaKeyPairs = require("./RSAgenerator/keys/" + sock.client.sessionId + ".json");
+                    var buf = new Buffer(rsaKeyPairs._scrambledModulus, 'base64');
+                    sock.client.rsaKeyPairs._old_scrambledModulus = rsaKeyPairs._scrambledModulus;
+                    sock.client.rsaKeyPairs._scrambledModulus = buf;
+
+                    var buff = serverLoginPackets.Init(pubKey, rsaKeyPairs._scrambledModulus, sock);
+
+                    var array = new Buffer(buff.getContent());
+
+                    array = helper.initPreSendLogin(array, pubKey, sock);
+
+                    sock.client.status = 1;
+                    sock.write(new Buffer(array));
+
+                    console.log('[LS] Send packet Init');
+                }
+                catch (ex) {
+                    loginServer.exceptionHandler(ex);
+                }
+
+            });
+
+        } catch (ex) {
+            loginServer.exceptionHandler(ex);
         }
+
     });
 
-    sock.on('close', (had_error) => {
-        console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
+    loginServer.master = net.createServer();
+    loginServer.master.listen(loginServer.loginServerMasterPort);
+    console.log('LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
+    loginServer.master.on('connection', (sock) => {
 
-    sock.on('end', () => {
-        console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
+        console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 
-    sock.on('error', (err) => {
-        console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+        sock.on('data', (data) => {
+            var dataArray = data.toString('utf8').split('|');
+            switch (data[0]) {
+                case "0": // game server info
+                    var game_server_id = data[1];
+                    var online = data[2];
+                    gameServers[game_server_id] = {
+                        sock: sock,
+                        online: online
+                    }
+                    break;
+            }
+        });
+
+        sock.on('close', (had_error) => {
+            console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
+
+        sock.on('end', () => {
+            console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
+
+        sock.on('error', (err) => {
+            console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
+
+
     });
-    
 
 });

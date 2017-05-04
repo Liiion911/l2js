@@ -1,111 +1,154 @@
-var net = require("net");
-var fs = require("fs");
-var execFile = require('child_process').execFile;
-var util = require('util');
-var _ = require('underscore');
-var mysql = require('mysql');
+// TODO: RTFM http://stackoverflow.com/questions/7310521/node-js-best-practice-exception-handling
+process.on('uncaughtException', function (err) {
+    console.log('uncaughtException');
+    console.log(err);
+})
 
-var protocol = require('./packets/protocol.js');
-var crypto = require('./packets/crypto.js');
-var helper = require('./packets/helper.js');
-var db = require('./db/db.js');
+var gameDomain = require('domain').create();
 
-var clientGamePackets = require('./packets/game/client.js');
-var serverGamePackets = require('./packets/game/server.js');
-var gamePacketController = require('./packets/gamePacketController.js');
-
-
-//-----------------------------------------------//
-// GameServer                                    //
-//-----------------------------------------------//
-
-var gameServer = {
-    server_id: 1,
-    clients: [],
-    onlineSyncCount: -1,
-    loginServerMasterIP: '127.0.0.1',
-    loginServerMasterPort: 5555
-};
-
-helper.poolGameServer = mysql.createPool({
-    connectionLimit: 100,
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'iPRyRKu2',
-    database: 'l2jgs'
+gameDomain.on('error', (err) => {
+    console.log('domain error');
+    console.log(err);
 });
 
-gameServer.server = net.createServer();
-gameServer.server.listen(7777);
-console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
-gameServer.server.on('connection', (sock) => {
+gameDomain.run(() => {
 
-    sock.client = {
-        status: 0
+    var net = require("net");
+    var fs = require("fs");
+    var execFile = require('child_process').execFile;
+    var util = require('util');
+    var _ = require('underscore');
+    var mysql = require('mysql');
+
+    var protocol = require('./packets/protocol.js');
+    var crypto = require('./packets/crypto.js');
+    var helper = require('./packets/helper.js');
+    var db = require('./db/db.js');
+
+    var clientGamePackets = require('./packets/game/client.js');
+    var serverGamePackets = require('./packets/game/server.js');
+    var gamePacketController = require('./packets/gamePacketController.js');
+
+    //-----------------------------------------------//
+    // GameServer                                    //
+    //-----------------------------------------------//
+
+    var gameServer = {
+        server_id: 1,
+        clients: [],
+        onlineSyncCount: -1,
+        loginServerMasterIP: '127.0.0.1',
+        loginServerMasterPort: 5555
     };
 
-    console.log('[GS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
+    gameServer.exceptionHandler = helper.exceptionHandler;
 
-    gameServer.clients.push(sock);
-    helper.syncPlayersCount(gameServer);
-
-    sock.on('data', (data) => {
-        gamePacketController.onRecivePacket(data, sock)
+    helper.poolGameServer = mysql.createPool({
+        connectionLimit: 100,
+        host: 'localhost',
+        port: 3306,
+        user: 'root',
+        password: 'iPRyRKu2',
+        database: 'l2jgs'
     });
 
-    sock.on('close', (had_error) => {
-        console.log('[GS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+    gameServer.server = net.createServer();
+    gameServer.server.listen(7777);
+    console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
+    gameServer.server.on('connection', (sock) => {
+
+        sock.client = {
+            status: 0
+        };
+
+        console.log('[GS] CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
+
+        try {
+            gameServer.clients.push(sock);
+            helper.syncPlayersCount(gameServer);
+        } catch (ex) {
+            loginServer.exceptionHandler(ex);
+        }
+
+        sock.on('data', (data) => {
+            try {
+                gamePacketController.onRecivePacket(data, sock);
+            } catch (ex) {
+                gameServer.exceptionHandler(ex);
+            }
+        });
+
+        sock.on('close', (had_error) => {
+            console.log('[GS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
+
+        sock.on('end', () => {
+            console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            try {
+                gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+                helper.syncPlayersCount(gameServer);
+            } catch (ex) {
+                gameServer.exceptionHandler(ex);
+            }
+        });
+
+        sock.on('error', (err) => {
+            console.log('[GS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+        });
+
     });
 
-    sock.on('end', () => {
-        console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
-        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+    gameServer.connectToMaster = () => {
+        try {
+
+            gameServer.client = new net.Socket();
+            gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
+                try {
+                    gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length);
+                    console.log('[GS] Connected to Login Server Master');
+                } catch (ex) {
+                    gameServer.exceptionHandler(ex);
+                }
+            });
+
+            gameServer.client.on('data', (data) => {
+                try {
+                    var dataArray = data.toString('utf8').split('|');
+                    switch (data[0]) {
+                        case "0": // disconnect player
+                            var username = data[1];
+                            helper.disconnectPlayer(username, gameServer.clients, 0)
+                            break;
+                    }
+                } catch (ex) {
+                    gameServer.exceptionHandler(ex);
+                }
+            });
+
+            gameServer.client.on('close', () => {
+                console.log('[GS] Closed connection to Login Server Master');
+                setTimeout(() => {
+                    gameServer.connectToMaster();
+                }, 10000)
+            });
+
+
+            gameServer.client.on('error', (err) => {
+                console.log('[GS] Error connection to Login Server Master');
+            });
+
+        } catch (ex) {
+            gameServer.exceptionHandler(ex);
+        }
+
+    };
+
+    gameServer.connectToMaster();
+
+    setInterval(() => {
+
         helper.syncPlayersCount(gameServer);
-    });
 
-    sock.on('error', (err) => {
-        console.log('[GS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
+    }, 30000);
 
 });
-
-gameServer.connectToMaster = () => {
-
-    gameServer.client = new net.Socket();
-    gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
-        console.log('[GS] Connected to Login Server Master');
-        gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length);
-    });
-
-    gameServer.client.on('data', (data) => {
-        var dataArray = data.toString('utf8').split('|');
-        switch (data[0]) {
-            case "0": // disconnect player
-                var username = data[1];
-                helper.disconnectPlayer(username, gameServer.clients, 0)
-                break;
-        }
-    });
-
-    gameServer.client.on('close', () => {
-        console.log('[GS] Closed connection to Login Server Master');
-        setTimeout(() => {
-            gameServer.connectToMaster();
-        }, 10000)
-    });
-
-
-    gameServer.client.on('error', (err) => {
-        console.log('[GS] Error connection to Login Server Master');
-    });
-
-};
-
-gameServer.connectToMaster();
-
-setInterval(() => {
-
-    helper.syncPlayersCount(gameServer);
-
-}, 30000);

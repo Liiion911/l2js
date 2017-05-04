@@ -6,133 +6,167 @@ crypto.randomInteger = function (min, max) {
     return rand;
 }
 
-crypto.decrypt = function (sock, raw, offset, size)
-{
-    var temp = 0;
-    for (var i = 0; i < size; i++) {
-        var temp2 = raw[offset + i] & 0xFF;
-        raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp);
-        temp = temp2;
+crypto.decrypt = function (sock, raw, offset, size) {
+    try {
+
+        var temp = 0;
+        for (var i = 0; i < size; i++) {
+            var temp2 = raw[offset + i] & 0xFF;
+            raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp);
+            temp = temp2;
+        }
+
+        var old = sock.client.newXorKeyDec[8] & 0xff;
+        old |= (sock.client.newXorKeyDec[9] << 8) & 0xff00;
+        old |= (sock.client.newXorKeyDec[10] << 0x10) & 0xff0000;
+        old |= (sock.client.newXorKeyDec[11] << 0x18) & 0xff000000;
+
+        old += size;
+
+        sock.client.newXorKeyDec[8] = (old & 0xff);
+        sock.client.newXorKeyDec[9] = ((old >> 0x08) & 0xff);
+        sock.client.newXorKeyDec[10] = ((old >> 0x10) & 0xff);
+        sock.client.newXorKeyDec[11] = ((old >> 0x18) & 0xff);
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-
-    var old = sock.client.newXorKeyDec[8] & 0xff;
-    old |= (sock.client.newXorKeyDec[9] << 8) & 0xff00;
-    old |= (sock.client.newXorKeyDec[10] << 0x10) & 0xff0000;
-    old |= (sock.client.newXorKeyDec[11] << 0x18) & 0xff000000;
-
-    old += size;
-
-    sock.client.newXorKeyDec[8] = (old & 0xff);
-    sock.client.newXorKeyDec[9] = ((old >> 0x08) & 0xff);
-    sock.client.newXorKeyDec[10] = ((old >> 0x10) & 0xff);
-    sock.client.newXorKeyDec[11] = ((old >> 0x18) & 0xff);
 }
 
-crypto.encrypt = function(sock, raw, offset, size)
-{
+crypto.encrypt = function (sock, raw, offset, size) {
+    try {
 
-    var temp = 0;
-    for (var i = 0; i < size; i++) {
-        var temp2 = raw[offset + i] & 0xFF;
-        temp = temp2 ^ sock.client.newXorKeyEnc[i & 15] ^ temp;
-        raw[offset + i] = temp;
+        var temp = 0;
+        for (var i = 0; i < size; i++) {
+            var temp2 = raw[offset + i] & 0xFF;
+            temp = temp2 ^ sock.client.newXorKeyEnc[i & 15] ^ temp;
+            raw[offset + i] = temp;
+        }
+
+        var old = sock.client.newXorKeyEnc[8] & 0xff;
+        old |= (sock.client.newXorKeyEnc[9] << 8) & 0xff00;
+        old |= (sock.client.newXorKeyEnc[10] << 0x10) & 0xff0000;
+        old |= (sock.client.newXorKeyEnc[11] << 0x18) & 0xff000000;
+
+        old += size;
+
+        sock.client.newXorKeyEnc[8] = (old & 0xff);
+        sock.client.newXorKeyEnc[9] = ((old >> 0x08) & 0xff);
+        sock.client.newXorKeyEnc[10] = ((old >> 0x10) & 0xff);
+        sock.client.newXorKeyEnc[11] = ((old >> 0x18) & 0xff);
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-
-    var old = sock.client.newXorKeyEnc[8] & 0xff;
-    old |= (sock.client.newXorKeyEnc[9] << 8) & 0xff00;
-    old |= (sock.client.newXorKeyEnc[10] << 0x10) & 0xff0000;
-    old |= (sock.client.newXorKeyEnc[11] << 0x18) & 0xff000000;
-
-    old += size;
-
-    sock.client.newXorKeyEnc[8] = (old & 0xff);
-    sock.client.newXorKeyEnc[9] = ((old >> 0x08) & 0xff);
-    sock.client.newXorKeyEnc[10] = ((old >> 0x10) & 0xff);
-    sock.client.newXorKeyEnc[11] = ((old >> 0x18) & 0xff);
 }
 
 crypto.generateNewKey = function () {
-    var key = new Uint8Array(16);
+    try {
+        var key = new Uint8Array(16);
 
-    // randomize the 8 first bytes
-    for (var j = 0; j < key.length; j++) {
-        key[j] = crypto.randomInteger(0, 255);
+        // randomize the 8 first bytes
+        for (var j = 0; j < key.length; j++) {
+            key[j] = crypto.randomInteger(0, 255);
+        }
+
+        // the last 8 bytes are static
+        key[8] = 0xc8;
+        key[9] = 0x27;
+        key[10] = 0x93;
+        key[11] = 0x01;
+        key[12] = 0xa1;
+        key[13] = 0x6c;
+        key[14] = 0x31;
+        key[15] = 0x97;
+        return key;
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-
-    // the last 8 bytes are static
-    key[8] = 0xc8;
-    key[9] = 0x27;
-    key[10] = 0x93;
-    key[11] = 0x01;
-    key[12] = 0xa1;
-    key[13] = 0x6c;
-    key[14] = 0x31;
-    key[15] = 0x97;
-    return key;
+    return [];
 }
 
 crypto.appendChecksum = function (raw, offset, size) {
-    var chksum = 0;
-    var count = size - 4;
-    var ecx;
-    var i;
+    try {
 
-    for (i = offset; i < count; i += 4) {
+        var chksum = 0;
+        var count = size - 4;
+        var ecx;
+        var i;
+
+        for (i = offset; i < count; i += 4) {
+            ecx = raw[i] & 0xff;
+            ecx |= (raw[i + 1] << 8) & 0xff00;
+            ecx |= (raw[i + 2] << 0x10) & 0xff0000;
+            ecx |= (raw[i + 3] << 0x18) & 0xff000000;
+
+            chksum ^= ecx;
+        }
+
         ecx = raw[i] & 0xff;
         ecx |= (raw[i + 1] << 8) & 0xff00;
         ecx |= (raw[i + 2] << 0x10) & 0xff0000;
         ecx |= (raw[i + 3] << 0x18) & 0xff000000;
 
-        chksum ^= ecx;
+        raw[i] = (chksum & 0xff);
+        raw[i + 1] = ((chksum >> 0x08) & 0xff);
+        raw[i + 2] = ((chksum >> 0x10) & 0xff);
+        raw[i + 3] = ((chksum >> 0x18) & 0xff);
+        return raw;
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-
-    ecx = raw[i] & 0xff;
-    ecx |= (raw[i + 1] << 8) & 0xff00;
-    ecx |= (raw[i + 2] << 0x10) & 0xff0000;
-    ecx |= (raw[i + 3] << 0x18) & 0xff000000;
-
-    raw[i] = (chksum & 0xff);
-    raw[i + 1] = ((chksum >> 0x08) & 0xff);
-    raw[i + 2] = ((chksum >> 0x10) & 0xff);
-    raw[i + 3] = ((chksum >> 0x18) & 0xff);
-    return raw;
+    return [];
 }
 
 crypto.newPubKey = function () {
-    var ret = new Uint8Array(16);
-    for (var i = 0; i < 16; i++) {
-        ret[i] = (parseInt((Math.random() * 50).toFixed(0)));
+    try {
+        var ret = new Uint8Array(16);
+        for (var i = 0; i < 16; i++) {
+            ret[i] = (parseInt((Math.random() * 50).toFixed(0)));
+        }
+        return ret;
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-    return ret;
+    return [];
 }
 
 crypto.encXORPass = function (raw, offset, size, key) {
-    var stop = size - 8;
-    var pos = 4 + offset;
-    var edx;
-    var ecx = key; // Initial xor key
+    try {
 
-    while (pos < stop) {
-        edx = (raw[pos] & 0xFF);
-        edx |= (raw[pos + 1] & 0xFF) << 8;
-        edx |= (raw[pos + 2] & 0xFF) << 16;
-        edx |= (raw[pos + 3] & 0xFF) << 24;
+        var stop = size - 8;
+        var pos = 4 + offset;
+        var edx;
+        var ecx = key; // Initial xor key
 
-        ecx += edx;
+        while (pos < stop) {
+            edx = (raw[pos] & 0xFF);
+            edx |= (raw[pos + 1] & 0xFF) << 8;
+            edx |= (raw[pos + 2] & 0xFF) << 16;
+            edx |= (raw[pos + 3] & 0xFF) << 24;
 
-        edx ^= ecx;
+            ecx += edx;
 
-        raw[pos++] = (edx & 0xFF);
-        raw[pos++] = ((edx >> 8) & 0xFF);
-        raw[pos++] = ((edx >> 16) & 0xFF);
-        raw[pos++] = ((edx >> 24) & 0xFF);
+            edx ^= ecx;
+
+            raw[pos++] = (edx & 0xFF);
+            raw[pos++] = ((edx >> 8) & 0xFF);
+            raw[pos++] = ((edx >> 16) & 0xFF);
+            raw[pos++] = ((edx >> 24) & 0xFF);
+        }
+
+        raw[pos++] = (ecx & 0xFF);
+        raw[pos++] = ((ecx >> 8) & 0xFF);
+        raw[pos++] = ((ecx >> 16) & 0xFF);
+        raw[pos++] = ((ecx >> 24) & 0xFF);
+        return raw;
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
     }
-
-    raw[pos++] = (ecx & 0xFF);
-    raw[pos++] = ((ecx >> 8) & 0xFF);
-    raw[pos++] = ((ecx >> 16) & 0xFF);
-    raw[pos++] = ((ecx >> 24) & 0xFF);
-    return raw;
+    return [];
 }
 
 module.exports = crypto;
