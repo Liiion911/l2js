@@ -13,7 +13,7 @@ var crypto = require('./crypto.js');
 
 var loginPacketController = {};
 
-loginPacketController.onRecivePacket = function (data, sock) {
+loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
     var packetLength = data[0] - 2;
     var packetsArray = new Uint8Array(data.length - 2);
@@ -49,7 +49,6 @@ loginPacketController.onRecivePacket = function (data, sock) {
                 console.log('[LS] Wrong sessionId');
                 sock.destroy();
             }
-
 
             sock.client.status = 2;
             helper.sendLoginPacket('GGAuth', sock, sock);
@@ -101,7 +100,7 @@ loginPacketController.onRecivePacket = function (data, sock) {
                                 console.log(err);
                                 connection.release();
                             } else {
-                                if (result.length == 1) { //checkLoginPass //sock.client.login == "123" && sock.client.pass == "321"
+                                if (result.length == 1) {
 
                                     connection.release();
 
@@ -277,56 +276,58 @@ loginPacketController.onRecivePacket = function (data, sock) {
                                 sock.client.session2_1 = (parseInt((Math.random() * 1000000000).toFixed(0)))
                                 sock.client.session2_2 = (parseInt((Math.random() * 1000000000).toFixed(0)))
 
-                                // attempt user to login onto GameServer
+                                loginServer.attemptToLoginOnGameServer(sock, pack.server_id, (res) => {
 
-                                var query = db.getAuthDataByLogin(sock.client.login);
+                                    var query = db.getAuthDataByLogin(sock.client.login);
 
-                                connection.query(query.text, query.values, function (err, result) {
-                                    if (err) {
-                                        console.log(err);
-                                        connection.release();
-                                    } else {
-
-                                        if (result.length == 1) {
-
-                                            var query1 = db.updateAuthData(sock.client.login, sock.client.session1_1, sock.client.session1_2, sock.client.session2_1, sock.client.session2_2);
-                                            connection.query(query1.text, query1.values, function (err1, result1) {
-
-                                                connection.release();
-
-                                                if (err1) {
-                                                    console.log(err1);
-                                                } else {
-
-                                                    sock.client.status = 7;
-                                                    helper.sendLoginPacket('PlayOk', sock, sock.client.session2_1, sock.client.session2_2);
-
-                                                    console.log('[LS] Send packet PlayOk');
-
-                                                }
-                                            });
-
+                                    connection.query(query.text, query.values, function (err, result) {
+                                        if (err) {
+                                            console.log(err);
+                                            connection.release();
                                         } else {
 
-                                            var query1 = db.insertAuthData(sock.client.login, sock.client.session1_1, sock.client.session1_2, sock.client.session2_1, sock.client.session2_2);
-                                            connection.query(query1.text, query1.values, function (err1, result1) {
+                                            if (result.length == 1) {
 
-                                                connection.release();
+                                                var query1 = db.updateAuthData(sock.client.login, sock.client.session1_1, sock.client.session1_2, sock.client.session2_1, sock.client.session2_2);
+                                                connection.query(query1.text, query1.values, function (err1, result1) {
 
-                                                if (err1) {
-                                                    console.log(err1);
-                                                } else {
+                                                    connection.release();
 
-                                                    sock.client.status = 7;
-                                                    helper.sendLoginPacket('PlayOk', sock, sock.client.session2_1, sock.client.session2_2);
+                                                    if (err1) {
+                                                        console.log(err1);
+                                                    } else {
 
-                                                    console.log('[LS] Send packet PlayOk');
+                                                        sock.client.status = 7;
+                                                        helper.sendLoginPacket('PlayOk', sock, sock.client.session2_1, sock.client.session2_2);
 
-                                                }
-                                            });
+                                                        console.log('[LS] Send packet PlayOk');
+
+                                                    }
+                                                });
+
+                                            } else {
+
+                                                var query1 = db.insertAuthData(sock.client.login, sock.client.session1_1, sock.client.session1_2, sock.client.session2_1, sock.client.session2_2);
+                                                connection.query(query1.text, query1.values, function (err1, result1) {
+
+                                                    connection.release();
+
+                                                    if (err1) {
+                                                        console.log(err1);
+                                                    } else {
+
+                                                        sock.client.status = 7;
+                                                        helper.sendLoginPacket('PlayOk', sock, sock.client.session2_1, sock.client.session2_2);
+
+                                                        console.log('[LS] Send packet PlayOk');
+
+                                                    }
+                                                });
+                                            }
+
                                         }
 
-                                    }
+                                    });
 
                                 });
 

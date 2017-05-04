@@ -75,7 +75,7 @@ loginDomain.run(() => {
 
         sock.on('data', (data) => {
             try {
-                loginPacketController.onRecivePacket(data, sock);
+                loginPacketController.onRecivePacket(data, sock, loginServer);
             } catch (ex) {
                 loginServer.exceptionHandler(ex);
             }
@@ -144,16 +144,42 @@ loginDomain.run(() => {
         console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 
         sock.on('data', (data) => {
-            var dataArray = data.toString('utf8').split('|');
-            switch (data[0]) {
-                case "0": // game server info
-                    var game_server_id = data[1];
-                    var online = data[2];
-                    gameServers[game_server_id] = {
-                        sock: sock,
-                        online: online
-                    }
-                    break;
+            try {
+
+                var dataArray = data.toString('utf8').split('|');
+                switch (data[0]) {
+                    case "0": // game server info
+                        var game_server_id = data[1];
+                        var online = data[2];
+                        if (!gameServers[game_server_id]) {
+                            gameServers[game_server_id] = {
+                                logins: []
+                            };
+                        }
+                        gameServers[game_server_id].sock = sock;
+                        gameServers[game_server_id].online = online;
+                        break;
+                    case "1": // player attempted to connect
+                        var game_server_id = data[1];
+                        var username = data[2];
+
+                        if (!gameServers[game_server_id]) {
+                            gameServers[game_server_id] = {
+                                logins: []
+                            };
+                        }
+
+                        if (!gameServers[game_server_id].logins[username]) gameServers[game_server_id].logins[username] = {};
+
+                        if (gameServers[server_id].logins[sock.client.login]["1"]) {
+                            gameServers[server_id].logins[sock.client.login]["1"].cb(true);
+                        }
+
+                        break;
+                }
+
+            } catch (ex) {
+                loginServer.exceptionHandler(ex);
             }
         });
 
@@ -169,7 +195,21 @@ loginDomain.run(() => {
             console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
-
     });
 
+    loginServer.attemptToLoginOnGameServer = (sock, server_id, cb) => {
+        try {
+            if (gameServers[server_id]) {
+                if (!gameServers[server_id].logins[sock.client.login]) gameServers[server_id].logins[sock.client.login] = {};
+                gameServers[server_id].logins[sock.client.login]["1"] = {
+                    cb: cb
+                };
+                gameServers[server_id].sock.write('1|' + sock.client.login);
+            } else {
+                cb(false);
+            }
+        } catch (ex) {
+            loginServer.exceptionHandler(ex);
+        }
+    };
 });

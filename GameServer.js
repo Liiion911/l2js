@@ -104,7 +104,7 @@ gameDomain.run(() => {
             gameServer.client = new net.Socket();
             gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
                 try {
-                    gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length);
+                    gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
                     console.log('[GS] Connected to Login Server Master');
                 } catch (ex) {
                     gameServer.exceptionHandler(ex);
@@ -115,9 +115,17 @@ gameDomain.run(() => {
                 try {
                     var dataArray = data.toString('utf8').split('|');
                     switch (data[0]) {
-                        case "0": // disconnect player
+                        case "1": // attempt login
                             var username = data[1];
-                            helper.disconnectPlayer(username, gameServer.clients, 0)
+                            helper.disconnectPlayer(username, gameServer.clients, 1);
+                            gameServer.client.write('1|' + gameServer.server_id + '|' + username);
+
+                            // TODO: check GS attempt to connect
+
+                            break;
+                        case "2": // disconnect player
+                            var username = data[1];
+                            helper.disconnectPlayer(username, gameServer.clients, 0);
                             break;
                     }
                 } catch (ex) {

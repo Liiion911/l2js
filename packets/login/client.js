@@ -20,8 +20,10 @@ clientLoginPackets.RequestServerLogin = function(buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readD();
     p.readD();
+    p.readC();
     p.session1_1 = p._data[0];
     p.session1_2 = p._data[1];
+    p.server_id = p._data[2];
     return p;
 }
 

@@ -14,7 +14,7 @@ helper.exceptionHandler = (ex) => {
 };
 
 helper.disconnectPlayer = (login, clients, error, sock) => {
-    try {
+    try { 
 
         if (!sock) {
             sock = _.find(clients, (s) => {
@@ -23,7 +23,8 @@ helper.disconnectPlayer = (login, clients, error, sock) => {
             });
         }
 
-        // send disconnect packet
+        // error: 0 - kick; 1 - attemp login; ...
+        // TODO: send disconnect packet
 
     } catch (ex) {
         helper.exceptionHandler(ex);
