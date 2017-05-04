@@ -7,7 +7,7 @@ var helper = {
     autoCreate: true
 };
 
-helper.syncPlqyersCount = function (gameServer) {
+helper.syncPlayersCount = function (gameServer) {
     var playersCount = gameServer.clients.length;
 
     if (playersCount != gameServer.onlineSyncCount) {
