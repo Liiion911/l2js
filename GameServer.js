@@ -8,7 +8,7 @@ var mysql = require('mysql');
 var protocol = require('./packets/protocol.js');
 var crypto = require('./packets/crypto.js');
 var helper = require('./packets/helper.js');
-var db = require('../db/db.js');
+var db = require('./db/db.js');
 
 var clientGamePackets = require('./packets/game/client.js');
 var serverGamePackets = require('./packets/game/server.js');
