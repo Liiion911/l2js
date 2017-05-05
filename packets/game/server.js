@@ -14,7 +14,7 @@ serverGamePackets.CreatureSay = function (sock, type, text, targetName) {
 
     p.writeD(sock.client.char.ObjectId);
     p.writeD(type);
-    p.writeS(targetName ? targetname: "");
+    p.writeS(targetName ? targetName : sock.client.char.Name);
     p.writeS(sock.client.char.Name);
 
     return p;
