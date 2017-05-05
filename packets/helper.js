@@ -195,8 +195,6 @@ helper.setIntention = function (sock, intention, args) {
 
                 // clientStopAutoAttack();
 
-
-
                 break;
         }
 
