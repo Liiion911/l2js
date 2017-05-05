@@ -8,6 +8,88 @@ var helper = {
     autoCreate: true
 };
 
+
+helper.initializeMapRegions = (gameServer) => {
+    var query = db.getMapRegions();
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    var count2 = 0;
+
+                    if (!gameServer.World.regions) gameServer.World.regions = [];
+
+                    _.each(result, (region) => {
+                        regionId = region.region;
+
+                        for (var j = 0; j < 10; j++)
+                        {
+                            if (!gameServer.World.regions[j]) gameServer.World.regions[j] = [];
+
+                            gameServer.World.regions[j][region] = region["sec" + j];
+
+                            count2++;
+
+                        }
+                    });
+
+                    console.log('[GS] Loaded map regions: ' + count2);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.isInsideRadiusObject = (object, x, y, z, radius, checkZ, strictCheck) => {
+    return helper.isInsideRadiusPos(object.X, object.Y, object.Z, x, y, z, radius, checkZ, strictCheck);
+};
+
+helper.isInsideRadiusPlayers = (player1, player2, radius, checkZ, strictCheck) => {
+    return helper.isInsideRadiusPos(player1.X, player1.Y, player1.Z, player2.X, player2.Y, player2.Z, radius, checkZ, strictCheck);
+};
+
+helper.isInsideRadiusPos = (posX1, posY1, posZ1, posX2, posY2, posZ2, radius, checkZ, strictCheck) => {
+    var dx = posX2 - posX1;
+    var dy = posY2 - posY1;
+    var dz = posZ2 - posZ1;
+
+    if (strictCheck) {
+        if (checkZ) return ((dx * dx) + (dy * dy) + (dz * dz)) < (radius * radius);
+
+        return ((dx * dx) + (dy * dy)) < (radius * radius);
+    }
+
+    if (checkZ) return ((dx * dx) + (dy * dy) + (dz * dz)) <= (radius * radius);
+
+    return ((dx * dx) + (dy * dy)) <= (radius * radius);
+}
+
+helper.getMapRegion = (gameServer, posX, posY) => {
+    return gameServer.World.regions[helper.getMapRegionX(posX)][helper.getMapRegionY(posY)];
+}
+	
+helper.getMapRegionX = (posX) => {
+    return (posX >> 15) + 4;// + centerTileX;
+};
+	
+helper.getMapRegionY = (posY) => {
+    return (posY >> 15) + 10;// + centerTileX;
+};
+
 helper.exceptionHandler = (ex) => {
     console.log('catch exception');
     console.log(ex);

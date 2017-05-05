@@ -70,4 +70,10 @@ db.createAccount = function (login, password, accessLevel) {
         }).toQuery();
 };
 
+db.getMapRegions = function () {
+    return sqlModels.mapregion
+        .select(sqlModels.mapregion.star())
+        .toQuery();
+};
+
 module.exports = db;

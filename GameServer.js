@@ -171,6 +171,14 @@ gameDomain.run(() => {
                 },
                 getPlayers: function () {
                     return this.players;
+                },
+                getPlayersInRadius: function (sock, radius, checkZ, strictCheck) {
+                    var players = this.getPlayers();
+                    var playersInRadius = [];
+                    _.each(players, (player) => {
+                        if (helper.isInsideRadiusPlayers(player.client.char, sock.client.char, radius, checkZ, strictCheck)) playersInRadius.push(player);
+                    });
+                    return playersInRadius;
                 }
             }
         ],
@@ -182,6 +190,8 @@ gameDomain.run(() => {
     };
 
     gameServer.connectToMaster();
+
+    helper.initializeMapRegions(gameServer);
 
     setInterval(() => {
 

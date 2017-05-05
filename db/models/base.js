@@ -20,6 +20,11 @@ sqlModels.gameservers = sql.define({
 
 // GAMESERVER DB
 
+sqlModels.mapregion = sql.define({
+    name: 'mapregion',
+    columns: ['region', 'sec0', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'sec6', 'sec7', 'sec8', 'sec9']
+});
+
 sqlModels.auth_data = sql.define({
     name: 'auth_data',
     columns: ['login', 'session1_1', 'session1_2', 'session2_1', 'session2_2']
