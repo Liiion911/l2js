@@ -211,7 +211,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
             // TODO: ValidateWaterZones
 
-            if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(spdX, spdY), false, false)) {
+            if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(posObject.spdX, posObject.spdY), false, false)) {
 
                 // arrived
                 sock.client.char.X = posObject.X;
@@ -224,6 +224,12 @@ helper.movePlayer = (gameServer, sock, posObject) => {
             } else {
                 sock.client.char.X += posObject.spdX;
                 sock.client.char.Y += posObject.spdY;
+
+                var realX = sock.client.char.X;
+                var realY = sock.client.char.Y;
+                var realZ = sock.client.char.Z;
+
+                console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
             }
 
         }, posObject.interval || 100);

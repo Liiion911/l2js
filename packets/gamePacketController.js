@@ -125,8 +125,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
 
-                sock.client.char.UpdatePosition = true;
-
                 // TODO: calculate speed
                 var speed = sock.client.char.RunSpd;
                 var interval = Math.ceil((10 * distance) / speed);
