@@ -1,4 +1,5 @@
-﻿var crypto = require('./crypto.js');
+﻿var _ = require('underscore');
+var crypto = require('./crypto.js');
 var db = require('../db/db.js');
 var serverLoginPackets = require('./login/server.js');
 var serverGamePackets = require('./game/server.js');
