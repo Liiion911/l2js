@@ -10,6 +10,7 @@ var helper = {
 };
 
 
+
 helper.initializeMapRegions = (gameServer) => {
     var query = db.getMapRegions();
     helper.poolGameServer.getConnection(function (err_con, connection) {
@@ -37,7 +38,9 @@ helper.initializeMapRegions = (gameServer) => {
                         {
                             if (!gameServer.World.regions[j]) gameServer.World.regions[j] = [];
 
-                            gameServer.World.regions[j][region] = region["sec" + j];
+                            gameServer.World.regions[j][regionId] = region["sec" + j];
+
+                            console.log('Init - j: ' + j + '; region: ' + regionId + '; value: ' + region["sec" + j]);
 
                             count2++;
 
