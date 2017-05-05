@@ -129,7 +129,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 // TODO: calculate speed
                 var speed = sock.client.char.RunSpd;
-                var interval = Math.Ceiling((10 * distance) / speed);
+                var interval = Math.ceil((10 * distance) / speed);
                 var spdX = dx / interval;
                 var spdY = dy / interval;
 
