@@ -7,6 +7,19 @@ var clientGamePackets = {};
 // Game server client packets                   //
 //-----------------------------------------------//
 
+clientGamePackets.ValidatePosition = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+    p.readD();
+    p.readD();
+    p.readD();
+    p.readD();
+    p.X = p._data[0];
+    p.Y = p._data[1];
+    p.Z = p._data[2];
+    p.Heading = p._data[3];
+    return p;
+}
+
 clientGamePackets.Say2 = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readS();

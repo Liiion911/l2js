@@ -47,6 +47,21 @@ serverGamePackets.CreatureSay = function (sock, type, text) {
     */
 }
 
+serverGamePackets.ValidateLocation = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x61);
+
+    p.writeD(char.ObjectId);
+
+    p.writeD(char.X);
+    p.writeD(char.Y);
+    p.writeD(char.Z);
+
+    p.writeD(char.Heading);
+
+    return p;
+}
 
 serverGamePackets.StopMove = function (char) {
     var p = new protocol.BasePacket();

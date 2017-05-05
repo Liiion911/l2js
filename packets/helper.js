@@ -34,8 +34,7 @@ helper.initializeMapRegions = (gameServer) => {
                     _.each(result, (region) => {
                         regionId = region.region;
 
-                        for (var j = 0; j < 10; j++)
-                        {
+                        for (var j = 0; j < 10; j++) {
                             if (!gameServer.World.regions[j]) gameServer.World.regions[j] = [];
 
                             gameServer.World.regions[j][regionId] = region["sec" + j];
@@ -90,12 +89,12 @@ helper.getMapRegion = (gameServer, posX, posY) => {
 
     return gameServer.World.regions[x][y];
 }
-	
+
 helper.getMapRegionX = (posX) => {
     //console.log('POSX: ', posX, ' ', (posX >> 15) + 4);
     return (posX >> 15) + 4;// + centerTileX;
 };
-	
+
 helper.getMapRegionY = (posY) => {
     //console.log('POSY: ', posY, ' ', (posY >> 15) + 10);
     return (posY >> 15) + 10;// + centerTileX;
@@ -107,7 +106,7 @@ helper.exceptionHandler = (ex) => {
 };
 
 helper.disconnectPlayer = (login, clients, error, sock) => {
-    try { 
+    try {
 
         if (!sock) {
             sock = _.find(clients, (s) => {
@@ -165,7 +164,7 @@ helper.syncPlayersCount = function (gameServer) {
 };
 
 
-helper.getPlanDistanceSq = function (x, y) {
+helper.getPlanDistanceSq = (x, y) => {
     var dist = 0;
     try {
         dist = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
@@ -175,41 +174,71 @@ helper.getPlanDistanceSq = function (x, y) {
     return dist;
 };
 
-helper.setIntention = function (sock, intention, args) {
+helper.stopMovePlayer = (gameServer, sock, posObject, broadcast, update) => {
     try {
 
-        // TODO: Stop the follow mode if necessary
-        //if ((intention != "AI_INTENTION_FOLLOW") && (intention != "AI_INTENTION_ATTACK"))
-        // sock.client.char.intention
-
-        switch (intention) {
-            case "AI_INTENTION_MOVE_TO":
-
-                if (sock.client.char.intention == "AI_INTENTION_REST") {
-                    helper.sendGamePacket('ActionFailed', sock);
-                }
-
-                // TODO: isAllSkillsDisabled -> ActionFailed
-
-                // changeIntention(AI_INTENTION_MOVE_TO, pos, null);
-
-                // clientStopAutoAttack();
-
-                break;
+        if (!sock.client.char.moveObject) {
+            sock.client.char.moveObject = {};
+        }
+        if (sock.client.char.moveObject.moveTimerId) {
+            clearInterval(sock.client.char.moveObject.moveTimerId);
         }
 
     } catch (ex) {
         helper.exceptionHandler(ex);
     }
-
 };
 
-helper.uncnownLoginPacket = function (sock, packetId, packetsArrayParse) {
+helper.movePlayer = (gameServer, sock, posObject) => {
+    try {
+        if (!sock.client.char.moveObject) {
+            sock.client.char.moveObject = {};
+        }
+        if (sock.client.char.moveObject.moveTimerId) {
+            clearInterval(sock.client.char.moveObject.moveTimerId);
+        }
+
+        _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
+
+            helper.sendGamePacket('MoveToLocation', player, sock.client.char, posObject);
+
+        });
+        console.log('[GS] Broadcast packet MoveToLocation');
+
+        // TODO: broadcastToPartyMembers
+
+        sock.client.char.moveObject.moveTimerId = setInterval(() => {
+
+            // TODO: ValidateWaterZones
+
+            if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(spdX, spdY), false, false)) {
+
+                // arrived
+                sock.client.char.X = posObject.X;
+                sock.client.char.Y = posObject.Y;
+                sock.client.char.Z = posObject.Z;
+
+                helper.stopMovePlayer(gameServer, sock, posObject, false, false);
+
+                return;
+            } else {
+                sock.client.char.X += posObject.spdX;
+                sock.client.char.Y += posObject.spdY;
+            }
+
+        }, posObject.interval || 100);
+
+    } catch (ex) {
+        helper.exceptionHandler(ex);
+    }
+};
+
+helper.unknownLoginPacket = function (sock, packetId, packetsArrayParse) {
     console.log('[LS] UNKNOWN PACKET - ' + packetId);
     sock.destroy();
 };
 
-helper.uncnownGamePacket = function (sock, packetId, packetsArrayParse) {
+helper.unknownGamePacket = function (sock, packetId, packetsArrayParse) {
     console.log('[GS] UNKNOWN PACKET - ' + packetId);
 };
 

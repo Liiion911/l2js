@@ -350,7 +350,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
             break;
         default:
 
-            helper.uncnownLoginPacket(sock, packetId, packetsArrayParse);
+            helper.unknownLoginPacket(sock, packetId, packetsArrayParse);
 
             break;
 

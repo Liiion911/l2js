@@ -111,12 +111,11 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             var heading = ((Math.atan2(-spx, -spy) * 10430.378) + 32767); // ? short.MaxValue 
 
-
-            if (sock.client.char.UpdatePosition) {
-                sock.client.char.UpdatePosition = false;
-                sock.client.char.Heading = heading;
-                helper.sendGamePacket('StopMove', sock, sock.client.char);
-            }
+            //if (sock.client.char.UpdatePosition) {
+            //    sock.client.char.UpdatePosition = false;
+            //    sock.client.char.Heading = heading;
+            //    helper.sendGamePacket('StopMove', sock, sock.client.char);
+            //}
 
             // or trying to move a huge distance
             if (((dx * dx) + (dy * dy)) > 98010000 || distance > 9900) // 9900*9900 
@@ -124,16 +123,19 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 helper.sendGamePacket('ActionFailed', sock);
             } else {
 
+                // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
+
                 sock.client.char.UpdatePosition = true;
 
-                helper.sendGamePacket('MoveToLocation', sock, sock.client.char, { X: pack.toX, Y: pack.toY, Z: pack.toZ });
-                console.log('[GS] Send packet: MoveToLocation');
+                // TODO: calculate speed
+                var speed = sock.client.char.RunSpd;
+                var interval = Math.Ceiling((10 * distance) / speed);
+                var spdX = dx / interval;
+                var spdY = dy / interval;
 
+                console.log('Move interval: ' + interval);
 
-                //helper.setIntention(sock, "AI_INTENTION_MOVE_TO", { x: pack.toX, y: pack.toY, z: pack.toZ, h: heading });
-
-
-                // TODO: broadcastToPartyMembers
+                helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, interval: interval, h: heading, spdX: spdX, spdY: spdY })
 
             }
 
@@ -260,7 +262,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                             sock.client.data = result[0];
                             if (result.length != 1 || !sock.client.data || sock.client.data.session2_1 != pack.session2_1 || sock.client.data.session2_2 != pack.session2_2 || sock.client.data.session1_1 != pack.session1_1 || sock.client.data.session1_2 != pack.session1_2) {
 
-                                console.log('[GS] No allServerData login or wrong session keys'); 
+                                console.log('[GS] No allServerData login or wrong session keys');
                                 sock.destroy();
 
                             } else {
@@ -311,7 +313,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
         case 0x38:
 
-            console.log('[GS] Recive packet Say2'); 
+            console.log('[GS] Recive packet Say2');
 
             var pack = clientGamePackets.Say2(new Buffer(packetsArrayParse));
 
@@ -396,14 +398,42 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             console.log('[GS] Recive packet ValidatePosition');
 
-            helper.sendGamePacket('UserInfo', sock, sock.client.char);
-            console.log('[GS] Send packet: UserInfo');
+            var pack = clientGamePackets.ValidatePosition(new Buffer(packetsArrayParse));
+
+            var realX = sock.client.char.X;
+            var realY = sock.client.char.Y;
+            var realZ = sock.client.char.Z;
+
+            var dx = pack.X - realX;
+            var dy = pack.Y - realY;
+            var diffSq = ((dx * dx) + (dy * dy));
+
+            console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
+            console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
+
+            if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
+            {
+
+            } else {
+                console.log('[GS] Small or large position difference');
+            }
+
+            // TODO: broadcast to party members
+
+            // TODO: checkWaterState
+
+
+            helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
+            console.log('[GS] Send packet: ValidateLocation');
+
+            //helper.sendGamePacket('UserInfo', sock, sock.client.char);
+            //console.log('[GS] Send packet: UserInfo');
 
             break;
 
         default:
 
-            helper.uncnownGamePacket(sock, packetId, packetsArrayParse);
+            helper.unknownGamePacket(sock, packetId, packetsArrayParse);
 
             break;
     }
