@@ -80,14 +80,21 @@ helper.isInsideRadiusPos = (posX1, posY1, posZ1, posX2, posY2, posZ2, radius, ch
 }
 
 helper.getMapRegion = (gameServer, posX, posY) => {
-    return gameServer.World.regions[helper.getMapRegionX(posX)][helper.getMapRegionY(posY)];
+    var x = helper.getMapRegionX(posX);
+    var y = helper.getMapRegionY(posY);
+
+    console.log(gameServer.World.regions[x].length);
+
+    return gameServer.World.regions[x][y];
 }
 	
 helper.getMapRegionX = (posX) => {
+    console.log('POSX: ', posX, ' ', (posX >> 15) + 4);
     return (posX >> 15) + 4;// + centerTileX;
 };
 	
 helper.getMapRegionY = (posY) => {
+    console.log('POSY: ', posY, ' ', (posY >> 15) + 10);
     return (posY >> 15) + 10;// + centerTileX;
 };
 

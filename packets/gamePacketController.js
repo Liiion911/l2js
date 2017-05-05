@@ -319,7 +319,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: flood protection
             // TODO: check BOTs etc.  https://xp-dev.com/sc/186542/3/%2Ftrunk%2FL2J_Server_BETA%2Fjava%2Fcom%2Fl2jserver%2Fgameserver%2Fnetwork%2Fclientpackets%2FSay2.java
 
-            console.log('[GS] CHAT - [' + pack.type + ']' + sock.client.char.name + ': ' + pack.text);
+            console.log('[GS] CHAT - [' + pack.type + ']' + sock.client.char.Name + ': ' + pack.text);
 
             switch (pack.type) {
                 case 0: // CHAT_NORMAL - in distance
