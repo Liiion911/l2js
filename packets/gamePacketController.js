@@ -383,7 +383,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             //
 
             sock.client.status = 1;
-            gamePacketController.sendCharList(sock);
+            helper.sendGamePacket('RestartResponse', sock, 1, "OK");
+            //gamePacketController.sendCharList(sock);
 
             break;
 

@@ -82,6 +82,17 @@ serverGamePackets.MoveToLocation = function (char, coords) {
     return p;
 }
 
+serverGamePackets.RestartResponse = function (res, text) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x5F);
+
+    p.writeD(res);
+    p.writeS(text);
+
+    return p;
+}
+
 serverGamePackets.ActionFailed = function () {
     var p = new protocol.BasePacket();
 
