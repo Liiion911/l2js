@@ -40,7 +40,7 @@ helper.initializeMapRegions = (gameServer) => {
 
                             gameServer.World.regions[j][regionId] = region["sec" + j];
 
-                            console.log('Init - j: ' + j + '; region: ' + regionId + '; value: ' + region["sec" + j]);
+                            //console.log('Init - j: ' + j + '; region: ' + regionId + '; value: ' + region["sec" + j]);
 
                             count2++;
 
@@ -86,18 +86,18 @@ helper.getMapRegion = (gameServer, posX, posY) => {
     var x = helper.getMapRegionX(posX);
     var y = helper.getMapRegionY(posY);
 
-    console.log(gameServer.World.regions[x].length);
+    //console.log(gameServer.World.regions[x].length);
 
     return gameServer.World.regions[x][y];
 }
 	
 helper.getMapRegionX = (posX) => {
-    console.log('POSX: ', posX, ' ', (posX >> 15) + 4);
+    //console.log('POSX: ', posX, ' ', (posX >> 15) + 4);
     return (posX >> 15) + 4;// + centerTileX;
 };
 	
 helper.getMapRegionY = (posY) => {
-    console.log('POSY: ', posY, ' ', (posY >> 15) + 10);
+    //console.log('POSY: ', posY, ' ', (posY >> 15) + 10);
     return (posY >> 15) + 10;// + centerTileX;
 };
 

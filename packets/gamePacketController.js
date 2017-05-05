@@ -335,13 +335,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                     var region = helper.getMapRegion(gameServer, sock.client.char.X, sock.client.char.Y);
 
-                    console.log('[GS] CHAT - current region ' + region);
+                    //console.log('CHAT - current region ' + region);
 
                     _.each(gameServer.World.getInstance(sock).getPlayers(), (player) => {
 
                         var playerRegion = helper.getMapRegion(gameServer, player.client.char.X, player.client.char.Y);
 
-                        console.log('[GS] CHAT - current region ' + playerRegion);
+                        //console.log('CHAT - player region ' + playerRegion);
 
                         if (playerRegion == region) {
                             helper.sendGamePacket('CreatureSay', player, sock, pack.type, pack.text);
