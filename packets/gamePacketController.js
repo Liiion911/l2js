@@ -384,7 +384,11 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             sock.client.status = 1;
             helper.sendGamePacket('RestartResponse', sock, 1, "OK");
-            //gamePacketController.sendCharList(sock);
+            console.log('[GS] Send packet: RestartResponse');
+
+            gamePacketController.sendCharList(sock);
+
+
 
             break;
 
