@@ -319,6 +319,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: flood protection
             // TODO: check BOTs etc.  https://xp-dev.com/sc/186542/3/%2Ftrunk%2FL2J_Server_BETA%2Fjava%2Fcom%2Fl2jserver%2Fgameserver%2Fnetwork%2Fclientpackets%2FSay2.java
 
+            console.log('[GS] CHAT - [' + pack.type + ']' + sock.client.login + ': ' + pack.text);
+
             switch (pack.type) {
                 case 0: // CHAT_NORMAL - in distance
 
@@ -332,9 +334,15 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 case 0: // CHAT_SHOUT: ! - in region
 
                     var region = helper.getMapRegion(gameServer, sock.client.char.X, sock.client.char.Y);
+
+                    console.log('[GS] CHAT - current region ' + region);
+
                     _.each(gameServer.World.getInstance(sock).getPlayers(), (player) => {
 
                         var playerRegion = helper.getMapRegion(gameServer, player.client.char.X, player.client.char.Y);
+
+                        console.log('[GS] CHAT - current region ' + playerRegion);
+
                         if (playerRegion == region) {
                             helper.sendGamePacket('CreatureSay', player, sock, pack.type, pack.text);
                         }
