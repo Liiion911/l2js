@@ -414,20 +414,22 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
             {
+
+                sock.client.char.Heading = pack.Heading;
+
                 console.log('[GS] OK, diffSq is: ' + diffSq);
             } else {
                 console.log('[GS] FAIL, diffSq so: ' + diffSq);
+
+                helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
+                console.log('[GS] Send packet: ValidateLocation');
             }
 
-            sock.client.char.Heading = pack.Heading;
 
             // TODO: broadcast to party members
 
             // TODO: checkWaterState
 
-
-            helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
-            console.log('[GS] Send packet: ValidateLocation');
 
             //helper.sendGamePacket('UserInfo', sock, sock.client.char);
             //console.log('[GS] Send packet: UserInfo');
