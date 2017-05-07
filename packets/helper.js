@@ -239,7 +239,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
                 var realY = sock.client.char.Y;
                 var realZ = sock.client.char.Z;
 
-                console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
+                //console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
 
             } else {
 
@@ -254,7 +254,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
             }
 
-        }, 100);
+        }, 10);
 
     } catch (ex) {
         helper.exceptionHandler(ex);

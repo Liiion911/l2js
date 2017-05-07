@@ -125,7 +125,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 // TODO: calculate speed
                 var speed = sock.client.char.RunSpd;
-                var ticksToMove = 1 + Math.ceil((10 * distance) / speed);
+                var ticksToMove = 1 + Math.ceil((100 * distance) / speed);
                 var ticksToMoveCompleted = 0;
                 var spdX = dx / ticksToMove;
                 var spdY = dy / ticksToMove;
@@ -409,8 +409,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var dy = pack.Y - realY;
             var diffSq = ((dx * dx) + (dy * dy));
 
-            console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
-            console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
+            //console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
+            //console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
 
             if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
             {
