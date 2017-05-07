@@ -134,6 +134,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 console.log('Move ticksToMove: ' + ticksToMove);
 
+                sock.client.char.Heading = heading;
+
                 helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, ticksToMove: ticksToMove, ticksToMoveCompleted: ticksToMoveCompleted, h: heading, spdX: spdX, spdY: spdY })
 
             }
