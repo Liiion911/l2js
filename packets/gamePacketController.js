@@ -124,7 +124,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
 
                 // TODO: calculate speed
-                var speed = 152; //sock.client.char.RunSpd * 0.999;
+                var speed = sock.client.char.RunSpd * 0,9868421052631579;
                 var ticksToMove = 1 + Math.ceil((100 * distance) / speed);
                 var ticksToMoveCompleted = 0;
                 var spdX = dx / ticksToMove;
@@ -414,7 +414,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
         case 0x48:
 
-            //console.log('[GS] Recive packet ValidatePosition');
+            console.log('[GS] Recive packet ValidatePosition');
 
             var pack = clientGamePackets.ValidatePosition(new Buffer(packetsArrayParse));
 
@@ -453,13 +453,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 var speedClient = distanceClient / time;
 
                 console.log('SPEED server: ' + speedServer);
-                console.log('DISTANCE client: ' + speedClient);
+                console.log('SPEED client: ' + speedClient);
 
             } catch (ex) {
                 helper.exceptionHandler(ex);
             }
 
-            if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
+            if ((diffSq > 0) && (diffSq < 1000)) // if too large, messes observation
             {
 
                 sock.client.char.Heading = pack.Heading;
@@ -472,6 +472,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 console.log('[GS] Send packet: ValidateLocation');
             }
 
+            helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
+            console.log('[GS] Send packet: ValidateLocation');
 
             // TODO: broadcast to party members
 
