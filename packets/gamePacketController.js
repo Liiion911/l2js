@@ -124,7 +124,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
 
                 // TODO: calculate speed
-                var speed = sock.client.char.RunSpd * 1;
+                var speed = sock.client.char.RunSpd * 0.995;
                 var ticksToMove = 1 + Math.ceil((100 * distance) / speed);
                 var ticksToMoveCompleted = 0;
                 var spdX = dx / ticksToMove;
@@ -139,7 +139,21 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 sock.client.char.Heading = heading;
 
-                helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, ticksToMove: ticksToMove, ticksToMoveCompleted: ticksToMoveCompleted, h: heading, spdX: spdX, spdY: spdY })
+                helper.movePlayer(gameServer, sock, {
+                    speed: speed,
+                    fromX: sock.client.char.X,
+                    fromY: sock.client.char.Y,
+                    fromZ: sock.client.char.Z,
+                    distance: distance,
+                    X: pack.toX,
+                    Y: pack.toY,
+                    Z: pack.toZ,
+                    ticksToMove: ticksToMove,
+                    ticksToMoveCompleted: ticksToMoveCompleted,
+                    h: heading,
+                    spdX: spdX,
+                    spdY: spdY
+                });
 
             }
 
@@ -414,6 +428,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             //console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
             //console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
+
+            if (!sock.client.char.moveObject) {
+                sock.client.char.moveObject = {};
+            }
 
             if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
             {
