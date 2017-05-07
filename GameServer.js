@@ -184,10 +184,13 @@ gameDomain.run(() => {
         ],
         getInstance: (sock) => {
             var instanceId = 0;
-            if (gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
+            if (sock && gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
             return gameServer.World.instances[instanceId];
         }
     };
+
+
+    helper.checkDisconnectedPlayersInInstance(gameServer);
 
     gameServer.connectToMaster();
 

@@ -261,6 +261,20 @@ helper.movePlayer = (gameServer, sock, posObject) => {
     }
 };
 
+helper.checkDisconnectedPlayersInInstance = (gameServer) => {
+
+    setInterval(() => {
+
+        _.each(gameServer.World.getInstance().getPlayers(), (player) => {
+
+            if (player.destroyed) gameServer.World.getInstance(player).removePlayer(player);
+
+        });
+
+    }, 1000);
+
+};
+
 helper.unknownLoginPacket = function (sock, packetId, packetsArrayParse) {
     console.log('[LS] UNKNOWN PACKET - ' + packetId);
     sock.destroy();
