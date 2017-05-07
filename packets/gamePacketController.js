@@ -416,8 +416,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             {
                 console.log('[GS] OK, diffSq is: ' + diffSq);
             } else {
-                console.log('[GS] Small or large position difference');
+                console.log('[GS] FAIL, diffSq so: ' + diffSq);
             }
+
+            sock.client.char.Heading = pack.Heading;
 
             // TODO: broadcast to party members
 
