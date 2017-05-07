@@ -129,10 +129,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 var speed = sock.client.char.RunSpd;
                 var ticksToMove = Math.ceil((10 * distance) / speed);
                 var ticksToMoveCompleted = 0;
-                var spdX = dx / interval;
-                var spdY = dy / interval;
+                var spdX = dx / ticksToMove;
+                var spdY = dy / ticksToMove;
 
-                console.log('Move ticksToMove: ' + interval);
+                console.log('Move ticksToMove: ' + ticksToMove);
 
                 helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, ticksToMove: ticksToMove, ticksToMoveCompleted: ticksToMoveCompleted, h: heading, spdX: spdX, spdY: spdY })
 
