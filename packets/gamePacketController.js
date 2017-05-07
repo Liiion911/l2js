@@ -472,9 +472,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 console.log('[GS] Send packet: ValidateLocation');
             }
 
-            helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
-            console.log('[GS] Send packet: ValidateLocation');
-
             // TODO: broadcast to party members
 
             // TODO: checkWaterState
@@ -577,15 +574,15 @@ gamePacketController.sendCharList = function (sock) {
             IsNoble: 1,
             IsHero: 1,
             PledgeClass: 0,
-            IsRunning: 1,
             NameColor: 0,
             TitleColor: 0,
             IsFishing: 0,
             FishX: 0,
             FishY: 0,
-            Fishz: 0,
-            RunSpd: 150,
-            WalkSpd: 150,
+            FishZ: 0,
+            IsRunning: 1,
+            RunSpd: 250,
+            WalkSpd: 250,
             SwimRunSpd: 150,
             SwimWalkSpd: 150,
             FlRunSpd: 150,
