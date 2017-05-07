@@ -109,8 +109,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var spy = dy / distance
             var spx = dx / distance;
 
-            var heading = ((Math.atan2(-spx, -spy) * 10430.378) + 32767); // ? short.MaxValue 
-
             //if (sock.client.char.UpdatePosition) {
             //    sock.client.char.UpdatePosition = false;
             //    sock.client.char.Heading = heading;
@@ -127,10 +125,12 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 // TODO: calculate speed
                 var speed = sock.client.char.RunSpd;
-                var ticksToMove = Math.ceil((10 * distance) / speed);
+                var ticksToMove = 1 + Math.ceil((10 * distance) / speed);
                 var ticksToMoveCompleted = 0;
                 var spdX = dx / ticksToMove;
                 var spdY = dy / ticksToMove;
+
+                var heading = ((Math.atan2(-spx, -spy) * 10430.378350470452724949566316381) + 32768); // ? short.MaxValue 
 
                 console.log('Move ticksToMove: ' + ticksToMove);
 
