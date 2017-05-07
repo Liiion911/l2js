@@ -444,16 +444,16 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var distanceClient = helper.getPlanDistanceSq(dxClient, dyClient);
 
-                cosnole.log('DISTANCE server: ' + distanceServer);
-                cosnole.log('DISTANCE client: ' + distanceClient);
+                console.log('DISTANCE server: ' + distanceServer);
+                console.log('DISTANCE client: ' + distanceClient);
 
                 var time = distanceServer / sock.client.char.moveObject.speed;
 
                 var speedServer = sock.client.char.moveObject.speed
                 var speedClient = distanceClient / time;
 
-                cosnole.log('SPEED server: ' + speedServer);
-                cosnole.log('DISTANCE client: ' + speedClient);
+                console.log('SPEED server: ' + speedServer);
+                console.log('DISTANCE client: ' + speedClient);
 
             } catch (ex) {
                 helper.exceptionHandler(ex);
