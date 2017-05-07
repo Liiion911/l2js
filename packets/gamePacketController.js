@@ -127,13 +127,14 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 // TODO: calculate speed
                 var speed = sock.client.char.RunSpd;
-                var interval = Math.ceil((10 * distance) / speed);
+                var ticksToMove = Math.ceil((10 * distance) / speed);
+                var ticksToMoveCompleted = 0;
                 var spdX = dx / interval;
                 var spdY = dy / interval;
 
-                console.log('Move interval: ' + interval);
+                console.log('Move ticksToMove: ' + interval);
 
-                helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, interval: interval, h: heading, spdX: spdX, spdY: spdY })
+                helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, ticksToMove: ticksToMove, ticksToMoveCompleted: ticksToMoveCompleted, h: heading, spdX: spdX, spdY: spdY })
 
             }
 
@@ -411,7 +412,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
             {
-
+                console.log('[GS] OK, diffSq is: ' + diffSq);
             } else {
                 console.log('[GS] Small or large position difference');
             }

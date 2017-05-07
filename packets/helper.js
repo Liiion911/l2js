@@ -198,9 +198,11 @@ helper.movePlayer = (gameServer, sock, posObject) => {
             clearInterval(sock.client.char.moveObject.moveTimerId);
         }
 
+        sock.client.char.moveObject = posObject;
+
         _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-            helper.sendGamePacket('MoveToLocation', player, sock.client.char, posObject);
+            helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
 
         });
         console.log('[GS] Broadcast packet MoveToLocation');
@@ -211,28 +213,48 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
             // TODO: ValidateWaterZones
 
-            if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(posObject.spdX, posObject.spdY), false, false)) {
+            //if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(posObject.spdX, posObject.spdY), false, false)) {
 
-                // arrived
-                sock.client.char.X = posObject.X;
-                sock.client.char.Y = posObject.Y;
-                sock.client.char.Z = posObject.Z;
+            // arrived
+            if (sock.client.char.X == sock.client.char.moveObject.X
+                && sock.client.char.Y == sock.client.char.moveObject.Y
+                && sock.client.char.Z == sock.client.char.moveObject.Z) {
 
-                helper.stopMovePlayer(gameServer, sock, posObject, false, false);
+                sock.client.char.moveObject.ticksToMove = 0;
+                clearInterval(sock.client.char.moveObject.moveTimerId);
+
+                helper.stopMovePlayer(gameServer, sock, sock.client.char.moveObject, false, false);
 
                 return;
-            } else {
-                sock.client.char.X += posObject.spdX;
-                sock.client.char.Y += posObject.spdY;
+            }
+
+            if (sock.client.char.moveObject.ticksToMove > sock.client.char.moveObject.ticksToMoveCompleted) {
+
+                sock.client.char.moveObject.ticksToMoveCompleted++;
+
+                sock.client.char.X += sock.client.char.moveObject.spdX;
+                sock.client.char.Y += sock.client.char.moveObject.spdY;
 
                 var realX = sock.client.char.X;
                 var realY = sock.client.char.Y;
                 var realZ = sock.client.char.Z;
 
                 console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
+
+            } else {
+
+                sock.client.char.X = sock.client.char.moveObject.X;
+                sock.client.char.Y = sock.client.char.moveObject.Y;
+                sock.client.char.Z = sock.client.char.moveObject.Z;
+
+                sock.client.char.moveObject.ticksToMove = 0;
+                clearInterval(sock.client.char.moveObject.moveTimerId);
+
+                helper.stopMovePlayer(gameServer, sock, sock.client.char.moveObject, false, false);
+
             }
 
-        }, posObject.interval || 100);
+        }, 100);
 
     } catch (ex) {
         helper.exceptionHandler(ex);
