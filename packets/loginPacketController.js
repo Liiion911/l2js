@@ -47,6 +47,8 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
             var pack = clientLoginPackets.RequestGGAuth(new Buffer(packetsArrayParse));
             if (sock.client.sessionId != pack.sessionId) {
                 console.log('[LS] Wrong sessionId');
+                console.log('[LS] client sess ' + pack.sessionId);
+                console.log('[LS] serv sess ' + sock.client.sessionId);
                 sock.destroy();
             }
 
