@@ -433,6 +433,32 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 sock.client.char.moveObject = {};
             }
 
+            try {
+                var dxServer = sock.client.char.moveObject.fromX - realX;
+                var dyServer = sock.client.char.moveObject.fromY - realY;
+
+                var distanceServer = helper.getPlanDistanceSq(dxServer, dyServer);
+
+                var dxClient = sock.client.char.moveObject.fromX - pack.X;
+                var dyClient = sock.client.char.moveObject.fromY - pack.Y;
+
+                var distanceClient = helper.getPlanDistanceSq(dxClient, dyClient);
+
+                cosnole.log('DISTANCE server: ' + distanceServer);
+                cosnole.log('DISTANCE client: ' + distanceClient);
+
+                var time = distanceServer / sock.client.char.moveObject.speed;
+
+                var speedServer = sock.client.char.moveObject.speed
+                var speedClient = distanceClient / time;
+
+                cosnole.log('SPEED server: ' + speedServer);
+                cosnole.log('DISTANCE client: ' + speedClient);
+
+            } catch (ex) {
+                helper.exceptionHandler(ex);
+            }
+
             if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
             {
 
