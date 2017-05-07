@@ -124,7 +124,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
 
                 // TODO: calculate speed
-                var speed = sock.client.char.RunSpd;
+                var speed = sock.client.char.RunSpd * 1.1;
                 var ticksToMove = 1 + Math.ceil((100 * distance) / speed);
                 var ticksToMoveCompleted = 0;
                 var spdX = dx / ticksToMove;
@@ -132,7 +132,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var heading = ((Math.atan2(-spx, -spy) * 10430.378350470452724949566316381) + 32768); // ? short.MaxValue 
 
-                console.log('Move ticksToMove: ' + ticksToMove);
+
+                console.log('[GS] Move ticksToMove: ' + ticksToMove);
+                console.log('[GS] Distance: ' + distance);
+                console.log('[GS] Speed: ' + speed);
 
                 sock.client.char.Heading = heading;
 
@@ -397,7 +400,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
         case 0x48:
 
-            console.log('[GS] Recive packet ValidatePosition');
+            //console.log('[GS] Recive packet ValidatePosition');
 
             var pack = clientGamePackets.ValidatePosition(new Buffer(packetsArrayParse));
 
