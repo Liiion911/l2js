@@ -163,10 +163,13 @@ loginDomain.run(() => {
                         loginServer.gameServers[game_server_id].online = online;
                         break;
                     case "1": // player attempted to connect
+
                         var game_server_id = data[1];
                         var username = data[2];
 
                         sock.game_server_id = game_server_id;
+
+                        console.log('[AS] Attemp to connect player recived: ' + username);
 
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
@@ -189,7 +192,9 @@ loginDomain.run(() => {
         });
 
         sock.on('close', (had_error) => {
-            loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[game_server_id]), 1);
+            if (sock.game_server_id) {
+                loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[sock.game_server_id]), 1);
+            }
             console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
@@ -211,6 +216,9 @@ loginDomain.run(() => {
                     cb: cb
                 };
                 loginServer.gameServers[server_id].sock.write('1|' + sock.client.login);
+
+                console.log('[AS] Attemp to connect player sended: ' + sock.client.login);
+
             } else {
                 cb(false);
             }

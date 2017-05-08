@@ -115,6 +115,8 @@ helper.disconnectPlayer = (login, clients, sock) => {
             });
         }
 
+        console.log('[GS] Kick player: ' + login);
+
         helper.sendGamePacket('ServerClose', sock);
         sock.destroy();
         clients.splice(clients.indexOf(sock), 1); // rly need ?

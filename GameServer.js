@@ -123,6 +123,9 @@ gameDomain.run(() => {
                     switch (data[0]) {
                         case "1": // attempt login
                             var username = data[1];
+
+                            console.log('[AS] Attemp to connect player recived: ' + username);
+
                             helper.disconnectPlayer(username, gameServer.clients);
                             gameServer.client.write('1|' + gameServer.server_id + '|' + username);
 
