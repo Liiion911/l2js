@@ -154,6 +154,8 @@ loginDomain.run(() => {
 
                         sock.game_server_id = game_server_id;
 
+                        console.log('[AS] NEW GAME SERVER WITH ID: ' + game_server_id);
+
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
                                 logins: []
@@ -161,7 +163,9 @@ loginDomain.run(() => {
                         }
                         loginServer.gameServers[game_server_id].sock = sock;
                         loginServer.gameServers[game_server_id].online = online;
+
                         break;
+
                     case "1": // player attempted to connect
 
                         var game_server_id = data[1];
@@ -212,7 +216,10 @@ loginDomain.run(() => {
         try {
 
             console.log('[AS] Attempt to connect to server ' + server_id + ' player: ' + sock.client.login);
-            console.log(loginServer.gameServers[server_id] ? "has server" : "no game server with this Id");
+
+            console.log(loginServer.gameServers);
+
+            console.log(loginServer.gameServers.length);
 
             if (loginServer.gameServers[server_id]) {
                 if (!loginServer.gameServers[server_id].logins[sock.client.login]) loginServer.gameServers[server_id].logins[sock.client.login] = {};
