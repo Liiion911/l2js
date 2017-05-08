@@ -35,7 +35,7 @@ loginDomain.run(() => {
     var loginServer = {
         sessionId: 0,
         loginServerMasterPort: 5555,
-        gameServers: {}
+        gameServers: []
     };
 
     loginServer.exceptionHandler = helper.exceptionHandler;
