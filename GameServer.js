@@ -183,7 +183,7 @@ gameDomain.run(() => {
         ],
         getInstance: (sock) => {
             var instanceId = 0;
-            if (sock && gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
+            if (sock && sock.client.char && gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
             return gameServer.World.instances[instanceId];
         }
     };

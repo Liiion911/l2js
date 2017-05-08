@@ -210,6 +210,10 @@ loginDomain.run(() => {
 
     loginServer.attemptToLoginOnGameServer = (sock, server_id, cb) => {
         try {
+
+            console.log('[AS] Attempt to connect to server ' + server_id + ' player: ' + sock.client.login);
+            console.log(loginServer.gameServers[server_id] ? "has server" : "no game server with this Id");
+
             if (loginServer.gameServers[server_id]) {
                 if (!loginServer.gameServers[server_id].logins[sock.client.login]) loginServer.gameServers[server_id].logins[sock.client.login] = {};
                 loginServer.gameServers[server_id].logins[sock.client.login]["1"] = {
