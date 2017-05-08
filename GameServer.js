@@ -118,7 +118,7 @@ gameDomain.run(() => {
                         gameServer.exceptionHandler(ex);
                         gameServer.client.end();
                     }
-                }, 1000);
+                }, 100);
             });
 
             gameServer.client.on('data', (data) => {
