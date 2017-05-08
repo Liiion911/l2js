@@ -61,7 +61,7 @@ loginDomain.run(() => {
 
     loginServer.server = net.createServer();
     loginServer.server.listen(2106);
-    console.log('LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
+    console.log('[LS] LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
     loginServer.server.on('connection', (sock) => {
 
         loginServer.sessionId++;
@@ -138,13 +138,15 @@ loginDomain.run(() => {
 
     loginServer.master = net.createServer();
     loginServer.master.listen(loginServer.loginServerMasterPort);
-    console.log('LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
+    console.log('[AS] LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
     loginServer.master.on('connection', (sock) => {
 
-        console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
+        console.log('[AS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 
         sock.on('data', (data) => {
             try {
+
+                console.log('[AS] Recived packet: ' + data.toString('utf8'));
 
                 var dataArray = data.toString('utf8').split('|');
                 switch (data[0]) {

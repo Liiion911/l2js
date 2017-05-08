@@ -54,7 +54,7 @@ gameDomain.run(() => {
 
     gameServer.server = net.createServer();
     gameServer.server.listen(7777);
-    console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
+    console.log('[GS] GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
     gameServer.server.on('connection', (sock) => {
 
         sock.client = {
@@ -113,7 +113,7 @@ gameDomain.run(() => {
                     try {
 
                         gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
-                        console.log('[GS] Connected to Login Server Master');
+                        console.log('[AS] Connected to Login Server Master');
                     } catch (ex) {
                         gameServer.exceptionHandler(ex);
                         gameServer.client.end();
@@ -143,7 +143,7 @@ gameDomain.run(() => {
             });
 
             gameServer.client.on('close', () => {
-                console.log('[GS] Closed connection to Login Server Master');
+                console.log('[AS] Closed connection to Login Server Master');
                 setTimeout(() => {
                     gameServer.connectToMaster();
                 }, 10000)
@@ -151,7 +151,7 @@ gameDomain.run(() => {
 
 
             gameServer.client.on('error', (err) => {
-                console.log('[GS] Error connection to Login Server Master');
+                console.log('[AS] Error connection to Login Server Master');
             });
 
         } catch (ex) {
