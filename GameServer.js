@@ -123,15 +123,11 @@ gameDomain.run(() => {
                     switch (data[0]) {
                         case "1": // attempt login
                             var username = data[1];
-                            helper.disconnectPlayer(username, gameServer.clients, 1);
+                            helper.disconnectPlayer(username, gameServer.clients);
                             gameServer.client.write('1|' + gameServer.server_id + '|' + username);
 
-                            // TODO: check GS attempt to connect
+                            // TODO: remove player with timeout or on new connection from this character
 
-                            break;
-                        case "2": // disconnect player
-                            var username = data[1];
-                            helper.disconnectPlayer(username, gameServer.clients, 0);
                             break;
                     }
                 } catch (ex) {
