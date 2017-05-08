@@ -109,12 +109,16 @@ gameDomain.run(() => {
 
             gameServer.client = new net.Socket();
             gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
-                try {
-                    gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
-                    console.log('[GS] Connected to Login Server Master');
-                } catch (ex) {
-                    gameServer.exceptionHandler(ex);
-                }
+                setTimeout(() => {
+                    try {
+
+                        gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
+                        console.log('[GS] Connected to Login Server Master');
+                    } catch (ex) {
+                        gameServer.exceptionHandler(ex);
+                        gameServer.client.end();
+                    }
+                }, 1000);
             });
 
             gameServer.client.on('data', (data) => {
