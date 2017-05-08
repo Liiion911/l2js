@@ -185,8 +185,8 @@ loginDomain.run(() => {
 
                         if (!loginServer.gameServers[game_server_id].logins[username]) loginServer.gameServers[game_server_id].logins[username] = {};
 
-                        if (loginServer.gameServers[server_id].logins[username]["1"]) {
-                            loginServer.gameServers[server_id].logins[username]["1"].cb(true);
+                        if (loginServer.gameServers[game_server_id].logins[username]["1"]) {
+                            loginServer.gameServers[game_server_id].logins[username]["1"].cb(true);
                         }
 
                         break;
