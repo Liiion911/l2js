@@ -151,6 +151,9 @@ loginDomain.run(() => {
                     case "0": // game server info
                         var game_server_id = data[1];
                         var online = data[2];
+
+                        sock.game_server_id = game_server_id;
+
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
                                 logins: []
@@ -163,6 +166,8 @@ loginDomain.run(() => {
                         var game_server_id = data[1];
                         var username = data[2];
 
+                        sock.game_server_id = game_server_id;
+
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
                                 logins: []
@@ -171,8 +176,8 @@ loginDomain.run(() => {
 
                         if (!loginServer.gameServers[game_server_id].logins[username]) loginServer.gameServers[game_server_id].logins[username] = {};
 
-                        if (loginServer.gameServers[server_id].logins[sock.client.login]["1"]) {
-                            loginServer.gameServers[server_id].logins[sock.client.login]["1"].cb(true);
+                        if (loginServer.gameServers[server_id].logins[username]["1"]) {
+                            loginServer.gameServers[server_id].logins[username]["1"].cb(true);
                         }
 
                         break;
@@ -184,6 +189,7 @@ loginDomain.run(() => {
         });
 
         sock.on('close', (had_error) => {
+            loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[game_server_id]), 1);
             console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 

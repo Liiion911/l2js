@@ -105,18 +105,19 @@ helper.exceptionHandler = (ex) => {
     console.log(ex);
 };
 
-helper.disconnectPlayer = (login, clients, error, sock) => {
+helper.disconnectPlayer = (login, clients, sock) => {
     try {
 
         if (!sock) {
             sock = _.find(clients, (s) => {
-                var username = sock.client.data ? sock.client.data.login : "";
+                var username = s.client.data ? s.client.data.login : "";
                 return username == login
             });
         }
 
-        // error: 0 - kick; 1 - attemp login; ...
-        // TODO: send disconnect packet
+        helper.sendGamePacket('ServerClose', sock);
+        sock.destroy();
+        clients.splice(clients.indexOf(sock), 1); // rly need ?
 
     } catch (ex) {
         helper.exceptionHandler(ex);

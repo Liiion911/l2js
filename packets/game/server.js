@@ -4,8 +4,16 @@ var _ = require('underscore');
 var serverGamePackets = {};
 
 //-----------------------------------------------//
-// Game Server packets                          //
+// Game Server packets                           //
 //-----------------------------------------------//
+
+serverGamePackets.ServerClose = function (sock, type, text) { // Kick player, disconnect player
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x26);
+
+    return p;
+};
 
 serverGamePackets.CreatureSay = function (sock, type, text) {
     var p = new protocol.BasePacket();
