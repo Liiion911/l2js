@@ -149,7 +149,7 @@ loginDomain.run(() => {
                 console.log('[AS] Recived packet: ' + data.toString('utf8'));
 
                 var dataArray = data.toString('utf8').split('|');
-                switch (data[0]) {
+                switch (dataArray[0]) {
                     case "0": // game server info
                         var game_server_id = data[1];
                         var online = data[2];
@@ -201,15 +201,15 @@ loginDomain.run(() => {
             if (sock.game_server_id) {
                 loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[sock.game_server_id]), 1);
             }
-            console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
         sock.on('end', () => {
-            console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
         sock.on('error', (err) => {
-            console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
     });
@@ -219,7 +219,7 @@ loginDomain.run(() => {
 
             console.log('[AS] Attempt to connect to server ' + server_id + ' player: ' + sock.client.login);
 
-            console.log(loginServer.gameServers);
+            //console.log(loginServer.gameServers);
 
             console.log(loginServer.gameServers.length);
 

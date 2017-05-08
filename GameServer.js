@@ -124,7 +124,7 @@ gameDomain.run(() => {
             gameServer.client.on('data', (data) => {
                 try {
                     var dataArray = data.toString('utf8').split('|');
-                    switch (data[0]) {
+                    switch (dataArray[0]) {
                         case "1": // attempt login
                             var username = data[1];
 
