@@ -151,8 +151,8 @@ loginDomain.run(() => {
                 var dataArray = data.toString('utf8').split('|');
                 switch (dataArray[0]) {
                     case "0": // game server info
-                        var game_server_id = data[1];
-                        var online = data[2];
+                        var game_server_id = dataArray[1];
+                        var online = dataArray[2];
 
                         sock.game_server_id = game_server_id;
 
@@ -170,8 +170,8 @@ loginDomain.run(() => {
 
                     case "1": // player attempted to connect
 
-                        var game_server_id = data[1];
-                        var username = data[2];
+                        var game_server_id = dataArray[1];
+                        var username = dataArray[2];
 
                         sock.game_server_id = game_server_id;
 

@@ -126,7 +126,7 @@ gameDomain.run(() => {
                     var dataArray = data.toString('utf8').split('|');
                     switch (dataArray[0]) {
                         case "1": // attempt login
-                            var username = data[1];
+                            var username = dataArray[1];
 
                             console.log('[AS] Attemp to connect player recived: ' + username);
 
