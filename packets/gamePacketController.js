@@ -379,10 +379,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 });
 
-                //helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
-                //console.log('[GS] Send packet: CharTemplates');
-
-
             }));
 
 
@@ -585,114 +581,117 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
 }
 
-gamePacketController.sendCharList = function (sock) {
+gamePacketController.sendCharList = (sock) => {
+    
+    helper.poolGameServer.getConnection((err_con, connection) => {
 
-    sock.client.chars = [
-        {
-            Name: 'testNickName',
-            Title: 'TEST',
-            CharId: 1,
-            ClanId: 0,
-            ClanCrestId: 0,
-            AllyId: 0,
-            AllyCrestId: 0,
-            Sex: 0,
-            Race: 0,
-            BaseClassId: 0,
-            X: -114356,
-            Y: -249645,
-            Z: -2984,
-            HP: 50.00,
-            MP: 100.00,
-            SP: 180,
-            EXP: 9.00,
-            Level: 1,
-            Karma: 2,
-            PK: 3,
-            PVP: 4,
-            HairStyle: 0,
-            HairColor: 0,
-            Face: 0,
-            MaxHP: 800.00,
-            MaxMP: 900.00,
-            DeleteDays: 0,
-            ClassId: 0,
-            Active: 1,
-            EnchantEffect: 0,
-            AugmentationId: 0,
-            INT: 0,
-            STR: 0,
-            CON: 0,
-            MEN: 0,
-            DEX: 0,
-            WIT: 0,
-            PAtk: 10,
-            PAtkSpd: 9,
-            PDef: 8,
-            EvasionRate: 1,
-            Accuracy: 11,
-            CriticalHit: 12,
-            MAtk: 12,
-            MAtkSpd: 13,
-            MDef: 14,
-            PvpFlag: 1,
-            WeightPenalty: 0,
-            IsChatBanned: 0,
-            ExpertisePenalty: 0,
-            CharmOfCourage: 1,
-            DeathPenaltyBuffLevel: 0,
-            Inventory: 100,
-            Warehouse: 200,
-            Freight: 300,
-            PrivateSell: 20,
-            PrivateBuy: 30,
-            ReceipeDwarf: 50,
-            Recipe: 40,
-            Heading: 0, // ??
-            ObjectId: 1,
-            Load: 9,
-            MaxLoad: 10,
-            MountType: 0,
-            PrivateStoreType: 0,
-            HasDwarvenCraft: 0,
-            Cubics: [],
-            AbnormalEffect: 0, // ?
-            ClanPrivileges: 0,
-            RecomLeft: 5,
-            RecomHave: 10,
-            InventoryLimit: 90,
-            CP: 15,
-            MaxCP: 100,
-            Team: 0,
-            ClanCrestLargeId: 0,
-            IsNoble: 1,
-            IsHero: 1,
-            PledgeClass: 0,
-            NameColor: 0,
-            TitleColor: 0,
-            IsFishing: 0,
-            FishX: 0,
-            FishY: 0,
-            FishZ: 0,
-            IsRunning: 1,
-            RunSpd: 130,
-            WalkSpd: 130,
-            SwimRunSpd: 130,
-            SwimWalkSpd: 130,
-            FlRunSpd: 130,
-            FlWalkSpd: 130,
-            FlyRunSpd: 130,
-            FlyWalkSpd: 130,
-            MoveMultiplier: 1,
-            AttackSpeedMultiplier: 1,
-            Instance: 0
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            var query = db.getCharacters(sock.client.data.login);
+
+            connection.query(query.text, query.values, (err, result) => {
+
+                connection.release();
+
+                if (err) {
+
+                    console.log(err);
+
+                } else {
+
+                    sock.client.chars = [];
+
+                    var active = true;
+
+                    _.each(result, (res) => {
+                        var char = _.extend({
+
+                            ClanCrestId: 0,
+                            ClanCrestLargeId: 0,
+
+                            AllyId: 0,
+                            AllyCrestId: 0,
+
+                            DeleteDays: 0,
+
+                            Active: active, // TODO
+
+                            EnchantEffect: 0,
+                            AugmentationId: 0,
+
+                            PvpFlag: 1,
+
+                            IsChatBanned: 0,
+
+                            WeightPenalty: 0,
+                            ExpertisePenalty: 0,
+                            CharmOfCourage: 1,
+                            DeathPenaltyBuffLevel: 0,
+
+                            Inventory: 100,
+                            Warehouse: 200,
+                            Freight: 300,
+                            PrivateSell: 20,
+                            PrivateBuy: 30,
+                            ReceipeDwarf: 50,
+                            Recipe: 40,
+                            PrivateStoreType: 0,
+                            HasDwarvenCraft: 0,
+
+                            InventoryLimit: 90,
+                            Load: 1,
+
+                            Cubics: [],
+                            AbnormalEffect: 0, // ?
+
+                            Team: 0,
+
+                            NameColor: 0,
+                            TitleColor: 0,
+
+                            IsFishing: 0,
+                            FishX: 0,
+                            FishY: 0,
+                            FishZ: 0,
+
+                            MountType: 0,
+                            IsRunning: 1,
+
+                            SwimRunSpd: 130,
+                            SwimWalkSpd: 130,
+                            FlRunSpd: 130,
+                            FlWalkSpd: 130,
+                            FlyRunSpd: 130,
+                            FlyWalkSpd: 130,
+
+                            Instance: 0
+
+                        }, res);
+
+                        sock.client.chars.push(char);
+
+                        // TODO: save and restore active char
+                        if (active) active = false;
+
+                    })
+
+                    sock.client.status = 2;
+                    helper.sendGamePacket('CharSelectInfo', sock, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
+
+                    console.log('[GS] Send packet: CharSelectInfo');
+
+                    
+                }
+
+            });
+
         }
-    ];
 
-    sock.client.status = 2;
-    helper.sendGamePacket('CharSelectInfo', sock, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
+    });
 
-    console.log('[GS] Send packet: CharSelectInfo');
+
 };
 
 module.exports = gamePacketController;

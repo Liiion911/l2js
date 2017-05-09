@@ -48,7 +48,7 @@ gameDomain.run(() => {
 
     helper.poolGameServer = mysql.createPool({
         connectionLimit: 100,
-        host: 'localhost',
+        host: 'ikonto.ddns.net', //'localhost',
         port: 3306,
         user: 'root',
         password: 'iPRyRKu2',

@@ -210,23 +210,25 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.Heading); // ??
     p.writeD(char.ObjectId); // ?
     p.writeS(char.Name);
-    p.writeD(char.Race);
+    p.writeD(char.RaceId);
     p.writeD(char.Sex);
 
     p.writeD(char.ClassId);
 
     p.writeD(char.Level);
     p.writeQ(char.EXP);
+
     p.writeD(char.STR);
     p.writeD(char.DEX);
     p.writeD(char.CON);
     p.writeD(char.INT);
     p.writeD(char.WIT);
     p.writeD(char.MEN);
+
     p.writeD(char.MaxHP);
-    p.writeD(parseInt(char.HP));
+    p.writeD(parseInt(char.CurHP));
     p.writeD(char.MaxMP);
-    p.writeD(parseInt(char.MP));
+    p.writeD(parseInt(char.CurMP));
     p.writeD(char.SP);
     p.writeD(char.Load);
     p.writeD(char.MaxLoad);
@@ -279,15 +281,15 @@ serverGamePackets.UserInfo = function (char) {
     // end of c6 new h's
 
     p.writeD(char.PAtk);
-    p.writeD(char.PAtkSpd);
+    p.writeD(char.PSpd);
     p.writeD(char.PDef);
     p.writeD(char.EvasionRate);
     p.writeD(char.Accuracy);
     p.writeD(char.CriticalHit);
     p.writeD(char.MAtk);
 
-    p.writeD(char.MAtkSpd);
-    p.writeD(char.PAtkSpd);
+    p.writeD(char.MSpd);
+    p.writeD(char.PSpd);
 
     p.writeD(char.MDef);
 
@@ -311,8 +313,8 @@ serverGamePackets.UserInfo = function (char) {
     //    writeF(pet.getTemplate().collisionHeight);
     //}
     //else {
-    p.writeF(8); // CollisionRadius
-    p.writeF(23); // CollisionHeight
+    p.writeF(char.CollisionRadius);
+    p.writeF(char.CollisionHeight);
     //}
 
     p.writeD(char.HairStyle);
@@ -375,7 +377,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.ClassId);
     p. writeD(0x00); // special effects? circles around player...
     p.writeD(char.MaxCP);
-    p.writeD(parseInt(char.CP));
+    p.writeD(parseInt(char.CurCP));
     p.writeC(0); // _activeChar.isMounted() ? 0 : char.EnchantEffect()
 
     if (char.Team == 1) {
@@ -464,15 +466,15 @@ serverGamePackets.CharSelected = function (session2_1, char) {
     p.writeD(char.ClanId);
     p.writeD(0x00); // ??
     p.writeD(char.Sex);
-    p.writeD(char.Race);
+    p.writeD(char.RaceId);
     p.writeD(char.Classid);
     p.writeD(0x01); // active ??
     p.writeD(char.X);
     p.writeD(char.Y);
     p.writeD(char.Z);
 
-    p.writeF(char.HP);
-    p.writeF(char.MP);
+    p.writeF(char.CurHP);
+    p.writeF(char.CurMP);
     p.writeD(char.SP);
     p.writeQ(char.EXP);
     p.writeD(char.Level);
@@ -533,7 +535,7 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
         p.writeD(0x00); // Builder level - ?
 
         p.writeD(char.Sex);
-        p.writeD(char.Race);
+        p.writeD(char.RaceId);
         p.writeD(char.BaseClassId); // it's BaseClassId
 
         p.writeD(0x01); // active - ??
@@ -542,8 +544,8 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
         p.writeD(char.Y);
         p.writeD(char.Z);
 
-        p.writeF(char.HP);
-        p.writeF(char.MP);
+        p.writeF(char.CurHP);
+        p.writeF(char.CurHP);
 
         p.writeD(char.SP);
         p.writeQ(char.EXP);

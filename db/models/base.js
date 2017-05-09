@@ -41,7 +41,7 @@ sqlModels.characters = sql.define({
         'ClanId', 'MaxLoad', 'RaceId', 'ClassId', 'BaseClassId', 'DeleteTime', 'Title', 'RecomHave',
         'RecomLeft', 'AccessLevel', 'Online', 'OnlineTime', 'CharId', 'Newbie', 'LastAccess',
         'ClanPrivileges', 'InJail', 'JailTimer', 'PowerGrade', 'IsNoble', 'PledgeClass', 'LastRecomDate', 'ClanJoinExpiryTime', 'ClanCreateExpiryTime', 'DeathPenaltyLevel',
-        'IsHero', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss', 'sss',]
+        'IsHero']
 });
 
 sqlModels.character_templates = sql.define({
