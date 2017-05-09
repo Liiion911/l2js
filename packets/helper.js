@@ -124,9 +124,11 @@ helper.initializeCharTemplates = (gameServer) => {
 
                     gameServer.charTemplates = [];
 
+                    console.log('[GS] CharTemplates loaded: ' + result.length);
                     _.each(result, (res) => {
 
                         gameServer.charTemplates.push(res);
+
 
                     });
 

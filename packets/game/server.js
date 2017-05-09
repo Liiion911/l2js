@@ -14,6 +14,9 @@ serverGamePackets.CharTemplates = function (sock, templates) { // NewCharacterSu
     p.writeC(0x17);
     p.writeD(templates.length);
 
+    console.log('17 packet');
+    console.log(templates.length);
+
     _.each(templates, (template) => {
 
         p.writeD(template.RaceId);
