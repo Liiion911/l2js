@@ -383,6 +383,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             }));
 
+            break;
 
         case 0x0d:
 
@@ -420,6 +421,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('CharTemplates', sock, sock, gameServer.charTemplates);
             console.log('[GS] Send packet: CharTemplates');
 
+            break;
+
         case 0x38:
 
             console.log('[GS] Recive packet Say2');
@@ -444,6 +447,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                         });
 
                         break;
+
                     case 1: // CHAT_SHOUT: ! - in region
 
                         var region = helper.getMapRegion(gameServer, sock.client.char.X, sock.client.char.Y);
