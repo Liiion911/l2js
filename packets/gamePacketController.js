@@ -327,8 +327,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             var pack = clientGamePackets.CharacterCreate(new Buffer(packetsArrayParse));
 
-            console.log(pack);
-
             var charTemplate = _.findWhere(gameServer.charTemplates, { ClassId: pack.ClassId });
             if (!charTemplate) {
 
@@ -346,6 +344,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                     return;
                 }
+
+                console.log(pack);
 
                 if ((pack.Name.length < 3) || (pack.Name.length > 16) || !helper.isAlphaNumericAndSpecial(pack.Name)) {
 
