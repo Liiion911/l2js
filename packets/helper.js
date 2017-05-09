@@ -207,6 +207,9 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
         // TODO: broadcastToPartyMembers
 
+
+        sock.client.char.Heading = posObject.h;
+
         sock.client.char.moveObject.moveTimerId = setInterval(() => {
 
             // TODO: ValidateWaterZones
