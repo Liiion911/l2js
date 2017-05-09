@@ -443,10 +443,10 @@ serverGamePackets.EtcStatusUpdate = function (char) {
 
     p.writeC(0xF3);
 
-    p.writeD(0x07);  // 1-7 increase force, lvl //getFirstEffect(L2Effect.EffectType.CHARGE)
+    p.writeD(char.IncreaseForce);  // 1-7 increase force, lvl //getFirstEffect(L2Effect.EffectType.CHARGE)
     p.writeD(char.WeightPenalty); // 1-4 weight penalty, lvl (1=50%, 2=66.6%, 3=80%, 4=100%)
     p.writeD(char.IsChatBanned); // 1 = block all chat
-    p.writeD(0x00); // 1 = danger area
+    p.writeD(char.DangerArea); // 1 = danger area
     p.writeD(Math.min(char.ExpertisePenalty, 1)); // 1 = grade penalty
     p.writeD(char.CharmOfCourage); // 1 = charm of courage (no xp loss in siege..)
     p.writeD(char.DeathPenaltyBuffLevel); // 1-15 death penalty, lvl (combat ability decreased due to death)

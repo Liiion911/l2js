@@ -544,16 +544,16 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var distanceClient = helper.getPlanDistanceSq(dxClient, dyClient);
 
-                console.log('DISTANCE server: ' + distanceServer);
-                console.log('DISTANCE client: ' + distanceClient);
+                //console.log('DISTANCE server: ' + distanceServer);
+                //console.log('DISTANCE client: ' + distanceClient);
 
                 var time = distanceServer / sock.client.char.moveObject.speed;
 
                 var speedServer = sock.client.char.moveObject.speed
                 var speedClient = distanceClient / time;
 
-                console.log('SPEED server: ' + speedServer);
-                console.log('SPEED client: ' + speedClient);
+                //console.log('SPEED server: ' + speedServer);
+                //console.log('SPEED client: ' + speedClient);
 
             } catch (ex) {
                 helper.exceptionHandler(ex);
@@ -631,14 +631,16 @@ gamePacketController.sendCharList = (sock) => {
                             EnchantEffect: 0,
                             AugmentationId: 0,
 
-                            PvpFlag: 1,
+                            PvpFlag: 0,
 
                             IsChatBanned: 0,
 
                             WeightPenalty: 0,
                             ExpertisePenalty: 0,
-                            CharmOfCourage: 1,
+                            CharmOfCourage: 0,
                             DeathPenaltyBuffLevel: 0,
+
+                            IncreaseForce: 0, // 0-7
 
                             Inventory: 100,
                             Warehouse: 200,
@@ -676,7 +678,9 @@ gamePacketController.sendCharList = (sock) => {
                             FlyRunSpd: 130,
                             FlyWalkSpd: 130,
 
-                            Instance: 0
+                            Instance: 0,
+
+                            DangerArea: 0
 
                         }, res);
 
