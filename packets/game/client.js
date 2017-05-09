@@ -53,19 +53,23 @@ clientGamePackets.ValidatePosition = function (buffer) {
 
 clientGamePackets.Say2 = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
-    p.readS();
-    p.readD();
-
-    p.text = p._data[0];
-    p.type = p._data[1];
-
-    if (p.type < 0 || p.type > 23) {
-        p.type = 0;
-    }
-
-    if (p.type == 2) { // CHAT_TELL
+    try {
         p.readS();
-        p.target = p._data[2];
+        p.readD();
+
+        p.text = p._data[0];
+        p.type = p._data[1];
+
+        if (p.type < 0 || p.type > 23) {
+            p.type = 0;
+        }
+
+        if (p.type == 2) { // CHAT_TELL
+            p.readS();
+            p.target = p._data[2];
+        }
+    } catch (ex) {
+        console.log(ex); // TODO: exception Say2 packet on Create Character.   0_o
     }
 
     return p;

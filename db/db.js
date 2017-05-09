@@ -35,6 +35,13 @@ db.insertAuthData = function (login, session1_1, session1_2, session2_1, session
         }).toQuery();
 };
 
+db.getCharByName = function (name) {
+    return sqlModels.characters
+        .select(sqlModels.characters.star())
+        .where(sqlModels.characters.Name.equals(name))
+        .toQuery();
+};
+
 db.getCharacters = function (login) {
     return sqlModels.characters
         .select(sqlModels.characters.star())
