@@ -132,10 +132,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var heading = ((Math.atan2(-spx, -spy) * 10430.378350470452724949566316381) + 32768); // ? short.MaxValue 
 
-
-                console.log('[GS] Move ticksToMove: ' + ticksToMove);
-                console.log('[GS] Distance: ' + distance);
-                console.log('[GS] Speed: ' + speed);
+                //console.log('[GS] Move ticksToMove: ' + ticksToMove);
+                //console.log('[GS] Distance: ' + distance);
+                //console.log('[GS] Speed: ' + speed);
 
                 sock.client.char.Heading = heading;
 
@@ -302,6 +301,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             console.log('[GS] Recive packet Logout');
 
             helper.sendGamePacket('LeaveWorld', sock);
+
+            helper.savePlayer(sock, () => { });
 
             console.log('[GS] Send packet LeaveWorld');
 

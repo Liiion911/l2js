@@ -9,8 +9,6 @@ var helper = {
     autoCreate: true
 };
 
-
-
 helper.initializeMapRegions = (gameServer) => {
     var query = db.getMapRegions();
     helper.poolGameServer.getConnection(function (err_con, connection) {
@@ -105,6 +103,13 @@ helper.exceptionHandler = (ex) => {
     console.log(ex);
 };
 
+helper.savePlayer = (sock, cb) => {
+    console.log('[GS] Start save char: ' + sock.client.char.Name);
+
+    // TODO: get pool/connection, save character to db
+
+};
+
 helper.disconnectPlayer = (login, clients, sock) => {
     try {
 
@@ -120,8 +125,11 @@ helper.disconnectPlayer = (login, clients, sock) => {
             console.log('[GS] Kick player: ' + login);
 
             helper.sendGamePacket('ServerClose', sock);
-            sock.destroy();
-            clients.splice(clients.indexOf(sock), 1); // rly need ?
+
+            helper.savePlayer(sock, () => {
+                sock.destroy();
+                clients.splice(clients.indexOf(sock), 1); // rly need ?
+            });
 
         }
 
@@ -212,6 +220,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
             helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
 
         });
+
         console.log('[GS] Broadcast packet MoveToLocation');
 
         // TODO: broadcastToPartyMembers
