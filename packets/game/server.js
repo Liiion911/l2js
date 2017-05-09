@@ -7,6 +7,73 @@ var serverGamePackets = {};
 // Game Server packets                           //
 //-----------------------------------------------//
 
+
+serverGamePackets.CharTemplates = function (sock, templates) { // NewCharacterSuccess
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x17);
+    p.writeD(templates.length);
+
+    _.each(templates, (template) => {
+
+        p.writeD(template.RaceId);
+        p.writeD(template.ClassId);
+
+        p.writeD(0x46);
+        p.writeD(template.BaseSTR);
+        p.writeD(0x0a);
+        p.writeD(0x46);
+        p.writeD(template.BaseDEX);
+        p.writeD(0x0a);
+        p.writeD(0x46);
+        p.writeD(template.BaseCON);
+        p.writeD(0x0a);
+        p.writeD(0x46);
+        p.writeD(template.BaseINT);
+        p.writeD(0x0a);
+        p.writeD(0x46);
+        p.writeD(template.BaseWIT);
+        p.writeD(0x0a);
+        p.writeD(0x46);
+        p.writeD(template.BaseMEN);
+        p.writeD(0x0a);
+
+    });
+
+    return p;
+}
+
+
+serverGamePackets.CharCreateFail = function (sock, error) {
+    var p = new protocol.BasePacket();
+
+    if (error < 0 || error > 3) error = 0;
+
+    p.writeC(0x1a);
+
+    p.writeD(error);
+
+    return p;
+
+    /*
+    REASON_CREATION_FAILED = 0x00;
+	REASON_TOO_MANY_CHARACTERS = 0x01;
+	REASON_NAME_ALREADY_EXISTS = 0x02;
+	REASON_16_ENG_CHARS = 0x03;
+    */
+
+};
+
+serverGamePackets.CharCreateSuccess = function (sock) { // CharCreateOk
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x19);
+
+    p.writeD(0x01);
+
+    return p;
+};
+
 serverGamePackets.ServerClose = function (sock, type, text) { // Kick player, disconnect player
     var p = new protocol.BasePacket();
 
@@ -244,8 +311,8 @@ serverGamePackets.UserInfo = function (char) {
     //    writeF(pet.getTemplate().collisionHeight);
     //}
     //else {
-    p.writeF(8);
-    p.writeF(23);
+    p.writeF(8); // CollisionRadius
+    p.writeF(23); // CollisionHeight
     //}
 
     p.writeD(char.HairStyle);

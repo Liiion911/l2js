@@ -9,7 +9,138 @@ var helper = {
     autoCreate: true
 };
 
+helper.isAlphaNumeric = (str) => {
+    return /^[a-zA-Z0-9]*$/.test(str);
+};
+
+helper.isAlphaNumericAndSpecial = (str) => {
+    return /^[a-zA-Zа-яА-ЯёЁ0-9_\-]*$/.test(str);
+};
+
+helper.isAlphaNumeric = (str) => {
+    return /^[a-zA-Zа-яА-ЯёЁ0-9_\-]*$/.test(str);
+};
+
+helper.createChar = (char, cb) => {
+
+    var query = db.insertCharacter(char);
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.getNextObjectId = (cb) => {
+
+    var query = db.getServerData();
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.existCharName = (name, cb) => {
+
+    var query = db.getCharByName(name);
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.initializeCharTemplates = (gameServer) => {
+
+    var query = db.getCharTemplates();
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    gameServer.charTemplates = [];
+
+                    _.each(result, (res) => {
+
+                        gameServer.charTemplates.push(res);
+
+                    });
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
 helper.initializeMapRegions = (gameServer) => {
+
     var query = db.getMapRegions();
     helper.poolGameServer.getConnection(function (err_con, connection) {
 

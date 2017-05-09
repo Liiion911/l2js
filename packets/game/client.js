@@ -7,6 +7,37 @@ var clientGamePackets = {};
 // Game server client packets                   //
 //-----------------------------------------------//
 
+clientGamePackets.CharacterCreate = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+    p.readS()
+
+    p.readD();
+    p.readD();
+    p.readD();
+
+    p.readD(); // INT
+    p.readD(); // STR
+    p.readD(); // CON
+    p.readD(); // MEN
+    p.readD(); // DEX
+    p.readD(); // WIT
+
+    p.readD();
+    p.readD();
+    p.readD();
+
+    p.Name = p._data[0];
+    p.Race = p._data[1];
+    p.Sex = p._data[2];
+    p.ClassId = p._data[3];
+
+    p.HairStyle = p._data[10];
+    p.HairColor = p._data[11];
+    p.Face = p._data[12];
+
+    return p;
+}
+
 clientGamePackets.ValidatePosition = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readD();

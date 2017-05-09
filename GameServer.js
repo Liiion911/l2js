@@ -38,7 +38,10 @@ gameDomain.run(() => {
         clients: [],
         onlineSyncCount: -1,
         loginServerMasterIP: '127.0.0.1',
-        loginServerMasterPort: 5555
+        loginServerMasterPort: 5555,
+        settings: {
+            maxCharacters: 5,
+        }
     };
 
     gameServer.exceptionHandler = helper.exceptionHandler;
@@ -196,8 +199,21 @@ gameDomain.run(() => {
     helper.checkDisconnectedPlayersInInstance(gameServer);
 
     gameServer.connectToMaster();
+    
+    // TODO: cascad load and THEN listen gameserver port
 
-    helper.initializeMapRegions(gameServer);
+
+    helper.getNextObjectId((res) => {
+
+        gameServer.nextObjectId = res.nextObjectId;
+
+        helper.initializeMapRegions(gameServer);
+
+        helper.initializeCharTemplates(gameServer);
+
+    });
+
+
 
     setInterval(() => {
 

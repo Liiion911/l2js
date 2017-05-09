@@ -202,6 +202,7 @@ loginDomain.run(() => {
                 loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[sock.game_server_id]), 1);
             }
             console.log('[AS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] DISCONNECTED GAME SERVER WITH ID: ' + sock.game_server_id);
         });
 
         sock.on('end', () => {

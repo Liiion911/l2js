@@ -308,7 +308,87 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x0b:
+
+            console.log('[GS] Recive packet CharacterCreate');
+
+            if (sock.client.status != 2) {
+                console.log('[GS] Wrong status 2');
+                sock.destroy();
+            }
+
+            if (sock.client.chars.length >= gameServer.settings.maxCharacters) {
+
+                helper.sendGamePacket('CharCreateFail', sock, 1);
+                console.log('[GS] Send packet: CharCreateFail - too many chars on acc');
+
+                return;
+            }
+
+            var pack = clientGamePackets.CharacterCreate(new Buffer(packetsArrayParse));
+
+            var charTemplate = _.findWhere(gameServer.charTemplates, { ClassId: pack.ClassId });
+            if (!charTemplate) {
+
+                helper.sendGamePacket('CharCreateFail', sock, 0);
+                console.log('[GS] Send packet: CharCreateFail - bad template class id');
+
+                return;
+            }
+
+            if (helper.existCharName(pack.Name, (res) => {
+                if (res.length > 0) {
+
+                    helper.sendGamePacket('CharCreateFail', sock, 2);
+                    console.log('[GS] Send packet: CharCreateFail - exist char name');
+
+                    return;
+                }
+
+                if ((pack.Name.length < 3) || (pack.Name.length > 16) || !helper.isAlphaNumericAndSpecial(pack.Name)) {
+
+                    helper.sendGamePacket('CharCreateFail', sock, 3);
+                    console.log('[GS] Send packet: CharCreateFail - char name 16 symbols or not valid');
+
+                    return;
+                }
+
+                var objectId = _.clone(gameServer.nextObjectId);
+
+                gameServer.nextObjectId++;
+
+                helper.createChar({
+                    ObjectId: objectId,
+                    charTemplate: charTemplate,
+                    AccountName: sock.client.data.login,
+                    Name: pack.Name,
+                    HairStyle: pack.HairStyle,
+                    HairColor: pack.HairColor,
+                    Face: pack.Face,
+                    Sex: pack.Sex,
+                    MaxHP: 500,
+                    MaxCP: 300,
+                    MaxMP: 200,
+                    CharId: sock.client.chars.length + 1
+                }, (res) => {
+
+                    helper.sendGamePacket('CharCreateSuccess', sock);
+                    console.log('[GS] Send packet: CharCreateSuccess');
+
+                    gamePacketController.sendCharList(sock);
+
+                });
+
+                //helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
+                //console.log('[GS] Send packet: CharTemplates');
+
+
+            }));
+
+
         case 0x0d:
+
+            console.log('[GS] Recive packet CharacterSelected');
 
             if (sock.client.status != 2) {
                 console.log('[GS] Wrong status 2');
@@ -329,6 +409,19 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             }
 
             break;
+
+        case 0x0e:
+
+            console.log('[GS] Recive packet NewCharacter');
+
+            if (sock.client.status != 2) {
+                console.log('[GS] Wrong status 2');
+                sock.destroy();
+            }
+
+
+            helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
+            console.log('[GS] Send packet: CharTemplates');
 
         case 0x38:
 
