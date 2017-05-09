@@ -38,7 +38,10 @@ gameDomain.run(() => {
         clients: [],
         onlineSyncCount: -1,
         loginServerMasterIP: '127.0.0.1',
-        loginServerMasterPort: 5555
+        loginServerMasterPort: 5555,
+        settings: {
+            maxCharacters: 5,
+        }
     };
 
     gameServer.exceptionHandler = helper.exceptionHandler;
@@ -54,7 +57,7 @@ gameDomain.run(() => {
 
     gameServer.server = net.createServer();
     gameServer.server.listen(7777);
-    console.log('GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
+    console.log('[GS] GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
     gameServer.server.on('connection', (sock) => {
 
         sock.client = {
@@ -109,29 +112,32 @@ gameDomain.run(() => {
 
             gameServer.client = new net.Socket();
             gameServer.client.connect(gameServer.loginServerMasterPort, gameServer.loginServerMasterIP, () => {
-                try {
-                    gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
-                    console.log('[GS] Connected to Login Server Master');
-                } catch (ex) {
-                    gameServer.exceptionHandler(ex);
-                }
+                setTimeout(() => {
+                    try {
+
+                        gameServer.client.write('0|' + gameServer.server_id + '|' + gameServer.clients.length + '|');
+                        console.log('[AS] Connected to Login Server Master');
+                    } catch (ex) {
+                        gameServer.exceptionHandler(ex);
+                        gameServer.client.end();
+                    }
+                }, 100);
             });
 
             gameServer.client.on('data', (data) => {
                 try {
                     var dataArray = data.toString('utf8').split('|');
-                    switch (data[0]) {
+                    switch (dataArray[0]) {
                         case "1": // attempt login
-                            var username = data[1];
-                            helper.disconnectPlayer(username, gameServer.clients, 1);
+                            var username = dataArray[1];
+
+                            console.log('[AS] Attemp to connect player recived: ' + username);
+
+                            helper.disconnectPlayer(username, gameServer.clients);
                             gameServer.client.write('1|' + gameServer.server_id + '|' + username);
 
-                            // TODO: check GS attempt to connect
+                            // TODO: remove player with timeout or on new connection from this character
 
-                            break;
-                        case "2": // disconnect player
-                            var username = data[1];
-                            helper.disconnectPlayer(username, gameServer.clients, 0);
                             break;
                     }
                 } catch (ex) {
@@ -140,7 +146,7 @@ gameDomain.run(() => {
             });
 
             gameServer.client.on('close', () => {
-                console.log('[GS] Closed connection to Login Server Master');
+                console.log('[AS] Closed connection to Login Server Master');
                 setTimeout(() => {
                     gameServer.connectToMaster();
                 }, 10000)
@@ -148,7 +154,7 @@ gameDomain.run(() => {
 
 
             gameServer.client.on('error', (err) => {
-                console.log('[GS] Error connection to Login Server Master');
+                console.log('[AS] Error connection to Login Server Master');
             });
 
         } catch (ex) {
@@ -184,14 +190,30 @@ gameDomain.run(() => {
         ],
         getInstance: (sock) => {
             var instanceId = 0;
-            if (gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
+            if (sock && sock.client.char && gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
             return gameServer.World.instances[instanceId];
         }
     };
 
-    gameServer.connectToMaster();
 
-    helper.initializeMapRegions(gameServer);
+    helper.checkDisconnectedPlayersInInstance(gameServer);
+
+    gameServer.connectToMaster();
+    
+    // TODO: cascad load and THEN listen gameserver port
+
+
+    helper.getNextObjectId((res) => {
+
+        gameServer.nextObjectId = res.nextObjectId;
+
+        helper.initializeMapRegions(gameServer);
+
+        helper.initializeCharTemplates(gameServer);
+
+    });
+
+
 
     setInterval(() => {
 

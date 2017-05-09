@@ -109,8 +109,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var spy = dy / distance
             var spx = dx / distance;
 
-            var heading = ((Math.atan2(-spx, -spy) * 10430.378) + 32767); // ? short.MaxValue 
-
             //if (sock.client.char.UpdatePosition) {
             //    sock.client.char.UpdatePosition = false;
             //    sock.client.char.Heading = heading;
@@ -126,14 +124,35 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java
 
                 // TODO: calculate speed
-                var speed = sock.client.char.RunSpd;
-                var interval = Math.ceil((10 * distance) / speed);
-                var spdX = dx / interval;
-                var spdY = dy / interval;
+                var speed = sock.client.char.RunSpd * 1.013157894736842146;
+                var ticksToMove = 1 + Math.ceil((100 * distance) / speed);
+                var ticksToMoveCompleted = 0;
+                var spdX = dx / ticksToMove;
+                var spdY = dy / ticksToMove;
 
-                console.log('Move interval: ' + interval);
+                var heading = ((Math.atan2(-spx, -spy) * 10430.378350470452724949566316381) + 32768); // ? short.MaxValue 
 
-                helper.movePlayer(gameServer, sock, { X: pack.toX, Y: pack.toY, Z: pack.toZ, interval: interval, h: heading, spdX: spdX, spdY: spdY })
+                //console.log('[GS] Move ticksToMove: ' + ticksToMove);
+                //console.log('[GS] Distance: ' + distance);
+                //console.log('[GS] Speed: ' + speed);
+
+                sock.client.char.Heading = heading;
+
+                helper.movePlayer(gameServer, sock, {
+                    speed: speed,
+                    fromX: sock.client.char.X,
+                    fromY: sock.client.char.Y,
+                    fromZ: sock.client.char.Z,
+                    distance: distance,
+                    X: pack.toX,
+                    Y: pack.toY,
+                    Z: pack.toZ,
+                    ticksToMove: ticksToMove,
+                    ticksToMoveCompleted: ticksToMoveCompleted,
+                    h: heading,
+                    spdX: spdX,
+                    spdY: spdY
+                });
 
             }
 
@@ -283,11 +302,93 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             helper.sendGamePacket('LeaveWorld', sock);
 
+            helper.savePlayer(sock, () => { });
+
             console.log('[GS] Send packet LeaveWorld');
 
             break;
 
+        case 0x0b:
+
+            console.log('[GS] Recive packet CharacterCreate');
+
+            if (sock.client.status != 2) {
+                console.log('[GS] Wrong status 2');
+                sock.destroy();
+            }
+
+            if (sock.client.chars.length >= gameServer.settings.maxCharacters) {
+
+                helper.sendGamePacket('CharCreateFail', sock, 1);
+                console.log('[GS] Send packet: CharCreateFail - too many chars on acc');
+
+                return;
+            }
+
+            var pack = clientGamePackets.CharacterCreate(new Buffer(packetsArrayParse));
+
+            var charTemplate = _.findWhere(gameServer.charTemplates, { ClassId: pack.ClassId });
+            if (!charTemplate) {
+
+                helper.sendGamePacket('CharCreateFail', sock, 0);
+                console.log('[GS] Send packet: CharCreateFail - bad template class id');
+
+                return;
+            }
+
+            if (helper.existCharName(pack.Name, (res) => {
+                if (res.length > 0) {
+
+                    helper.sendGamePacket('CharCreateFail', sock, 2);
+                    console.log('[GS] Send packet: CharCreateFail - exist char name');
+
+                    return;
+                }
+
+                if ((pack.Name.length < 3) || (pack.Name.length > 16) || !helper.isAlphaNumericAndSpecial(pack.Name)) {
+
+                    helper.sendGamePacket('CharCreateFail', sock, 3);
+                    console.log('[GS] Send packet: CharCreateFail - char name 16 symbols or not valid');
+
+                    return;
+                }
+
+                var objectId = _.clone(gameServer.nextObjectId);
+
+                gameServer.nextObjectId++;
+
+                helper.createChar({
+                    ObjectId: objectId,
+                    charTemplate: charTemplate,
+                    AccountName: sock.client.data.login,
+                    Name: pack.Name,
+                    HairStyle: pack.HairStyle,
+                    HairColor: pack.HairColor,
+                    Face: pack.Face,
+                    Sex: pack.Sex,
+                    MaxHP: 500,
+                    MaxCP: 300,
+                    MaxMP: 200,
+                    CharId: sock.client.chars.length + 1
+                }, (res) => {
+
+                    helper.sendGamePacket('CharCreateSuccess', sock);
+                    console.log('[GS] Send packet: CharCreateSuccess');
+
+                    gamePacketController.sendCharList(sock);
+
+                });
+
+                //helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
+                //console.log('[GS] Send packet: CharTemplates');
+
+
+            }));
+
+
         case 0x0d:
+
+            console.log('[GS] Recive packet CharacterSelected');
 
             if (sock.client.status != 2) {
                 console.log('[GS] Wrong status 2');
@@ -308,6 +409,19 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             }
 
             break;
+
+        case 0x0e:
+
+            console.log('[GS] Recive packet NewCharacter');
+
+            if (sock.client.status != 2) {
+                console.log('[GS] Wrong status 2');
+                sock.destroy();
+            }
+
+
+            helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
+            console.log('[GS] Send packet: CharTemplates');
 
         case 0x38:
 
@@ -406,23 +520,56 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var dy = pack.Y - realY;
             var diffSq = ((dx * dx) + (dy * dy));
 
-            console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
-            console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
+            //console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
+            //console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
 
-            if ((diffSq > 0) && (diffSq < 250000)) // if too large, messes observation
+            if (!sock.client.char.moveObject) {
+                sock.client.char.moveObject = {};
+            }
+
+            try {
+                var dxServer = sock.client.char.moveObject.fromX - realX;
+                var dyServer = sock.client.char.moveObject.fromY - realY;
+
+                var distanceServer = helper.getPlanDistanceSq(dxServer, dyServer);
+
+                var dxClient = sock.client.char.moveObject.fromX - pack.X;
+                var dyClient = sock.client.char.moveObject.fromY - pack.Y;
+
+                var distanceClient = helper.getPlanDistanceSq(dxClient, dyClient);
+
+                console.log('DISTANCE server: ' + distanceServer);
+                console.log('DISTANCE client: ' + distanceClient);
+
+                var time = distanceServer / sock.client.char.moveObject.speed;
+
+                var speedServer = sock.client.char.moveObject.speed
+                var speedClient = distanceClient / time;
+
+                console.log('SPEED server: ' + speedServer);
+                console.log('SPEED client: ' + speedClient);
+
+            } catch (ex) {
+                helper.exceptionHandler(ex);
+            }
+
+            if ((diffSq > 0) && (diffSq < 1000)) // if too large, messes observation
             {
 
+                sock.client.char.Heading = pack.Heading;
+
+                console.log('[GS] OK, diffSq is: ' + diffSq);
             } else {
-                console.log('[GS] Small or large position difference');
+                console.log('[GS] FAIL, diffSq so: ' + diffSq);
+
+                helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
+                console.log('[GS] Send packet: ValidateLocation');
             }
 
             // TODO: broadcast to party members
 
             // TODO: checkWaterState
 
-
-            helper.sendGamePacket('ValidateLocation', sock, sock.client.char);
-            console.log('[GS] Send packet: ValidateLocation');
 
             //helper.sendGamePacket('UserInfo', sock, sock.client.char);
             //console.log('[GS] Send packet: UserInfo');
@@ -521,21 +668,21 @@ gamePacketController.sendCharList = function (sock) {
             IsNoble: 1,
             IsHero: 1,
             PledgeClass: 0,
-            IsRunning: 1,
             NameColor: 0,
             TitleColor: 0,
             IsFishing: 0,
             FishX: 0,
             FishY: 0,
-            Fishz: 0,
-            RunSpd: 150,
-            WalkSpd: 100,
-            SwimRunSpd: 105,
-            SwimWalkSpd: 100,
-            FlRunSpd: 105,
-            FlWalkSpd: 100,
-            FlyRunSpd: 150,
-            FlyWalkSpd: 100,
+            FishZ: 0,
+            IsRunning: 1,
+            RunSpd: 130,
+            WalkSpd: 130,
+            SwimRunSpd: 130,
+            SwimWalkSpd: 130,
+            FlRunSpd: 130,
+            FlWalkSpd: 130,
+            FlyRunSpd: 130,
+            FlyWalkSpd: 130,
             MoveMultiplier: 1,
             AttackSpeedMultiplier: 1,
             Instance: 0

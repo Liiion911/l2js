@@ -12,13 +12,4 @@ skills.restorCharacterSkill = function (charId, class_index) {
         .toQuery();
 }
 
-skills.createAccount = function (login, password, accessLevel) {
-    return sqlModels.accounts
-        .insert({
-            login: login,
-            password: password,
-            accessLevel: 0
-        }).toQuery();
-}
-
 module.exports = skills;

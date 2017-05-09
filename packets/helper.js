@@ -9,9 +9,138 @@ var helper = {
     autoCreate: true
 };
 
+helper.isAlphaNumeric = (str) => {
+    return /^[a-zA-Z0-9]*$/.test(str);
+};
 
+helper.isAlphaNumericAndSpecial = (str) => {
+    return /^[a-zA-Zа-яА-ЯёЁ0-9_\-]*$/.test(str);
+};
+
+helper.isAlphaNumeric = (str) => {
+    return /^[a-zA-Zа-яА-ЯёЁ0-9_\-]*$/.test(str);
+};
+
+helper.createChar = (char, cb) => {
+
+    var query = db.insertCharacter(char);
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.getNextObjectId = (cb) => {
+
+    var query = db.getServerData();
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.existCharName = (name, cb) => {
+
+    var query = db.getCharByName(name);
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb(result);
+
+                }
+
+            });
+
+        }
+    });
+
+};
+
+helper.initializeCharTemplates = (gameServer) => {
+
+    var query = db.getCharTemplates();
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    gameServer.charTemplates = [];
+
+                    _.each(result, (res) => {
+
+                        gameServer.charTemplates.push(res);
+
+                    });
+
+                }
+
+            });
+
+        }
+    });
+
+};
 
 helper.initializeMapRegions = (gameServer) => {
+
     var query = db.getMapRegions();
     helper.poolGameServer.getConnection(function (err_con, connection) {
 
@@ -105,18 +234,35 @@ helper.exceptionHandler = (ex) => {
     console.log(ex);
 };
 
-helper.disconnectPlayer = (login, clients, error, sock) => {
+helper.savePlayer = (sock, cb) => {
+    console.log('[GS] Start save char: ' + sock.client.char.Name);
+
+    // TODO: get pool/connection, save character to db
+
+};
+
+helper.disconnectPlayer = (login, clients, sock) => {
     try {
 
         if (!sock) {
             sock = _.find(clients, (s) => {
-                var username = sock.client.data ? sock.client.data.login : "";
+                var username = s.client.data ? s.client.data.login : "";
                 return username == login
             });
         }
 
-        // error: 0 - kick; 1 - attemp login; ...
-        // TODO: send disconnect packet
+        if (sock) { // if finded player
+
+            console.log('[GS] Kick player: ' + login);
+
+            helper.sendGamePacket('ServerClose', sock);
+
+            helper.savePlayer(sock, () => {
+                sock.destroy();
+                clients.splice(clients.indexOf(sock), 1); // rly need ?
+            });
+
+        }
 
     } catch (ex) {
         helper.exceptionHandler(ex);
@@ -198,11 +344,14 @@ helper.movePlayer = (gameServer, sock, posObject) => {
             clearInterval(sock.client.char.moveObject.moveTimerId);
         }
 
+        sock.client.char.moveObject = posObject;
+
         _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-            helper.sendGamePacket('MoveToLocation', player, sock.client.char, posObject);
+            helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
 
         });
+
         console.log('[GS] Broadcast packet MoveToLocation');
 
         // TODO: broadcastToPartyMembers
@@ -214,32 +363,66 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
             // TODO: ValidateWaterZones
 
-            if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(posObject.spdX, posObject.spdY), false, false)) {
+            //if (helper.isInsideRadiusPos(posObject.X, posObject.Y, posObject.Z, sock.client.char.X, sock.client.char.Y, sock.client.char.Z, Math.max(posObject.spdX, posObject.spdY), false, false)) {
 
-                // arrived
-                sock.client.char.X = posObject.X;
-                sock.client.char.Y = posObject.Y;
-                sock.client.char.Z = posObject.Z;
+            // arrived
+            if (sock.client.char.X == sock.client.char.moveObject.X
+                && sock.client.char.Y == sock.client.char.moveObject.Y
+                && sock.client.char.Z == sock.client.char.moveObject.Z) {
 
-                helper.stopMovePlayer(gameServer, sock, posObject, false, false);
+                sock.client.char.moveObject.ticksToMove = 0;
+                clearInterval(sock.client.char.moveObject.moveTimerId);
+
+                helper.stopMovePlayer(gameServer, sock, sock.client.char.moveObject, false, false);
 
                 return;
-            } else {
-                sock.client.char.X += posObject.spdX;
-                sock.client.char.Y += posObject.spdY;
+            }
+
+            if (sock.client.char.moveObject.ticksToMove > sock.client.char.moveObject.ticksToMoveCompleted) {
+
+                sock.client.char.moveObject.ticksToMoveCompleted++;
+
+                sock.client.char.X += sock.client.char.moveObject.spdX;
+                sock.client.char.Y += sock.client.char.moveObject.spdY;
 
                 var realX = sock.client.char.X;
                 var realY = sock.client.char.Y;
                 var realZ = sock.client.char.Z;
 
-                console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
+                //console.log("[GS] update position on interval: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading);
+
+            } else {
+
+                sock.client.char.X = sock.client.char.moveObject.X;
+                sock.client.char.Y = sock.client.char.moveObject.Y;
+                sock.client.char.Z = sock.client.char.moveObject.Z;
+
+                sock.client.char.moveObject.ticksToMove = 0;
+                clearInterval(sock.client.char.moveObject.moveTimerId);
+
+                helper.stopMovePlayer(gameServer, sock, sock.client.char.moveObject, false, false);
+
             }
 
-        }, posObject.interval || 100);
+        }, 10);
 
     } catch (ex) {
         helper.exceptionHandler(ex);
     }
+};
+
+helper.checkDisconnectedPlayersInInstance = (gameServer) => {
+
+    setInterval(() => {
+
+        _.each(gameServer.World.getInstance().getPlayers(), (player) => {
+
+            if (player.destroyed) gameServer.World.getInstance(player).removePlayer(player);
+
+        });
+
+    }, 1000);
+
 };
 
 helper.unknownLoginPacket = function (sock, packetId, packetsArrayParse) {

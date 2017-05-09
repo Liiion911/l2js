@@ -47,6 +47,8 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
             var pack = clientLoginPackets.RequestGGAuth(new Buffer(packetsArrayParse));
             if (sock.client.sessionId != pack.sessionId) {
                 console.log('[LS] Wrong sessionId');
+                console.log('[LS] client sess ' + pack.sessionId);
+                console.log('[LS] serv sess ' + sock.client.sessionId);
                 sock.destroy();
             }
 
@@ -202,28 +204,33 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
                             _.each(result, (res) => {
 
-                                var server = {
-                                    AgeLimit: 0,
-                                    IsPvpServer: 0,
-                                    PlayerCount: 99,
-                                    MaxPlayerCount: 100,
-                                    IsOnline: 1,
-                                    ShowClock: 0,
-                                    ServerBrackets: 0,
-                                };
+                                if (loginServer.gameServers[res.server_id]) {
 
-                                server.Id = res.server_id
-                                server.Port = res.port;
+                                    var server = {
+                                        AgeLimit: 0,
+                                        IsPvpServer: 0,
+                                        PlayerCount: 99,
+                                        MaxPlayerCount: 100,
+                                        IsOnline: 1,
+                                        ShowClock: 0,
+                                        ServerBrackets: 0,
+                                    };
 
-                                var ipStr = res.ip.split('.');
-                                var ipInt = [];
-                                _.each(ipStr, (ip) => {
-                                    ipInt.push(parseInt(ip));
-                                });
+                                    server.Id = res.server_id
+                                    server.Port = res.port;
 
-                                server.IP = ipInt;
+                                    var ipStr = res.ip.split('.');
+                                    var ipInt = [];
+                                    _.each(ipStr, (ip) => {
+                                        ipInt.push(parseInt(ip));
+                                    });
 
-                                servers.push(server);
+                                    server.IP = ipInt;
+
+                                    servers.push(server);
+                                } else {
+                                    console.log('[LS] GameServer with ID ' + res.server_id + ' is OFFLINE (not connected to MasterServer)');
+                                }
 
                             });
 

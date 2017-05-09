@@ -35,7 +35,7 @@ loginDomain.run(() => {
     var loginServer = {
         sessionId: 0,
         loginServerMasterPort: 5555,
-        gameServers: {}
+        gameServers: []
     };
 
     loginServer.exceptionHandler = helper.exceptionHandler;
@@ -61,7 +61,7 @@ loginDomain.run(() => {
 
     loginServer.server = net.createServer();
     loginServer.server.listen(2106);
-    console.log('LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
+    console.log('[LS] LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
     loginServer.server.on('connection', (sock) => {
 
         loginServer.sessionId++;
@@ -138,19 +138,26 @@ loginDomain.run(() => {
 
     loginServer.master = net.createServer();
     loginServer.master.listen(loginServer.loginServerMasterPort);
-    console.log('LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
+    console.log('[AS] LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
     loginServer.master.on('connection', (sock) => {
 
-        console.log('[LS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
+        console.log('[AS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 
         sock.on('data', (data) => {
             try {
 
+                console.log('[AS] Recived packet: ' + data.toString('utf8'));
+
                 var dataArray = data.toString('utf8').split('|');
-                switch (data[0]) {
+                switch (dataArray[0]) {
                     case "0": // game server info
-                        var game_server_id = data[1];
-                        var online = data[2];
+                        var game_server_id = dataArray[1];
+                        var online = dataArray[2];
+
+                        sock.game_server_id = game_server_id;
+
+                        console.log('[AS] NEW GAME SERVER WITH ID: ' + game_server_id);
+
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
                                 logins: []
@@ -158,10 +165,17 @@ loginDomain.run(() => {
                         }
                         loginServer.gameServers[game_server_id].sock = sock;
                         loginServer.gameServers[game_server_id].online = online;
+
                         break;
+
                     case "1": // player attempted to connect
-                        var game_server_id = data[1];
-                        var username = data[2];
+
+                        var game_server_id = dataArray[1];
+                        var username = dataArray[2];
+
+                        sock.game_server_id = game_server_id;
+
+                        console.log('[AS] Attemp to connect player recived: ' + username);
 
                         if (!loginServer.gameServers[game_server_id]) {
                             loginServer.gameServers[game_server_id] = {
@@ -171,8 +185,8 @@ loginDomain.run(() => {
 
                         if (!loginServer.gameServers[game_server_id].logins[username]) loginServer.gameServers[game_server_id].logins[username] = {};
 
-                        if (loginServer.gameServers[server_id].logins[sock.client.login]["1"]) {
-                            loginServer.gameServers[server_id].logins[sock.client.login]["1"].cb(true);
+                        if (loginServer.gameServers[game_server_id].logins[username]["1"]) {
+                            loginServer.gameServers[game_server_id].logins[username]["1"].cb(true);
                         }
 
                         break;
@@ -184,27 +198,41 @@ loginDomain.run(() => {
         });
 
         sock.on('close', (had_error) => {
-            console.log('[LS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+            if (sock.game_server_id) {
+                loginServer.gameServers.splice(loginServer.gameServers.indexOf(loginServer.gameServers[sock.game_server_id]), 1);
+            }
+            console.log('[AS] CLOSED: ' + had_error + ', ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] DISCONNECTED GAME SERVER WITH ID: ' + sock.game_server_id);
         });
 
         sock.on('end', () => {
-            console.log('[LS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
         sock.on('error', (err) => {
-            console.log('[LS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
+            console.log('[AS] ERROR: ' + err + ' , ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
 
     });
 
     loginServer.attemptToLoginOnGameServer = (sock, server_id, cb) => {
         try {
+
+            console.log('[AS] Attempt to connect to server ' + server_id + ' player: ' + sock.client.login);
+
+            //console.log(loginServer.gameServers);
+
+            console.log(loginServer.gameServers.length);
+
             if (loginServer.gameServers[server_id]) {
                 if (!loginServer.gameServers[server_id].logins[sock.client.login]) loginServer.gameServers[server_id].logins[sock.client.login] = {};
                 loginServer.gameServers[server_id].logins[sock.client.login]["1"] = {
                     cb: cb
                 };
                 loginServer.gameServers[server_id].sock.write('1|' + sock.client.login);
+
+                console.log('[AS] Attemp to connect player sended: ' + sock.client.login);
+
             } else {
                 cb(false);
             }

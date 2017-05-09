@@ -35,6 +35,82 @@ db.insertAuthData = function (login, session1_1, session1_2, session2_1, session
         }).toQuery();
 };
 
+db.insertCharacter = function (char) {
+    return sqlModels.characters
+        .insert({
+            AccountName: char.AccountName,
+            ObjectId: char.ObjectId,
+            Name: char.Name,
+            Level: 1,
+            MaxHP: char.MaxHP,
+            CurHP: char.MaxHP,
+            MaxCP: char.MaxCP,
+            CurCP: char.MaxCP,
+            MaxMP: char.MaxMP,
+            CurMP: char.MaxMP,
+            Accuracy: char.charTemplate.ACC,
+            CriticalHit: char.charTemplate.CRITICAL,
+            EvasionRate: char.charTemplate.EVASION,
+            MAtk: char.charTemplate.M_ATK,
+            MDef: char.charTemplate.M_DEF,
+            MSpd: char.charTemplate.M_SPD,
+            PAtk: char.charTemplate.P_ATK,
+            PDef: char.charTemplate.P_DEF,
+            PSpd: char.charTemplate.P_SPD,
+            RunSpd: char.charTemplate.MOVE_SPD,
+            WalkSpd: char.charTemplate.MOVE_SPD * 0.75,
+            STR: char.charTemplate.BaseSTR,
+            CON: char.charTemplate.BaseCON,
+            DEX: char.charTemplate.BaseDEX,
+            INT: char.charTemplate.BaseINT,
+            MEN: char.charTemplate.BaseMEN,
+            WIT: char.charTemplate.BaseWIT,
+            Face: char.Face,
+            HairStyle: char.HairStyle,
+            HairColor: char.HairColor,
+            Sex: char.Sex,
+            Heading: 0,
+            X: char.charTemplate.X,
+            Y: char.charTemplate.Y,
+            Z: char.charTemplate.Z,
+            MoveMultiplier: 1,
+            AttackSpeedMultiplier: 1,
+            CollisionRadius: 8,
+            CollisionHeight: 23,
+            EXP: 0,
+            EXPBeforeDeath: 0,
+            SP: 0,
+            Karma: 0,
+            PVP: 0,
+            PK: 0,
+            ClanId: 0,
+            MaxLoad: char.charTemplate.BaseLOAD,
+            RaceId: char.charTemplate.RaceId,
+            ClassId: char.charTemplate.ClassId,
+            BaseClassId: char.charTemplate.ClassId,
+            Title: '',
+            RecomHave: 0,
+            RecomLeft: 10,
+            AccessLevel: 0,
+            Online: 0,
+            OnlineTime: 0,
+            CharId: char.CharId,
+            Newbie: 1,
+            LastAccess: 0,
+            ClanPrivileges: 0,
+            InJail: 0,
+            JailTimer: 0,
+            PowerGrade: 0,
+            IsNoble: 0,
+            PledgeClass: 0,
+            LastRecomDate: 0,
+            ClanJoinExpiryTime: 0,
+            ClanCreateExpiryTime: 0,
+            DeathPenaltyLevel: 0,
+            IsHero: 0
+        }).toQuery();
+};
+
 db.getServers = function () {
     return sqlModels.gameservers
         .select(sqlModels.gameservers.star())
@@ -71,8 +147,14 @@ db.createAccount = function (login, password, accessLevel) {
 };
 
 db.getMapRegions = function () {
-    return sqlModels.mapregion
-        .select(sqlModels.mapregion.star())
+    return sqlModels.map_region
+        .select(sqlModels.map_region.star())
+        .toQuery();
+};
+
+db.getCharTemplates = function () {
+    return sqlModels.character_templates
+        .select(sqlModels.character_templates.star())
         .toQuery();
 };
 
