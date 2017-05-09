@@ -205,7 +205,9 @@ gameDomain.run(() => {
 
     helper.getNextObjectId((res) => {
 
-        gameServer.nextObjectId = res.nextObjectId;
+        console.log('[GS] Next ObjectId: ' + res[0].nextObjectId)
+
+        gameServer.nextObjectId = res[0].nextObjectId;
 
         helper.initializeMapRegions(gameServer);
 

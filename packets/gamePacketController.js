@@ -345,7 +345,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                     return;
                 }
 
-                console.log(pack);
+                //console.log(pack);
 
                 if ((pack.Name.length < 3) || (pack.Name.length > 16) || !helper.isAlphaNumericAndSpecial(pack.Name)) {
 
