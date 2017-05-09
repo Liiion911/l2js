@@ -327,6 +327,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             var pack = clientGamePackets.CharacterCreate(new Buffer(packetsArrayParse));
 
+            console.log(pack);
+
             var charTemplate = _.findWhere(gameServer.charTemplates, { ClassId: pack.ClassId });
             if (!charTemplate) {
 
@@ -424,43 +426,46 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             var pack = clientGamePackets.Say2(new Buffer(packetsArrayParse));
 
-            // TODO: check player can use chat
-            // TODO: flood protection
-            // TODO: check BOTs etc.  https://xp-dev.com/sc/186542/3/%2Ftrunk%2FL2J_Server_BETA%2Fjava%2Fcom%2Fl2jserver%2Fgameserver%2Fnetwork%2Fclientpackets%2FSay2.java
+            if (pack.real) { // TODO: !!! on create character Say2 sended too. 0_o
 
-            console.log('[GS] CHAT - [' + pack.type + ']' + sock.client.char.Name + ': ' + pack.text);
+                // TODO: check player can use chat
+                // TODO: flood protection
+                // TODO: check BOTs etc.  https://xp-dev.com/sc/186542/3/%2Ftrunk%2FL2J_Server_BETA%2Fjava%2Fcom%2Fl2jserver%2Fgameserver%2Fnetwork%2Fclientpackets%2FSay2.java
 
-            switch (pack.type) {
-                case 0: // CHAT_NORMAL - in distance
+                console.log('[GS] CHAT - [' + pack.type + ']' + sock.client.char.Name ? + ': ' + pack.text);
 
-                    _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 1250, true, false), (player) => { // TODO: get players in radius
+                switch (pack.type) {
+                    case 0: // CHAT_NORMAL - in distance
 
-                        helper.sendGamePacket('CreatureSay', player, sock, pack.type, pack.text);
+                        _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 1250, true, false), (player) => { // TODO: get players in radius
 
-                    });
-
-                    break;
-                case 1: // CHAT_SHOUT: ! - in region
-
-                    var region = helper.getMapRegion(gameServer, sock.client.char.X, sock.client.char.Y);
-
-                    //console.log('CHAT - current region ' + region);
-
-                    _.each(gameServer.World.getInstance(sock).getPlayers(), (player) => {
-
-                        var playerRegion = helper.getMapRegion(gameServer, player.client.char.X, player.client.char.Y);
-
-                        //console.log('CHAT - player region ' + playerRegion);
-
-                        if (playerRegion == region) {
                             helper.sendGamePacket('CreatureSay', player, sock, pack.type, pack.text);
-                        }
 
-                    });
+                        });
 
-                    break;
+                        break;
+                    case 1: // CHAT_SHOUT: ! - in region
+
+                        var region = helper.getMapRegion(gameServer, sock.client.char.X, sock.client.char.Y);
+
+                        //console.log('CHAT - current region ' + region);
+
+                        _.each(gameServer.World.getInstance(sock).getPlayers(), (player) => {
+
+                            var playerRegion = helper.getMapRegion(gameServer, player.client.char.X, player.client.char.Y);
+
+                            //console.log('CHAT - player region ' + playerRegion);
+
+                            if (playerRegion == region) {
+                                helper.sendGamePacket('CreatureSay', player, sock, pack.type, pack.text);
+                            }
+
+                        });
+
+                        break;
+                }
+
             }
-
 
             break;
 

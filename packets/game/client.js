@@ -9,7 +9,7 @@ var clientGamePackets = {};
 
 clientGamePackets.CharacterCreate = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
-    p.readS()
+    p.readS();
 
     p.readD();
     p.readD();
@@ -68,8 +68,11 @@ clientGamePackets.Say2 = function (buffer) {
             p.readS();
             p.target = p._data[2];
         }
+
+        p.real = true;
     } catch (ex) {
         console.log(ex); // TODO: exception Say2 packet on Create Character.   0_o
+        p.real = false;
     }
 
     return p;
