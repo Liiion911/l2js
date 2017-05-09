@@ -23,6 +23,8 @@ helper.isAlphaNumeric = (str) => {
 
 helper.createChar = (char, cb) => {
 
+    console.log(char.ObjectId);
+
     var query = db.insertCharacter(char);
     helper.poolGameServer.getConnection(function (err_con, connection) {
 

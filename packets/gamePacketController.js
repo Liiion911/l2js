@@ -357,11 +357,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var objectId = _.clone(gameServer.nextObjectId);
 
+                console.log('[GS] New object Id for character: ' + objectId);
+
                 gameServer.nextObjectId++;
 
                 helper.createChar({
-                    ObjectId: objectId,
                     charTemplate: charTemplate,
+                    ObjectId: objectId,
                     AccountName: sock.client.data.login,
                     Name: pack.Name,
                     HairStyle: pack.HairStyle,
@@ -683,7 +685,9 @@ gamePacketController.sendCharList = (sock) => {
                         // TODO: save and restore active char
                         if (active) active = false;
 
-                    })
+                    });
+
+                    console.log('[GS] Account characters: ' + sock.client.chars.length);
 
                     sock.client.status = 2;
                     helper.sendGamePacket('CharSelectInfo', sock, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
