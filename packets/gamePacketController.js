@@ -415,14 +415,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 sock.destroy();
             }
 
-
-            if (gameServer.charTemplates) {
-                console.log('I SEE FUCKING CHAR TEMPLATES: ' + gameServer.charTemplates.length);
-            } else {
-                console.log('NO CHAR TEMPLATES');
-            }
-
-            helper.sendGamePacket('CharTemplates', sock, gameServer.charTemplates);
+            helper.sendGamePacket('CharTemplates', sock, sock, gameServer.charTemplates);
             console.log('[GS] Send packet: CharTemplates');
 
         case 0x38:
