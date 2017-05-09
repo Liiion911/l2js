@@ -660,8 +660,8 @@ gamePacketController.sendCharList = (sock) => {
 
                             Team: 0,
 
-                            NameColor: 0,
-                            TitleColor: 0,
+                            NameColor: 0x00ffffff,
+                            TitleColor: 0x00ffffff,
 
                             IsFishing: 0,
                             FishX: 0,
@@ -698,7 +698,6 @@ gamePacketController.sendCharList = (sock) => {
 
                     console.log('[GS] Send packet: CharSelectInfo');
 
-                    
                 }
 
             });
