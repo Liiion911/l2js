@@ -1,5 +1,4 @@
 ﻿var crypto = {}
-var helper = require('./helper.js');
 
 crypto.randomInteger = function (min, max) {
     var rand = min - 0.5 + Math.random() * (max - min + 1)
@@ -30,7 +29,7 @@ crypto.decrypt = function (sock, raw, offset, size) {
         sock.client.newXorKeyDec[11] = ((old >> 0x18) & 0xff);
 
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
 }
 
@@ -57,7 +56,7 @@ crypto.encrypt = function (sock, raw, offset, size) {
         sock.client.newXorKeyEnc[11] = ((old >> 0x18) & 0xff);
 
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
 }
 
@@ -82,7 +81,7 @@ crypto.generateNewKey = function () {
         return key;
 
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
     return [];
 }
@@ -116,7 +115,7 @@ crypto.appendChecksum = function (raw, offset, size) {
         return raw;
 
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
     return [];
 }
@@ -129,7 +128,7 @@ crypto.newPubKey = function () {
         }
         return ret;
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
     return [];
 }
@@ -165,7 +164,7 @@ crypto.encXORPass = function (raw, offset, size, key) {
         return raw;
 
     } catch (ex) {
-        helper.exceptionHandler(ex);
+        console.log(ex);
     }
     return [];
 }
