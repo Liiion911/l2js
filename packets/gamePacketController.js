@@ -242,6 +242,14 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('UserInfo', sock, sock.client.char);
             console.log('[GS] Send packet: UserInfo');
 
+            // TODO: Broadcast CharInfo to allin region/instance: CharInfo
+            _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
+
+                helper.sendGamePacket('CharInfo', player, sock.client.char);
+
+            });
+
+
             break;
 
         case 0x07:
@@ -670,9 +678,13 @@ gamePacketController.sendCharList = (sock) => {
 
                             MountType: 0,
                             IsRunning: 1,
+                            IsSiting: 0,
+                            IsInCombat: 0,
+                            IsAlikeDead: 0,
+                            Visible: 1,
 
-                            SwimRunSpd: 130,
-                            SwimWalkSpd: 130,
+                            SwimRunSpd: 50,
+                            SwimWalkSpd: 50,
                             FlRunSpd: 130,
                             FlWalkSpd: 130,
                             FlyRunSpd: 130,

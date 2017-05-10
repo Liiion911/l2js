@@ -199,6 +199,157 @@ serverGamePackets.LeaveWorld = function () {
     return p;
 }
 
+serverGamePackets.CharInfo = (char) => {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x03);
+
+    p.writeD(char.X);
+    p.writeD(char.Y);
+    p.writeD(char.Z);
+    p.writeD(char.Heading); // ??
+    p.writeD(char.ObjectId); // ?
+    p.writeS(char.Name);
+    p.writeD(char.RaceId);
+    p.writeD(char.Sex);
+
+    p.writeD(char.ClassId);
+
+    // 12 D
+    for (var i = 0; i < 12; i++) {
+        p.writeD(0x00);
+    }
+
+    // c6 new h's
+    p.writeH(0x00);
+    p.writeH(0x00);
+    p.writeH(0x00);
+    p.writeH(0x00);
+    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_RHAND);
+
+    // 12 H
+    for (var i = 0; i < 12; i++) {
+        p.writeH(0x00);
+    }
+
+    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_LRHAND);
+    p.writeH(0x00);
+    p.writeH(0x00);
+    p.writeH(0x00);
+    p.writeH(0x00);
+
+    p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
+    p.writeD(char.Karma);
+
+    p.writeD(char.MSpd);
+    p.writeD(char.PSpd);
+
+    p.writeD(char.PvpFlag); // second ?
+    p.writeD(char.Karma); // second ?
+
+    p.writeD(char.RunSpd);
+    p.writeD(char.WalkSpd);
+    p.writeD(char.SwimRunSpd); // swimspeed 50
+    p.writeD(char.SwimWalkSpd); // swimspeed 50
+    p.writeD(char.FlRunSpd);
+    p.writeD(char.FlWalkSpd);
+    p.writeD(char.FlyRunSpd);
+    p.writeD(char.FlyWalkSpd);
+    p.writeF(char.MoveMultiplier); // 1
+    p.writeF(char.AttackSpeedMultiplier); // 1
+
+    p.writeF(char.CollisionRadius);
+    p.writeF(char.CollisionHeight);
+
+    p.writeD(char.HairStyle);
+    p.writeD(char.HairColor);
+    p.writeD(char.Face);
+
+    var title = char.Title;
+    //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
+    //    title = "Invisible";
+    //}
+    //if (char.Poly().isMorphed()) {
+    //    L2NpcTemplate polyObj = NpcTable.getInstance().getTemplate(char.Poly().getPolyId());
+    //    if (polyObj != null) {
+    //        title += " - " + polyObj.name;
+    //    }
+    //}
+    p.writeS(title);
+
+    p.writeD(char.ClanId);
+    p.writeD(char.ClanCrestId);
+    p.writeD(char.AllyId);
+    p.writeD(char.AllyCrestId); // ally crest id
+
+    p.writeD(0); // builder level
+
+    p.writeC(char.IsSiting);
+    p.writeC(char.IsRunning);
+    p.writeC(char.IsInCombat);
+    p.writeC(char.IsAlikeDead);
+    p.writeC(char.Visible);
+
+    p.writeC(char.MountType);
+    p.writeC(char.PrivateStoreType);
+
+    p.writeH(char.Cubics.length);
+    for (var i = 0; i < char.Cubics.length; i++) {
+        p.writeH(char.Cubics[i].KeySetId);
+    }
+
+    p.writeC(0x00); // 1-find party members
+
+    p.writeD(char.AbnormalEffect);  // ??
+
+    p.writeH(char.RecomLeft); // c2 recommendations remaining
+    p.writeH(char.RecomHave); // c2 recommendations received
+
+    p.writeD(char.ClassId);
+
+    p.writeD(char.MaxCP);
+    p.writeD(parseInt(char.CurCP));
+
+    p.writeC(0); // _activeChar.isMounted() ? 0 : char.EnchantEffect()
+
+    if (char.Team == 1) {
+        p.writeC(0x01); // team circle around feet 1= Blue, 2 = red
+    }
+    else if (char.Team == 2) {
+        p.writeC(0x02); // team circle around feet 1= Blue, 2 = red
+    }
+    else {
+        p.writeC(0x00); // team circle around feet 1= Blue, 2 = red
+    }
+
+    p.writeD(char.ClanCrestLargeId);
+    p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
+    p.writeC(char.IsHero); // 0x01: Hero Aura
+
+    p.writeC(char.IsFishing); // Fishing Mode
+    p.writeD(char.FishX); // fishing x
+    p.writeD(char.FishY); // fishing y
+    p.writeD(char.FishZ); // fishing z
+    p.writeD(char.NameColor);
+
+    // new c5
+    p.writeC(char.IsRunning); // changes the Speed display on Status Window
+
+    p.writeD(char.PledgeClass); // changes the text above CP on Status Window
+    p.writeD(0x00); // ??
+
+    p.writeD(char.TitleColor);
+
+    //if (_activeChar.isCursedWeaponEquiped()) {
+    //    p.writeD(CursedWeaponsManager.getInstance().getLevel(char.CursedWeaponEquipedId()));
+    //}
+    //else {
+    p.writeD(0x00);
+    //}
+
+    return p;
+};
+
 serverGamePackets.UserInfo = function (char) {
     var p = new protocol.BasePacket();
 

@@ -146,7 +146,7 @@ loginDomain.run(() => {
         sock.on('data', (data) => {
             try {
 
-                console.log('[AS] Recived packet: ' + data.toString('utf8'));
+                // console.log('[AS] Recived packet: ' + data.toString('utf8'));
 
                 var dataArray = data.toString('utf8').split('|');
                 switch (dataArray[0]) {

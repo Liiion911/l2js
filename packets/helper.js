@@ -348,16 +348,18 @@ helper.movePlayer = (gameServer, sock, posObject) => {
 
         sock.client.char.moveObject = posObject;
 
-        _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
-
-            helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
-
-        });
 
         console.log('[GS] Broadcast packet MoveToLocation');
 
         // TODO: broadcastToPartyMembers
 
+
+        // broadcast to all in region/instance:
+        _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
+
+            helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
+
+        });
 
         sock.client.char.moveObject.moveTimerId = setInterval(() => {
 
