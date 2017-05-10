@@ -498,9 +498,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             if (pack.unselect == 0) { // && casting now - abort cast
                 // TODO: abort cast
-            } else {
-                helper.doAction(gameServer, sock, null, -1); // cancel target
             }
+
+            helper.doAction(gameServer, sock, null, -1); // cancel target
 
 
             break;
