@@ -245,7 +245,7 @@ helper.doAction = (gameServer, sock, player, action) => {
 
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-                helper.sendGamePacket('TargetUnselected', player, { ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
+                helper.sendGamePacket('TargetUnselected', player, player, { ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
 
             });
 
