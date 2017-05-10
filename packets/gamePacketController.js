@@ -242,6 +242,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('UserInfo', sock, sock.client.char);
             console.log('[GS] Send packet: UserInfo');
 
+            helper.sendGamePacket('CharInfo', sock, sock.client.char);
+            console.log('[GS] Send CharInfo self to ' + sock.client.char.Name);
+
             // TODO: Broadcast CharInfo to all in region/instance: CharInfo
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
@@ -316,15 +319,24 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             console.log('[GS] Recive packet Logout');
 
             try {
-                helper.savePlayer(sock, () => { });
 
-                gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
-                gameServer.World.getInstance(sock).removePlayer(sock);
-                helper.syncPlayersCount(gameServer);
+                helper.savePlayer(sock, () => {
 
-                helper.sendGamePacket('LeaveWorld', sock);
+                    try {
+                        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+                        gameServer.World.getInstance(sock).removePlayer(sock);
+                        helper.syncPlayersCount(gameServer);
 
-                console.log('[GS] Send packet LeaveWorld');
+                        helper.sendGamePacket('LeaveWorld', sock);
+
+                        console.log('[GS] Send packet LeaveWorld');
+
+                    } catch (ex) {
+                        helper.exceptionHandler(ex);
+                    }
+
+                });
+
 
             } catch (ex) {
                 helper.exceptionHandler(ex);
