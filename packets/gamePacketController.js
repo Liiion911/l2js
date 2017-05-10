@@ -119,6 +119,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             if (((dx * dx) + (dy * dy)) > 98010000 || distance > 9900) // 9900*9900 
             {
                 helper.sendGamePacket('ActionFailed', sock);
+                helper.sendGamePacket('MoveToLocation', sock, sock.client.char, { X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z }); // char stay and don't move
             } else {
 
                 // TODO: GEDATA - https://github.com/oonym/l2InterludeServer/blob/4a89de6427a4148308aaedc24f87c5db93b35f40/L2J_Server/java/net/sf/l2j/gameserver/model/L2Character.java

@@ -238,14 +238,14 @@ helper.exceptionHandler = (ex) => {
 
 helper.doAction = (gameServer, sock, player, action) => {
     if (action == -1) { // cancel target
-        if (soc.client.char.TargetId) {
+        if (sock.client.char.TargetId) {
 
-            soc.client.char.TargetId = 0;
-            soc.client.char.Target = null;
+            sock.client.char.TargetId = 0;
+            sock.client.char.Target = null;
 
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-                helper.sendGamePacket('TargetUnselected', player, { ObjectId: soc.client.char.ObjectId, X: soc.client.char.X, Y: soc.client.char.Y, Z: soc.client.char.Z });
+                helper.sendGamePacket('TargetUnselected', player, { ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
 
             });
 
@@ -256,17 +256,17 @@ helper.doAction = (gameServer, sock, player, action) => {
         }
         
     } else {
-        if (soc.client.char.TargetId != player.client.char.ObjectId) {
+        if (sock.client.char.TargetId != player.client.char.ObjectId) {
 
-            soc.client.char.TargetId = player.client.char.ObjectId;
-            soc.client.char.Target = player.client.char;
+            sock.client.char.TargetId = player.client.char.ObjectId;
+            sock.client.char.Target = player.client.char;
 
-            helper.sendGamePacket('MyTargetSelected', sock, soc.client.char.TargetId, 0);
+            helper.sendGamePacket('MyTargetSelected', sock, sock.client.char.TargetId, 0);
             console.log('[GS] Send packet MyTargetSelected');
 
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-                helper.sendGamePacket('TargetSelected', player, { TargetId: soc.client.char.TargetId, ObjectId: soc.client.char.ObjectId, X: soc.client.char.X, Y: soc.client.char.Y, Z: soc.client.char.Z });
+                helper.sendGamePacket('TargetSelected', player, { TargetId: sock.client.char.TargetId, ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
 
             });
 
