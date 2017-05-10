@@ -236,33 +236,81 @@ helper.exceptionHandler = (ex) => {
     console.log(ex);
 };
 
-helper.savePlayer = (sock, cb) => {
-    console.log('[GS] Start save char: ' + sock.client.char.Name);
+helper.onAction = (sock, player, action) => {
+    if (action == -1) { // cancel target
+        if (soc.client.char.TargetId) {
 
-    var query = db.updateCharacter(sock.client.char);
-    helper.poolGameServer.getConnection(function (err_con, connection) {
+            soc.client.char.TargetId = 0;
+            soc.client.char.Target = null;
 
-        if (err_con) {
-            console.log(err_con);
-        } else {
+            _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-            connection.query(query.text, query.values, function (err, result) {
-
-                connection.release();
-
-                if (err) {
-                    console.log(err);
-                } else {
-
-                    cb();
-
-                }
+                helper.sendGamePacket('TargetUnselected', player, { ObjectId: soc.client.char.ObjectId, X: soc.client.char.X, Y: soc.client.char.Y, Z: soc.client.char.Z });
 
             });
 
-        }
+            console.log('[GS] Broadcast packet TargetUnselected');
 
-    });
+        } else {
+            helper.sendGamePacket('ActionFailed', sock);
+        }
+        
+    } else {
+        if (soc.client.char.TargetId != player.client.char.ObjectId) {
+
+            soc.client.char.TargetId = player.client.char.ObjectId;
+            soc.client.char.Target = player.client.char;
+
+            helper.sendGamePacket('MyTargetSelected', sock, soc.client.char.TargetId, 0);
+            console.log('[GS] Send packet MyTargetSelected');
+
+            _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
+
+                helper.sendGamePacket('TargetSelected', player, { TargetId: soc.client.char.TargetId, ObjectId: soc.client.char.ObjectId, X: soc.client.char.X, Y: soc.client.char.Y, Z: soc.client.char.Z });
+
+            });
+
+            console.log('[GS] Broadcast packet TargetSelected');
+
+        } else {
+            helper.sendGamePacket('ActionFailed', sock);
+        }
+    }
+};
+
+helper.savePlayer = (sock, cb) => {
+    if (sock.client.char) {
+        console.log('[GS] Start save char: ' + sock.client.char.Name);
+
+        var query = db.updateCharacter(sock.client.char);
+        helper.poolGameServer.getConnection(function (err_con, connection) {
+
+            if (err_con) {
+                console.log(err_con);
+                cb(2);
+            } else {
+
+                connection.query(query.text, query.values, function (err, result) {
+
+                    connection.release();
+
+                    if (err) {
+                        console.log(err);
+                        cb(3);
+                    } else {
+
+                        cb(0);
+
+                    }
+
+                });
+
+            }
+
+        });
+    } else {
+        cb(1);
+    }
 
 };
 

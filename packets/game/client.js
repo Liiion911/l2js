@@ -7,6 +7,13 @@ var clientGamePackets = {};
 // Game server client packets                   //
 //-----------------------------------------------//
 
+clientGamePackets.RequestTargetCancel = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+    p.readH();
+    p.unselect = p._data[0];
+    return p;
+}
+
 clientGamePackets.CharacterCreate = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readS();
@@ -36,7 +43,22 @@ clientGamePackets.CharacterCreate = function (buffer) {
     p.Face = p._data[12];
 
     return p;
-}
+};
+
+clientGamePackets.RequestAction = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+    p.readD();
+    p.readD();
+    p.readD();
+    p.readD();
+    p.readC();
+    p.ObjectId = p._data[0];
+    p.X = p._data[1];
+    p.Y = p._data[2];
+    p.Z = p._data[3];
+    p.Action = p._data[4];
+    return p;
+};
 
 clientGamePackets.ValidatePosition = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
@@ -49,7 +71,7 @@ clientGamePackets.ValidatePosition = function (buffer) {
     p.Z = p._data[2];
     p.Heading = p._data[3];
     return p;
-}
+};
 
 clientGamePackets.Say2 = function (buffer) {
     var p = new protocol.ClientPacket(buffer);

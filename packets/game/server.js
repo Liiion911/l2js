@@ -43,6 +43,43 @@ serverGamePackets.CharTemplates = function (sock, templates) { // NewCharacterSu
     return p;
 }
 
+serverGamePackets.TargetUnselected = function (sock, targetObj) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x2a);
+
+    p.writeD(targetObj.ObjectId);
+    p.writeD(targetObj.X);
+    p.writeD(targetObj.Y);
+    p.writeD(targetObj.Z);
+
+    return p;
+};
+
+serverGamePackets.TargetSelected = function (sock, targetObj) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x29);
+
+    p.writeD(targetObj.ObjectId);
+    p.writeD(targetObj.TargetId);
+    p.writeD(targetObj.X);
+    p.writeD(targetObj.Y);
+    p.writeD(targetObj.Z);
+
+    return p;
+};
+
+serverGamePackets.MyTargetSelected = function (sock, objectId, color) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xa6);
+
+    p.writeD(objectId);
+    p.writeH(color);
+
+    return p;
+};
 
 serverGamePackets.CharCreateFail = function (sock, error) {
     var p = new protocol.BasePacket();

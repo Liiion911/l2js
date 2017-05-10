@@ -1,4 +1,5 @@
 ﻿var crypto = {}
+var helper = require('./helper.js');
 
 crypto.randomInteger = function (min, max) {
     var rand = min - 0.5 + Math.random() * (max - min + 1)

@@ -265,6 +265,31 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x04:
+
+            console.log('[GS] Recive packet RequestAction / Action');
+
+            var pack = clientGamePackets.RequestAction(new Buffer(packetsArrayParse));
+
+            if (pack.ObjectId != 0) {
+
+                var player = gameServer.World.getInstance(sock).getPlayerByObjectId(pack.ObjectId);
+                if (player) {
+
+                    // TODO: Check if the target is valid, if the player haven't a shop or isn't the requester of a transaction (ex : FriendInvite, JoinAlly, JoinParty...)
+
+                    helper.onAction(sock, player, pack.Action);
+
+                    return; // don't send action failed packet
+                } 
+
+            }
+
+            helper.sendGamePacket('ActionFailed', sock);
+
+            break;
+
+
         case 0x07:
 
             console.log('[GS] Recive packet 0x07 - Ping');
@@ -464,6 +489,21 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x37:
+
+            console.log('[GS] Recive packet RequestTargetCancel');
+
+            var pack = clientGamePackets.RequestTargetCancel(new Buffer(packetsArrayParse));
+
+            if (pack.unselect == 0) { // && casting now - abort cast
+                // TODO: abort cast
+            } else {
+                helper.doAction(sock, null, -1); // cancel target
+            }
+
+
+            break;
+
         case 0x38:
 
             console.log('[GS] Recive packet Say2');
@@ -643,8 +683,16 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x9D:
+
+            console.log('[GS] Recive packet RequesSkillCoolTime');
+
+            // TODO: send skill cool time? Java servers ignore this packet
+
+            break;
+
         case 0xD0:
-            // TODO: check to other D0 pakets !!! ( D0 i'ts not onli manor list)
+            // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
 
             console.log('[GS] Recive packet RequestManorList');
             
@@ -754,7 +802,9 @@ gamePacketController.sendCharList = (sock) => {
 
                             Instance: 0,
 
-                            DangerArea: 0
+                            DangerArea: 0,
+
+                            TargetId: 0
 
                         }, res);
 
