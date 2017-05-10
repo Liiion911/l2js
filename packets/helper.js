@@ -261,12 +261,12 @@ helper.doAction = (gameServer, sock, player, action) => {
             sock.client.char.TargetId = player.client.char.ObjectId;
             sock.client.char.Target = player.client.char;
 
-            helper.sendGamePacket('MyTargetSelected', sock, sock.client.char.TargetId, 0);
+            helper.sendGamePacket('MyTargetSelected', sock, sock, sock.client.char.TargetId, 0);
             console.log('[GS] Send packet MyTargetSelected');
 
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-                helper.sendGamePacket('TargetSelected', player, { TargetId: sock.client.char.TargetId, ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
+                helper.sendGamePacket('TargetSelected', player, player, { TargetId: sock.client.char.TargetId, ObjectId: sock.client.char.ObjectId, X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z });
 
             });
 
