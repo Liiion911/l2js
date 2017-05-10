@@ -191,6 +191,19 @@ serverGamePackets.ActionFailed = function () {
     return p;
 }
 
+serverGamePackets.QuestList = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x80);
+
+    p.writeH(0); // remove on real list
+    p.writeH(0); // remove on real list
+
+    // TODO: quest list
+
+    return p;
+}
+
 serverGamePackets.SkillList = function () {
     var p = new protocol.BasePacket();
 

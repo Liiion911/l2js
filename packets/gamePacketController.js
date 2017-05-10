@@ -259,6 +259,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             });
 
+            // Send UserInfo
+            helper.sendGamePacket('UserInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: UserInfo');
 
             break;
 
@@ -626,6 +629,17 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             //helper.sendGamePacket('UserInfo', sock, sock.client.char);
             //console.log('[GS] Send packet: UserInfo');
+
+            break;
+
+        case 0x63:
+
+            console.log('[GS] Recive packet RequesQuestList');
+
+            // TODO: quest list
+
+            helper.sendGamePacket('QuestList', sock);
+            console.log('[GS] Send packet: QuestList');
 
             break;
 
