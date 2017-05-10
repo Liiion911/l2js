@@ -199,6 +199,19 @@ serverGamePackets.LeaveWorld = function () {
     return p;
 }
 
+serverGamePackets.ExSendManorList = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x1B);
+
+    p.writeD(0);
+
+    // TODO: we have manor ?
+
+    return p;
+}
+
 serverGamePackets.CharInfo = (char) => {
     var p = new protocol.BasePacket();
 
@@ -333,7 +346,7 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.NameColor);
 
     // new c5
-    p.writeC(0); // p.writeC(char.IsRunning); // changes the Speed display on Status Window
+    p.writeD(0); // p.writeC(char.IsRunning); // changes the Speed display on Status Window
 
     p.writeD(char.PledgeClass); // changes the text above CP on Status Window
     p.writeD(0x00); // ??

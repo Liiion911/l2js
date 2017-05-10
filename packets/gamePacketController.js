@@ -618,6 +618,15 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0xD0:
+            // TODO: check to other D0 pakets !!! ( D0 i'ts not onli manor list)
+
+            console.log('[GS] Recive packet RequestManorList');
+            
+            helper.sendGamePacket('ExSendManorList', sock);
+            console.log('[GS] Send packet: ExSendManorList');
+
+            break;
         default:
 
             helper.unknownGamePacket(sock, packetId, packetsArrayParse);
