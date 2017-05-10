@@ -239,7 +239,30 @@ helper.exceptionHandler = (ex) => {
 helper.savePlayer = (sock, cb) => {
     console.log('[GS] Start save char: ' + sock.client.char.Name);
 
-    // TODO: get pool/connection, save character to db
+    var query = db.updateCharacter(sock.client.char);
+    helper.poolGameServer.getConnection(function (err_con, connection) {
+
+        if (err_con) {
+            console.log(err_con);
+        } else {
+
+            connection.query(query.text, query.values, function (err, result) {
+
+                connection.release();
+
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    cb();
+
+                }
+
+            });
+
+        }
+
+    });
 
 };
 
@@ -278,7 +301,7 @@ helper.syncPlayersCount = function (gameServer) {
 
         if (playersCount != gameServer.onlineSyncCount) {
 
-            var query = db.updateServerData(playersCount);
+            var query = db.updateServerData(gameServer);
             helper.poolGameServer.getConnection(function (err_con, connection) {
 
                 if (err_con) {
@@ -357,8 +380,10 @@ helper.movePlayer = (gameServer, sock, posObject) => {
         // broadcast to all in region/instance: MoveToLocation
         _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-            helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
-            console.log('[GS] Send MoveToLocation ' + sock.client.char.Name + ' to ' + player.client.char.Name);
+            if (sock.client.char.Name != player.client.char.Name) {
+                helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
+                console.log('[GS] Send MoveToLocation ' + sock.client.char.Name + ' to ' + player.client.char.Name);
+            }
 
         });
 
@@ -420,7 +445,7 @@ helper.checkDisconnectedPlayersInInstance = (gameServer) => {
 
         _.each(gameServer.World.getInstance().getPlayers(), (player) => {
 
-            if (player.destroyed) gameServer.World.getInstance(player).removePlayer(player);
+            if (player && player.destroyed) gameServer.World.getInstance(player).removePlayer(player);
 
         });
 

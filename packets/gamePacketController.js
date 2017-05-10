@@ -245,12 +245,14 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: Broadcast CharInfo to all in region/instance: CharInfo
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
-                helper.sendGamePacket('CharInfo', player, sock.client.char);
-                console.log('[GS] Send CharInfo about ' + sock.client.char.Name + ' to ' + player.client.char.Name);
+                if (sock.client.char.Name != player.client.char.Name) { // don't self broadcast, cuz we hav UserInfo
+                    helper.sendGamePacket('CharInfo', player, sock.client.char);
+                    console.log('[GS] Send CharInfo about ' + sock.client.char.Name + ' to ' + player.client.char.Name);
 
-                // broadcast info about another player to me
-                helper.sendGamePacket('CharInfo', sock, player.client.char);
-                console.log('[GS] Send CharInfo about ' + player.client.char.Name + ' to ' + sock.client.char.Name);
+                    // broadcast info about another player to me
+                    helper.sendGamePacket('CharInfo', sock, player.client.char);
+                    console.log('[GS] Send CharInfo about ' + player.client.char.Name + ' to ' + sock.client.char.Name);
+                }
 
             });
 
@@ -313,11 +315,20 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             console.log('[GS] Recive packet Logout');
 
-            helper.sendGamePacket('LeaveWorld', sock);
+            try {
+                helper.savePlayer(sock, () => { });
 
-            helper.savePlayer(sock, () => { });
+                gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+                gameServer.World.getInstance(sock).removePlayer(sock);
+                helper.syncPlayersCount(gameServer);
 
-            console.log('[GS] Send packet LeaveWorld');
+                helper.sendGamePacket('LeaveWorld', sock);
+
+                console.log('[GS] Send packet LeaveWorld');
+
+            } catch (ex) {
+                helper.exceptionHandler(ex);
+            }
 
             break;
 
@@ -605,7 +616,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 }
 
 gamePacketController.sendCharList = (sock) => {
-    
+
     helper.poolGameServer.getConnection((err_con, connection) => {
 
         if (err_con) {

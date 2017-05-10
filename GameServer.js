@@ -89,12 +89,20 @@ gameDomain.run(() => {
             console.log('[GS] END: ' + sock.remoteAddress + ' ' + sock.remotePort);
             try {
 
-                // TODO: all check and operations in one - helper.playerDIsconnected();
+                // TODO: all check and operations in one - helper.playerDisconnected();
 
-                gameServer.World.getInstance(sock).removePlayer(sock);
+                helper.savePlayer(sock, () => {
+                    try {
 
-                gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
-                helper.syncPlayersCount(gameServer);
+                        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+                        gameServer.World.getInstance(sock).removePlayer(sock);
+                        helper.syncPlayersCount(gameServer);
+                        sock.destroy();
+
+                    } catch (ex) {
+                        gameServer.exceptionHandler(ex);
+                    }
+                });
 
             } catch (ex) {
                 gameServer.exceptionHandler(ex);
@@ -201,7 +209,7 @@ gameDomain.run(() => {
     helper.checkDisconnectedPlayersInInstance(gameServer);
 
     gameServer.connectToMaster();
-    
+
     // TODO: cascad load and THEN listen gameserver port
 
 

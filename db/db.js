@@ -49,6 +49,84 @@ db.getCharacters = function (login) {
         .toQuery();
 };
 
+db.updateCharacter = function (char) {
+    return sqlModels.characters
+        .insert({
+            AccountName: char.AccountName,
+            ObjectId: char.ObjectId,
+            Name: char.Name,
+            Level: char.Level,
+            MaxHP: char.MaxHP,
+            CurHP: char.MaxHP,
+            MaxCP: char.MaxCP,
+            CurCP: char.MaxCP,
+            MaxMP: char.MaxMP,
+            CurMP: char.MaxMP,
+            Accuracy: char.Accuracy,
+            CriticalHit: char.CriticalHit,
+            EvasionRate: char.EvasionRate,
+            MAtk: char.MAtk,
+            MDef: char.MDef,
+            MSpd: char.MSpd,
+            PAtk: char.PAtk,
+            PDef: char.PDef,
+            PSpd: char.PSpd,
+            RunSpd: char.RunSpd,
+            WalkSpd: char.WalkSpd,
+            STR: char.STR,
+            CON: char.CON,
+            DEX: char.DEX,
+            INT: char.INT,
+            MEN: char.MEN,
+            WIT: char.WIT,
+            Face: char.Face,
+            HairStyle: char.HairStyle,
+            HairColor: char.HairColor,
+            Sex: char.Sex,
+            Heading: char.Heading,
+            X: char.X,
+            Y: char.Y,
+            Z: char.Z,
+            MoveMultiplier: char.MoveMultiplier,
+            AttackSpeedMultiplier: char.AttackSpeedMultiplier,
+            CollisionRadius: char.CollisionRadius,
+            CollisionHeight: char.CollisionHeight,
+            EXP: char.EXP,
+            EXPBeforeDeath: char.EXPBeforeDeath,
+            SP: char.SP,
+            Karma: char.Karma,
+            PVP: char.PVP,
+            PK: char.PK,
+            ClanId: char.ClanId,
+            MaxLoad: char.MaxLoad,
+            RaceId: char.RaceId,
+            ClassId: char.ClassId,
+            BaseClassId: char.BaseClassId,
+            Title: char.Title,
+            RecomHave: char.RecomHave,
+            RecomLeft: char.RecomLeft,
+            AccessLevel: char.AccessLevel,
+            Online: char.Online,
+            OnlineTime: char.OnlineTime,
+            CharId: char.CharId,
+            Newbie: char.Newbie,
+            LastAccess: char.LastAccess,
+            ClanPrivileges: char.ClanPrivileges,
+            InJail: char.InJail,
+            JailTimer: char.JailTimer,
+            PowerGrade: char.PowerGrade,
+            IsNoble: char.IsNoble,
+            PledgeClass: char.PledgeClass,
+            LastRecomDate: char.LastRecomDate,
+            ClanJoinExpiryTime: char.ClanJoinExpiryTime,
+            ClanCreateExpiryTime: char.ClanCreateExpiryTime,
+            DeathPenaltyLevel: char.DeathPenaltyLevel,
+            IsHero: char.IsHero
+        })
+        .where(sqlModels.characters.ObjectId.equals(char.ObjectId))
+        .toQuery();
+};
+
 db.insertCharacter = function (char) {
     return sqlModels.characters
         .insert({
@@ -137,10 +215,11 @@ db.getAuthDataByLogin = function (login) {
         .toQuery();
 };
 
-db.updateServerData = function (online) {
+db.updateServerData = function (gameServer) {
     return sqlModels.server_data
         .update({
-            online: online,
+            online: gameServer.clients.length,
+            nextObjectId: gameServer.nextObjectId
         })
         .toQuery();
 };
