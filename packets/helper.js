@@ -358,6 +358,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
         _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
             helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
+            console.log('[GS] Send MoveToLocation ' + sock.client.char.Name + ' to ' + player.client.char.Name);
 
         });
 

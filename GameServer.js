@@ -182,7 +182,9 @@ gameDomain.run(() => {
                     var players = this.getPlayers();
                     var playersInRadius = [];
                     _.each(players, (player) => {
-                        if (helper.isInsideRadiusPlayers(player.client.char, sock.client.char, radius, checkZ, strictCheck)) playersInRadius.push(player);
+                        if (player.client.char) {
+                            if (helper.isInsideRadiusPlayers(player.client.char, sock.client.char, radius, checkZ, strictCheck)) playersInRadius.push(player);
+                        }
                     });
                     return playersInRadius;
                 }
