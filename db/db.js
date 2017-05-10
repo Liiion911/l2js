@@ -51,7 +51,7 @@ db.getCharacters = function (login) {
 
 db.updateCharacter = function (char) {
     return sqlModels.characters
-        .insert({
+        .update({
             AccountName: char.AccountName,
             ObjectId: char.ObjectId,
             Name: char.Name,
