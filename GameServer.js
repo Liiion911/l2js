@@ -186,6 +186,10 @@ gameDomain.run(() => {
                 getPlayers: function () {
                     return this.players;
                 },
+                getPlayerByObjectId: function (objectId) {
+                    var players = this.getPlayers();
+                    return _.find(players, (player) => { return player.client.char.ObjectId == objectId });
+                },
                 getPlayersInRadius: function (sock, radius, checkZ, strictCheck) {
                     var players = this.getPlayers();
                     var playersInRadius = [];
