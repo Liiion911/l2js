@@ -511,6 +511,17 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x3F:
+
+            console.log('[GS] Recive packet RequestSkillList');
+
+            // TODO: skill list
+
+            helper.sendGamePacket('SkillList', sock);
+            console.log('[GS] Send packet: SkillList');
+
+            break;
+
         case 0x46:
 
             console.log('[GS] Recive packet RequestRestart');

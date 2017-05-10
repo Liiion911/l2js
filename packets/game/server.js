@@ -191,6 +191,17 @@ serverGamePackets.ActionFailed = function () {
     return p;
 }
 
+serverGamePackets.SkillList = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x58);
+    p.writeD(0);
+
+    // TODO: skill list
+
+    return p;
+}
+
 serverGamePackets.LeaveWorld = function () {
     var p = new protocol.BasePacket();
 
