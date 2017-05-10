@@ -278,7 +278,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                     // TODO: Check if the target is valid, if the player haven't a shop or isn't the requester of a transaction (ex : FriendInvite, JoinAlly, JoinParty...)
 
-                    helper.onAction(sock, player, pack.Action);
+                    helper.doAction(gameServer, sock, player, pack.Action);
 
                     return; // don't send action failed packet
                 } 
@@ -498,7 +498,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             if (pack.unselect == 0) { // && casting now - abort cast
                 // TODO: abort cast
             } else {
-                helper.doAction(sock, null, -1); // cancel target
+                helper.doAction(gameServer, sock, null, -1); // cancel target
             }
 
 

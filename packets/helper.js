@@ -236,7 +236,7 @@ helper.exceptionHandler = (ex) => {
     console.log(ex);
 };
 
-helper.onAction = (sock, player, action) => {
+helper.doAction = (gameServer, sock, player, action) => {
     if (action == -1) { // cancel target
         if (soc.client.char.TargetId) {
 
