@@ -302,7 +302,7 @@ serverGamePackets.CharInfo = (char) => {
 
     p.writeD(char.AbnormalEffect);  // ??
 
-    p.writeH(char.RecomLeft); // c2 recommendations remaining
+    p.writeC(char.RecomLeft); // c2 recommendations remaining
     p.writeH(char.RecomHave); // c2 recommendations received
 
     p.writeD(char.ClassId);

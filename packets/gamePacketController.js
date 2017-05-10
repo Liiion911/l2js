@@ -248,6 +248,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 helper.sendGamePacket('CharInfo', player, sock.client.char);
                 console.log('[GS] Send CharInfo about ' + sock.client.char.Name + ' to ' + player.client.char.Name);
 
+                // broadcast info about another player to me
+                helper.sendGamePacket('CharInfo', sock, player.client.char);
+                console.log('[GS] Send CharInfo about ' + player.client.char.Name + ' to ' + sock.client.char.Name);
+
             });
 
 
