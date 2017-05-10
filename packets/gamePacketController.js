@@ -242,7 +242,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('UserInfo', sock, sock.client.char);
             console.log('[GS] Send packet: UserInfo');
 
-            // TODO: Broadcast CharInfo to allin region/instance: CharInfo
+            // TODO: Broadcast CharInfo to all in region/instance: CharInfo
             _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
                 helper.sendGamePacket('CharInfo', player, sock.client.char);

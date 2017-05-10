@@ -284,11 +284,11 @@ serverGamePackets.CharInfo = (char) => {
 
     p.writeD(0); // builder level
 
-    p.writeC(char.IsSiting);
+    p.writeC(!char.IsSiting); // standing - 1; sitting - 0 !!!
     p.writeC(char.IsRunning);
     p.writeC(char.IsInCombat);
     p.writeC(char.IsAlikeDead);
-    p.writeC(char.Visible);
+    p.writeC(!char.Visible); // invis - 1, visible - 0 !!
 
     p.writeC(char.MountType);
     p.writeC(char.PrivateStoreType);
@@ -333,7 +333,7 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.NameColor);
 
     // new c5
-    p.writeC(char.IsRunning); // changes the Speed display on Status Window
+    p.writeC(0); // p.writeC(char.IsRunning); // changes the Speed display on Status Window
 
     p.writeD(char.PledgeClass); // changes the text above CP on Status Window
     p.writeD(0x00); // ??

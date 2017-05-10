@@ -354,7 +354,7 @@ helper.movePlayer = (gameServer, sock, posObject) => {
         // TODO: broadcastToPartyMembers
 
 
-        // broadcast to all in region/instance:
+        // broadcast to all in region/instance: MoveToLocation
         _.each(gameServer.World.getInstance(sock).getPlayersInRadius(sock, 3500, true, false), (player) => {
 
             helper.sendGamePacket('MoveToLocation', player, sock.client.char, sock.client.char.moveObject);
