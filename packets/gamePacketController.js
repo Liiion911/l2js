@@ -347,29 +347,31 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             console.log('[GS] Recive packet Logout');
 
-            try {
+            console.log(packetsArrayParse);
 
-                helper.savePlayer(sock, () => {
+            //try {
 
-                    try {
-                        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
-                        gameServer.World.getInstance(sock).removePlayer(sock);
-                        helper.syncPlayersCount(gameServer);
+            //    helper.savePlayer(sock, () => {
 
-                        helper.sendGamePacket('LeaveWorld', sock);
+            //        try {
+            //            gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+            //            gameServer.World.getInstance(sock).removePlayer(sock);
+            //            helper.syncPlayersCount(gameServer);
 
-                        console.log('[GS] Send packet LeaveWorld');
+            //            helper.sendGamePacket('LeaveWorld', sock);
 
-                    } catch (ex) {
-                        helper.exceptionHandler(ex);
-                    }
+            //            console.log('[GS] Send packet LeaveWorld');
 
-                });
+            //        } catch (ex) {
+            //            helper.exceptionHandler(ex);
+            //        }
+
+            //    });
 
 
-            } catch (ex) {
-                helper.exceptionHandler(ex);
-            }
+            //} catch (ex) {
+            //    helper.exceptionHandler(ex);
+            //}
 
             break;
 

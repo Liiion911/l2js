@@ -264,7 +264,7 @@ serverGamePackets.ExSendManorList = function () {
     var p = new protocol.BasePacket();
 
     p.writeC(0xFE);
-    p.writeH(0x1B);
+    p.writeH(0x22);
 
     p.writeD(0);
 
