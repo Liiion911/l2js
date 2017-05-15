@@ -331,7 +331,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                             } else {
 
-                                gamePacketController.sendCharList(sock);
+                                gamePacketController.sendCharList(sock, gameServer);
 
                             }
 
@@ -444,7 +444,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                     helper.sendGamePacket('CharCreateSuccess', sock);
                     console.log('[GS] Send packet: CharCreateSuccess');
 
-                    gamePacketController.sendCharList(sock);
+                    gamePacketController.sendCharList(sock, gameServer);
 
                 });
 
@@ -596,7 +596,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('RestartResponse', sock, 1, "OK");
             console.log('[GS] Send packet: RestartResponse');
 
-            gamePacketController.sendCharList(sock);
+            gamePacketController.sendCharList(sock, gameServer);
 
 
 
@@ -709,7 +709,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
 }
 
-gamePacketController.sendCharList = (sock) => {
+gamePacketController.sendCharList = (sock, gameServer) => {
 
     helper.poolGameServer.getConnection((err_con, connection) => {
 
