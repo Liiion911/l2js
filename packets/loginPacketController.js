@@ -212,7 +212,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                                         PlayerCount: 10,
                                         MaxPlayerCount: 100,
                                         IsOnline: 1,
-                                        ShowClock: 64,
+                                        ShowClock: 1,
                                         ServerBrackets: 0,
                                     };
 

@@ -137,6 +137,20 @@ serverLoginPackets.ServerList = function(servers) {
 
     });
 
+    var paddedBytes = 1;
+    paddedBytes += (3 + (4 * (1))); // account entry().length
+
+    p.writeH(paddedBytes);
+    p.writeC(servers.length);
+
+    _.each(servers, (server) => {
+
+        p.writeC(server.Id);
+        p.writeC(1);
+        p.writeC(0);
+
+    });
+
     return p;
 }
 

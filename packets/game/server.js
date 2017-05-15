@@ -821,11 +821,17 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
 serverGamePackets.CryptInit = function (newXorKey) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x00);
+    p.writeC(0x2e);
     p.writeC(0x01);
     p.writeB(new Buffer(newXorKey));
+
+    // L2 Classic block
     p.writeD(0x01);
-    p.writeD(0x01);
+    p.writeD(0x00); 	// Server ID
+    p.writeC(0x00);
+    p.writeD(0x00);
+    p.writeC(0x01);
+    p.writeC(0x01);
 
     return p;
 }
