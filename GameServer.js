@@ -99,7 +99,7 @@ gameDomain.run(() => {
                         gameServer.World.getInstance(sock).removePlayer(sock);
                         helper.syncPlayersCount(gameServer);
                         sock.destroy();
-                        sock.removePLayerTimerId = setTImeout(() => {
+                        sock.removePLayerTimerId = setTimeout(() => {
 
                         }, gameserver.settings.removeDisconnectedPlayerTimeout)
 
