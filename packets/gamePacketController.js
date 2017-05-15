@@ -80,7 +80,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x01:
+        case 0x0f:
 
             console.log('[GS] Recive packet MoveBackwardToLocation');
 
@@ -159,7 +159,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x03:
+        case 0x11:
 
             console.log('[GS] Recive packet EnterWorld');
 
@@ -266,7 +266,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x04:
+        case 0x1f:
 
             console.log('[GS] Recive packet RequestAction / Action');
 
@@ -291,13 +291,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             break;
 
 
-        case 0x07:
+        case 0xb1:
 
-            console.log('[GS] Recive packet 0x07 - Ping');
+            console.log('[GS] Recive packet 0xb1 - Ping');
 
             break;
 
-        case 0x08:
+        case 0x2b:
 
             if (sock.client.status != 1) {
                 console.log('[GS] Wrong status 1');
@@ -343,7 +343,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x09:
+        case 0x00:
 
             console.log('[GS] Recive packet Logout');
 
@@ -373,7 +373,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x0b:
+        case 0x0c:
 
             console.log('[GS] Recive packet CharacterCreate');
 
@@ -452,7 +452,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x0d:
+        case 0x12:
 
             console.log('[GS] Recive packet CharacterSelected');
 
@@ -476,7 +476,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x0e:
+        case 0x13:
 
             console.log('[GS] Recive packet NewCharacter');
 
@@ -490,7 +490,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x37:
+        case 0x48:
 
             console.log('[GS] Recive packet RequestTargetCancel');
 
@@ -504,7 +504,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x38:
+        case 0x49:
 
             console.log('[GS] Recive packet Say2');
 
@@ -554,7 +554,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x3F:
+        case 0x50:
 
             console.log('[GS] Recive packet RequestSkillList');
 
@@ -565,7 +565,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x46:
+        case 0x57:
 
             console.log('[GS] Recive packet RequestRestart');
 
@@ -602,7 +602,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x48:
+        case 0x59:
 
             console.log('[GS] Recive packet ValidatePosition');
 
@@ -672,9 +672,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x63:
+        case 0x62:
 
-            console.log('[GS] Recive packet RequesQuestList');
+            console.log('[GS] Recive packet RequestQuestList');
 
             // TODO: quest list
 
@@ -683,9 +683,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
-        case 0x9D:
+        case 0xa6:
 
-            console.log('[GS] Recive packet RequesSkillCoolTime');
+            console.log('[GS] Recive packet RequestSkillCoolTime');
 
             // TODO: send skill cool time? Java servers ignore this packet
 
