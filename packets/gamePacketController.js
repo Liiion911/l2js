@@ -23,9 +23,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
     packetsArrayParse = packetsArray;
 
-    console.log(packetId);
-
-    if (sock.client.status == 0 && packetId == 0x00) {
+    if (sock.client.status == 0 && packetId == 0x0e) {
 
     } else {
 
@@ -45,7 +43,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
     switch (packetId) {
 
-        case 0x00:
+        case 0x0e:
 
             if (sock.client.status != 0) {
                 console.log('[GS] Wrong status 0');
@@ -54,12 +52,12 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             var pack = clientGamePackets.ProtocolVersion(new Buffer(packetsArrayParse));
 
-            if (pack.protocolVersion === -2) {
+            if (pack.protocolVersion === -2 || pack.protocolVersion === -3 || pack.protocolVersion >= 65533) {
 
                 console.log('[GS] Recive Ping');
                 sock.destroy();
 
-            } else if (pack.protocolVersion >= 730 && pack.protocolVersion <= 746) {
+            } else if (pack.protocolVersion >= 19 && pack.protocolVersion <= 606) {
 
                 console.log('[GS] Recive packet ProtocolVersion: ' + pack.protocolVersion);
 
