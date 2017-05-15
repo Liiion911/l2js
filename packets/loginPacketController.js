@@ -208,12 +208,12 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
                                     var server = {
                                         AgeLimit: 0,
-                                        IsPvpServer: 0,
+                                        IsPvpServer: 1,
                                         PlayerCount: 10,
                                         MaxPlayerCount: 100,
                                         IsOnline: 1,
                                         ShowClock: 1,
-                                        ServerBrackets: 0,
+                                        ServerBrackets: 1,
                                     };
 
                                     server.Id = res.server_id

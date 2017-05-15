@@ -282,7 +282,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                     helper.doAction(gameServer, sock, player, pack.Action);
 
                     return; // don't send action failed packet
-                } 
+                }
 
             }
 
@@ -694,12 +694,33 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             break;
 
         case 0xD0:
-            // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
 
-            console.log('[GS] Recive packet RequestManorList');
-            
-            helper.sendGamePacket('ExSendManorList', sock);
-            console.log('[GS] Send packet: ExSendManorList');
+
+            if (sock.client.status == 2) { // AUTHED
+
+                var id2 = -1;
+                if (packetsArrayParse.length >= 1) {
+
+                    id2 = packetsArrayParse[0] & 0xffff;
+
+                    // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
+
+                    console.log('[GS] id2: ' + id2);
+
+                }
+                else {
+                    console.log('[GS] Client: sent a 0xd0 in lobby without the second opcode.');
+                }
+
+            } else {
+
+                // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
+
+                console.log('[GS] Recive packet RequestManorList');
+
+                helper.sendGamePacket('ExSendManorList', sock);
+                console.log('[GS] Send packet: ExSendManorList');
+            }
 
             break;
         default:
