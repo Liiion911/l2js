@@ -742,11 +742,16 @@ serverGamePackets.CharSelected = function (session2_1, char) {
     return p;
 }
 
-serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
+serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, chars) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x13);
+    p.writeC(0x09);
     p.writeD(chars.length);
+    p.writeD(gameServer.settings.maxCharacters);
+    p.writeC(0); // _unk
+    p.writeC(0); // PLAY_FREE
+    p.writeD(0); // isKorean
+    p.writeC(0); // gift
 
     _.each(chars, (char) => {
 
@@ -763,17 +768,19 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
         p.writeD(char.RaceId);
         p.writeD(char.BaseClassId); // it's BaseClassId
 
-        p.writeD(0x01); // active - ??
+        p.writeD(gameServer.server_id); // serverId    // active - ??
 
         p.writeD(char.X);
         p.writeD(char.Y);
         p.writeD(char.Z);
 
         p.writeF(char.CurHP);
-        p.writeF(char.CurHP);
+        p.writeF(char.CurMP);
 
         p.writeD(char.SP);
         p.writeQ(char.EXP);
+
+        p.writeF(0); // TODO: percent EXPT to next level
         p.writeD(char.Level); // TODO: check for current SP >= nextLevelSP = increaseLevel()
 
         p.writeD(char.Karma);
@@ -785,13 +792,24 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
             p.writeD(0x00);
         }
 
-        for (var i = 0; i < 17; i++) { // paperdollOrder
+        p.writeD(0x00);
+        p.writeD(0x00);
+
+
+        for (var i = 0; i < 9; i++) { // paperdollOrder
             p.writeD(0);
         }
 
-        for (var i = 0; i < 17; i++) { //paperdollOrder 2
+        for (var i = 0; i < 9; i++) { //paperdollOrder 2
             p.writeD(0);
         }
+
+        p.writeH(0);
+        p.writeH(0);
+        p.writeH(0);
+        p.writeH(0);
+        p.writeH(0);
+
 
         p.writeD(char.HairStyle);
         p.writeD(char.HairColor);
@@ -808,10 +826,24 @@ serverGamePackets.CharSelectInfo = function (login, session2_1, chars) {
 
         p.writeC(Math.min(char.EnchantEffect, 127));
 
-        p.writeD(char.AugmentationId);
+        p.writeH(char.AugmentationId); // LEFT_HANF
+        p.writeH(char.AugmentationId); // RIGHT_HAND
 
-        p.writeH(0);
-        p.writeH(0);
+        p.writeD(0); // getTransform: weaponId == 8190 => 301; weaponId == 8689 => 302;
+        p.writeD(0); // _petObjectId
+        p.writeD(0); // _petLvl
+        p.writeD(0); // _petFood
+        p.writeD(9); // _petFoodLvl
+        p.writeF(0); // _petHP
+        p.writeF(0); // _petMP
+
+        p.writeD(1);
+        p.writeD(200); // Vitality percent
+        p.writeD(5); // Vitality items count
+        p.writeD(1);
+        p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
+        p.writeC(char.IsHero);
+        p.writeC(1); //_unk2
 
     });
 

@@ -467,7 +467,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 sock.client.status = 3;
                 sock.client.char = sock.client.chars[pack.charIndex];
-                helper.sendGamePacket('CharSelected', sock, sock.client.data.session2_1, sock.client.char);
+                helper.sendGamePacket('CharSelected', sock, gameServer, sock.client.data.session2_1, sock.client.char);
                 console.log('[GS] Send packet: CharSelected');
 
             } else {
@@ -818,7 +818,7 @@ gamePacketController.sendCharList = (sock) => {
                     console.log('[GS] Account characters: ' + sock.client.chars.length);
 
                     sock.client.status = 2;
-                    helper.sendGamePacket('CharSelectInfo', sock, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
+                    helper.sendGamePacket('CharSelectInfo', sock, gameServer, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
 
                     console.log('[GS] Send packet: CharSelectInfo');
 
