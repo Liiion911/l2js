@@ -211,7 +211,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                                         IsPvpServer: 0,
                                         PlayerCount: 99,
                                         MaxPlayerCount: 100,
-                                        IsOnline: 1,
+                                        IsOnline: 64,
                                         ShowClock: 0,
                                         ServerBrackets: 0,
                                     };

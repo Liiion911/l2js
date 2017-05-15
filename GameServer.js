@@ -41,6 +41,7 @@ gameDomain.run(() => {
         loginServerMasterPort: 5555,
         settings: {
             maxCharacters: 5,
+            removeDisconnectedPlayerTimeout: 10, // seconds
         }
     };
 
@@ -98,6 +99,9 @@ gameDomain.run(() => {
                         gameServer.World.getInstance(sock).removePlayer(sock);
                         helper.syncPlayersCount(gameServer);
                         sock.destroy();
+                        sock.removePLayerTimerId = setTImeout(() => {
+
+                        }, gameserver.settings.removeDisconnectedPlayerTimeout)
 
                     } catch (ex) {
                         gameServer.exceptionHandler(ex);

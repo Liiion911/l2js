@@ -502,7 +502,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             helper.doAction(gameServer, sock, null, -1); // cancel target
 
-
             break;
 
         case 0x38:
