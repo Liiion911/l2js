@@ -23,6 +23,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
     packetsArrayParse = packetsArray;
 
+    console.log(packetId);
+
     if (sock.client.status == 0 && packetId == 0x00) {
 
     } else {
