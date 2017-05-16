@@ -148,10 +148,10 @@ loginDomain.run(() => {
     loginServer.master.on('connection', (sock) => {
 
         sock.setKeepAlive(true, 5000); //
-        sock.setTimeout(30000, () => {
-            console.log('[AS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
-            sock.destroy();
-        });
+        //sock.setTimeout(30000, () => {
+        //    console.log('[AS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
+        //    sock.destroy();
+        //});
 
         console.log('[AS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 

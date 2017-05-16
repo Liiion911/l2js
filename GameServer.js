@@ -49,7 +49,7 @@ gameDomain.run(() => {
 
     helper.poolGameServer = mysql.createPool({
         connectionLimit: 100,
-        host: 'ikonto.ddns.net',
+        host: '192.168.0.100',
         port: 3306,
         user: 'root',
         password: 'iPRyRKu2',
@@ -107,7 +107,7 @@ gameDomain.run(() => {
                         sock.destroy();
                         sock.removePLayerTimerId = setTimeout(() => {
 
-                        }, gameserver.settings.removeDisconnectedPlayerTimeout)
+                        }, gameServer.settings.removeDisconnectedPlayerTimeout)
 
                     } catch (ex) {
                         gameServer.exceptionHandler(ex);
