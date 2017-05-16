@@ -273,6 +273,21 @@ serverGamePackets.ExSendManorList = function () {
     return p;
 }
 
+serverGamePackets.ExLoginVitalityEffectInfo = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x119);
+
+    p.writeD(100); // TODO: charInfo.getVitalityPoints() == 0 ? 0 : Config.ALT_VITALITY_RATE * 100
+    // bonus
+    p.writeD(5); // TODO: Remaining items count
+    p.writeD(0x00); // TODO: Max vitality items
+    p.writeD(0x00); // TODO: Max vitality items allowed
+
+    return p;
+}
+
 serverGamePackets.CharInfo = (char) => {
     var p = new protocol.BasePacket();
 

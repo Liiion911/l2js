@@ -42,7 +42,7 @@ loginDomain.run(() => {
 
     helper.poolLoginServer = mysql.createPool({
         connectionLimit: 100,
-        host: 'localhost',
+        host: 'ikonto.ddns.net',
         port: 3306,
         user: 'root',
         password: 'iPRyRKu2',
@@ -51,7 +51,7 @@ loginDomain.run(() => {
 
     helper.poolLoginGameServer = mysql.createPool({
         connectionLimit: 10,
-        host: 'localhost',
+        host: 'ikonto.ddns.net',
         port: 3306,
         user: 'root',
         password: 'iPRyRKu2',
@@ -63,6 +63,12 @@ loginDomain.run(() => {
     loginServer.server.listen(2106);
     console.log('[LS] LoginServer listening on ' + loginServer.server.address().address + ':' + loginServer.server.address().port);
     loginServer.server.on('connection', (sock) => {
+
+        sock.setKeepAlive(true, 5000); //
+        sock.setTimeout(30000, () => {
+            console.log('[LS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            sock.destroy();
+        });
 
         loginServer.sessionId++;
 
@@ -140,6 +146,12 @@ loginDomain.run(() => {
     loginServer.master.listen(loginServer.loginServerMasterPort);
     console.log('[AS] LoginServer Master listening on ' + loginServer.master.address().address + ':' + loginServer.master.address().port);
     loginServer.master.on('connection', (sock) => {
+
+        sock.setKeepAlive(true, 5000); //
+        sock.setTimeout(30000, () => {
+            console.log('[AS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            sock.destroy();
+        });
 
         console.log('[AS] CONNECTED GAME SERVER TO MASTER: ' + sock.remoteAddress + ':' + sock.remotePort);
 

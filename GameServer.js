@@ -37,7 +37,7 @@ gameDomain.run(() => {
         server_id: 1,
         clients: [],
         onlineSyncCount: -1,
-        loginServerMasterIP: '127.0.0.1',
+        loginServerMasterIP: '192.168.0.100',
         loginServerMasterPort: 5555,
         settings: {
             maxCharacters: 5,
@@ -49,7 +49,7 @@ gameDomain.run(() => {
 
     helper.poolGameServer = mysql.createPool({
         connectionLimit: 100,
-        host: 'localhost',
+        host: 'ikonto.ddns.net',
         port: 3306,
         user: 'root',
         password: 'iPRyRKu2',
@@ -60,6 +60,12 @@ gameDomain.run(() => {
     gameServer.server.listen(7777);
     console.log('[GS] GameServer listening on ' + gameServer.server.address().address + ':' + gameServer.server.address().port);
     gameServer.server.on('connection', (sock) => {
+
+        sock.setKeepAlive(true, 5000); //
+        sock.setTimeout(30000, () => {
+            console.log('[GS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            sock.destroy();
+        });
 
         sock.client = {
             status: 0

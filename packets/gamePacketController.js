@@ -333,6 +333,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                                 gamePacketController.sendCharList(sock, gameServer);
 
+                                helper.sendGamePacket('ExLoginVitalityEffectInfo', sock);
+                                console.log('[GS] Send ExLoginVitalityEffectInfo');
+
                             }
 
                         }
@@ -841,6 +844,7 @@ gamePacketController.sendCharList = (sock, gameServer) => {
                     console.log('[GS] Account characters: ' + sock.client.chars.length);
 
                     sock.client.status = 2;
+
                     helper.sendGamePacket('CharSelectInfo', sock, gameServer, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
 
                     console.log('[GS] Send packet: CharSelectInfo');
