@@ -333,8 +333,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                                 gamePacketController.sendCharList(sock, gameServer);
 
-                                helper.sendGamePacket('ExLoginVitalityEffectInfo', sock);
-                                console.log('[GS] Send ExLoginVitalityEffectInfo');
 
                             }
 
@@ -350,31 +348,29 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             console.log('[GS] Recive packet Logout');
 
-            console.log(packetsArrayParse);
+            try {
 
-            //try {
+                helper.savePlayer(sock, () => {
 
-            //    helper.savePlayer(sock, () => {
+                    try {
+                        gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
+                        gameServer.World.getInstance(sock).removePlayer(sock);
+                        helper.syncPlayersCount(gameServer);
 
-            //        try {
-            //            gameServer.clients.splice(gameServer.clients.indexOf(sock), 1);
-            //            gameServer.World.getInstance(sock).removePlayer(sock);
-            //            helper.syncPlayersCount(gameServer);
+                        helper.sendGamePacket('LeaveWorld', sock);
 
-            //            helper.sendGamePacket('LeaveWorld', sock);
+                        console.log('[GS] Send packet LeaveWorld');
 
-            //            console.log('[GS] Send packet LeaveWorld');
+                    } catch (ex) {
+                        helper.exceptionHandler(ex);
+                    }
 
-            //        } catch (ex) {
-            //            helper.exceptionHandler(ex);
-            //        }
-
-            //    });
+                });
 
 
-            //} catch (ex) {
-            //    helper.exceptionHandler(ex);
-            //}
+            } catch (ex) {
+                helper.exceptionHandler(ex);
+            }
 
             break;
 
@@ -698,7 +694,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
         case 0xD0:
 
-
             if (sock.client.status == 2) { // AUTHED
 
                 var id2 = -1;
@@ -710,8 +705,15 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                     console.log('[GS] id2: ' + id2);
 
-                }
-                else {
+                    switch (id2) {
+                        case 0x04:
+
+                            console.log('[GS] Recive packet ExSendClientINI');
+
+                            break;
+                    }
+
+                } else {
                     console.log('[GS] Client: sent a 0xd0 in lobby without the second opcode.');
                 }
 
@@ -848,6 +850,9 @@ gamePacketController.sendCharList = (sock, gameServer) => {
                     helper.sendGamePacket('CharSelectInfo', sock, gameServer, sock.client.data.login, sock.client.data.session2_1, sock.client.chars);
 
                     console.log('[GS] Send packet: CharSelectInfo');
+
+                    helper.sendGamePacket('ExLoginVitalityEffectInfo', sock);
+                    console.log('[GS] Send ExLoginVitalityEffectInfo');
 
                 }
 
