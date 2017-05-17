@@ -331,6 +331,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                             } else {
 
+								helper.sendGamePacket('LoginResultPacket', sock);
+							
                                 gamePacketController.sendCharList(sock, gameServer);
 
 

@@ -867,6 +867,16 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
     return p;
 }
 
+serverGamePackets.LoginResultPacket = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x0a);
+    p.writeD(0xFFFFFF);
+    p.writeD(0);
+
+    return p;
+}
+
 serverGamePackets.CryptInit = function (newXorKey) {
     var p = new protocol.BasePacket();
 
