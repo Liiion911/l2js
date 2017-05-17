@@ -132,7 +132,7 @@ serverLoginPackets.ServerList = function(servers) {
         p.writeH(server.PlayerCount);
         p.writeH(server.MaxPlayerCount);
         p.writeC(server.IsOnline);
-        p.writeD(server.ShowClock);
+        p.writeD(1 << 10); // server type / Classic hack ?
         p.writeC(server.ServerBrackets);
 
     });

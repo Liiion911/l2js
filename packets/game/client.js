@@ -14,6 +14,25 @@ clientGamePackets.RequestTargetCancel = function (buffer) {
     return p;
 }
 
+clientGamePackets.ExSendClientINI = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+    p.readC(); // 0x04
+    p.readC(); // 0x01
+    p.readC(); // partNumber
+    p.readH(); // size
+
+    p.packetId2 = p._data[0];
+    p.packetId3 = p._data[1];
+    p.partNumber = p._data[2];
+    p.size = p._data[3];
+
+    p.readB(p.size);
+    p.content = p._data[4];
+
+    return p;
+}
+
+
 clientGamePackets.CharacterCreate = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readS();

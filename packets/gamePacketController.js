@@ -708,6 +708,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                     switch (id2) {
                         case 0x04:
 
+                            var pack = clientGamePackets.ExSendClientINI(new Buffer(packetsArrayParse));
+
                             console.log('[GS] Recive packet ExSendClientINI');
 
                             break;
