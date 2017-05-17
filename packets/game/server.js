@@ -792,7 +792,7 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
         p.writeF(char.CurHP);
         p.writeF(char.CurMP);
 
-        p.writeD(char.SP);
+        p.writeQ(char.SP);
         p.writeQ(char.EXP);
 
         p.writeF(0); // TODO: percent EXPT to next level
@@ -800,7 +800,6 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
 
         p.writeD(char.Karma);
         p.writeD(char.PK);
-
         p.writeD(char.PVP);
 
         for (var i = 0; i < 7; i++) { // trash
@@ -811,11 +810,11 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
         p.writeD(0x00);
 
 
-        for (var i = 0; i < 9; i++) { // paperdollOrder
+        for (var i = 0; i < 21; i++) { // paperdollOrder
             p.writeD(0);
         }
 
-        for (var i = 0; i < 9; i++) { //paperdollOrder 2
+        for (var i = 0; i < 21; i++) { //paperdollOrder 2
             p.writeD(0);
         }
 
@@ -841,10 +840,11 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
 
         p.writeC(Math.min(char.EnchantEffect, 127));
 
-        p.writeH(char.AugmentationId); // LEFT_HANF
-        p.writeH(char.AugmentationId); // RIGHT_HAND
+        p.writeD(char.AugmentationId); // LEFT_HANF
+        p.writeD(char.AugmentationId); // RIGHT_HAND
 
         p.writeD(0); // getTransform: weaponId == 8190 => 301; weaponId == 8689 => 302;
+
         p.writeD(0); // _petObjectId
         p.writeD(0); // _petLvl
         p.writeD(0); // _petFood
@@ -852,13 +852,15 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
         p.writeF(0); // _petHP
         p.writeF(0); // _petMP
 
-        p.writeD(1);
+        p.writeD(1); // Vitality Level
         p.writeD(200); // Vitality percent
         p.writeD(5); // Vitality items count
-        p.writeD(1);
+
+        p.writeD(1); // Available - active = not banned / suspended
+
         p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
         p.writeC(char.IsHero);
-        p.writeC(1); //_unk2
+        p.writeC(1); //_unk2 - Show Hair Accessory
 
     });
 

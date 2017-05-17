@@ -91,8 +91,11 @@ serverLoginPackets.LoginOk = function(session1_1, session1_2) {
     p.writeD(session1_2);
     p.writeD(0);
     p.writeD(0);
-    p.writeD(0x000003ea);
-    p.writeB(new Buffer([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+    p.writeD(1002);
+    p.writeH(60872);
+    p.writeC(35);
+    p.writeC(6);
+    p.writeB(new Buffer(28));
     return p;
 }
 
@@ -113,6 +116,7 @@ serverLoginPackets.PlayOk = function(session2_1, session2_2) {
     p.writeC(0x07);
     p.writeD(session2_1);
     p.writeD(session2_2);
+    p.writeC(0x0E); // TODO: fix it!
     return p;
 }
 
