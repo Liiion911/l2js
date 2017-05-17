@@ -871,7 +871,7 @@ serverGamePackets.LoginResultPacket = function () {
     var p = new protocol.BasePacket();
 
     p.writeC(0x0a);
-    p.writeD(0xFFFFFF);
+    p.writeD(0xFFFFFFFF);
     p.writeD(0);
 
     return p;
