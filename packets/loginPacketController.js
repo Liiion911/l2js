@@ -208,7 +208,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
                                     var server = {
                                         AgeLimit: 0,
-                                        IsPvpServer: 1,
+                                        IsPvpServer: 0,
                                         PlayerCount: 10,
                                         MaxPlayerCount: 100,
                                         IsOnline: 1,
