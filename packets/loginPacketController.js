@@ -213,7 +213,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                                         MaxPlayerCount: 100,
                                         IsOnline: 1,
                                         ShowClock: 1,
-                                        ServerBrackets: 1,
+                                        ServerBrackets: 0,
                                     };
 
                                     server.Id = res.server_id
