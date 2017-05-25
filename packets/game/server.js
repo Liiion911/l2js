@@ -671,7 +671,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(char.Sex);
     p.writeD(char.BaseClassId); // 
     p.writeD(char.ClassId); //     ^
-    p.writeС(char.Level);
+    p.writeC(char.Level);
 
     p.writeH(18);
     p.writeD(char.STR);
