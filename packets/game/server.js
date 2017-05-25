@@ -364,15 +364,15 @@ serverGamePackets.ExPeriodicHenna = function () {
 serverGamePackets.ExAcquireAPSkillList = function () {
     var p = new protocol.BasePacket();
 
-    writeC(0xFE);
-    writeH(0x15F);
-    writeD(1);
-    writeQ(10000000);
-    writeQ(250000000);
-    writeD(16);
-    writeD(0);
-    writeD(0);
-    writeD(0);
+    p.writeC(0xFE);
+    p.writeH(0x15F);
+    p.writeD(1);
+    p.writeQ(10000000);
+    p.writeQ(250000000);
+    p.writeD(16);
+    p.writeD(0);
+    p.writeD(0);
+    p.writeD(0);
 
     return p;
 }
@@ -858,7 +858,7 @@ serverGamePackets.ExVitalityEffectInfo = function (char) {
     var p = new protocol.BasePacket();
 
     p.writeC(0xfe);
-    p.writeEx(0x118);
+    p.writeH(0x118);
     p.writeD(char.Vitality);
     p.writeD(100); // TODO: vitality bonus - Config.ALT_VITALITY_RATE * 100
     p.writeH(5); // TODO: Remaining items count  // Vitality items allowed???
