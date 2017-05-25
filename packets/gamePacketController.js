@@ -635,6 +635,19 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             break;
 
+        case 0x38:
+            console.log('[GS] Recive packet RequestMagicSkillList');
+
+            // TODO: skill list
+
+            helper.sendGamePacket('SkillList', sock);
+            console.log('[GS] Send packet: SkillList');
+
+            helper.sendGamePacket('SkillCoolTime', sock);
+            console.log('[GS] Send packet: SkillCoolTime');
+
+            break;
+
         case 0x50:
 
             console.log('[GS] Recive packet RequestSkillList');
@@ -643,6 +656,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             helper.sendGamePacket('SkillList', sock);
             console.log('[GS] Send packet: SkillList');
+
+            helper.sendGamePacket('SkillCoolTime', sock);
+            console.log('[GS] Send packet: SkillCoolTime');
 
             break;
 
