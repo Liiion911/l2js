@@ -987,7 +987,7 @@ gamePacketController.sendCharList = (sock, gameServer) => {
 
                     console.log('[GS] Send packet: CharSelectInfo');
 
-                    helper.sendGamePacket('ExLoginVitalityEffectInfo', sock, sock.client.char);
+                    helper.sendGamePacket('ExLoginVitalityEffectInfo', sock, 5);
                     console.log('[GS] Send ExLoginVitalityEffectInfo');
 
                 }

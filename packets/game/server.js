@@ -460,7 +460,7 @@ serverGamePackets.ExLoginVitalityEffectInfo = function (char) {
 
     p.writeD(100); // TODO: charInfo.getVitalityPoints() == 0 ? 0 : Config.ALT_VITALITY_RATE * 100
     // bonus
-    p.writeD(char.Vitality); // TODO: Remaining items count
+    p.writeD(5); // TODO: Remaining items count
     p.writeD(0x00); // TODO: Max vitality items
     p.writeD(0x00); // TODO: Max vitality items allowed
 
