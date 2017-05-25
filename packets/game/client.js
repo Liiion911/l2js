@@ -14,6 +14,15 @@ clientGamePackets.RequestTargetCancel = function (buffer) {
     return p;
 }
 
+clientGamePackets.RequestStartPledgeWar = function (buffer) {
+    var p = new protocol.ClientPacket(buffer);
+
+    p.readS();
+    p.pledgeName = p._data[0];
+
+    return p;
+}
+
 clientGamePackets.ExSendClientINI = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readC(); // 0x04

@@ -34,20 +34,22 @@ sqlModels.auth_data = sql.define({
 sqlModels.characters = sql.define({
     name: 'characters',
     columns: ['AccountName', 'ObjectId', 'Name', 'Level', 'MaxHP', 'CurHP', 'MaxCP', 'CurCP',
-        'MaxMP', 'CurMP', 'Accuracy', 'CriticalHit', 'EvasionRate', 'MAtk', 'MDef', 'MSpd', 'PAtk', 'PDef',
-        'PSpd', 'RunSpd', 'WalkSpd', 'STR', 'CON', 'DEX', 'INT', 'MEN', 'WIT', 'Face', 'HairStyle',
+        'MaxMP', 'CurMP', 'PAccuracy', 'PCriticalHit', 'PEvasionRate', 'MAccuracy', 'MCriticalHit', 'MEvasionRate',
+        'MAtk', 'MDef', 'MSpd', 'PAtk', 'PDef',
+        'PSpd', 'RunSpd', 'WalkSpd', 'STR', 'CON', 'DEX', 'INT', 'MEN', 'WIT', 'LUC', 'CHA', 'Face', 'HairStyle',
         'HairColor', 'Sex', 'Heading', 'X', 'Y', 'Z', 'MoveMultiplier', 'AttackSpeedMultiplier',
         'CollisionRadius', 'CollisionHeight', 'EXP', 'EXPBeforeDeath', 'SP', 'Karma', 'PVP', 'PK',
         'ClanId', 'MaxLoad', 'RaceId', 'ClassId', 'BaseClassId', 'DeleteTime', 'Title', 'RecomHave',
         'RecomLeft', 'AccessLevel', 'Online', 'OnlineTime', 'CharId', 'Newbie', 'LastAccess',
-        'ClanPrivileges', 'InJail', 'JailTimer', 'PowerGrade', 'IsNoble', 'PledgeClass', 'LastRecomDate', 'ClanJoinExpiryTime', 'ClanCreateExpiryTime', 'DeathPenaltyLevel',
-        'IsHero']
+        'ClanPrivileges', 'InJail', 'JailTimer', 'PowerGrade', 'IsNoble', 'PledgeClass', 'LastRecomDate',
+        'ClanJoinExpiryTime', 'ClanCreateExpiryTime', 'DeathPenaltyLevel', 'IsHero']
 });
 
 sqlModels.character_templates = sql.define({
     name: 'character_templates',
     columns: ['ClassName', 'ClassId', 'RaceId', 'BaseSTR', 'BaseCON', 'BaseDEX', 'BaseINT', 'BaseWIT',
-        'BaseMEN', 'P_ATK', 'P_DEF', 'M_ATK', 'M_DEF', 'P_SPD', 'M_SPD', 'ACC', 'CRITICAL', 'EVASION',
+        'BaseMEN', 'BaseLUC', 'BaseCHA', 'P_ATK', 'P_DEF', 'M_ATK', 'M_DEF', 'P_SPD', 'M_SPD', 'PACC', 'PCRITICAL', 'PEVASION',
+        'MACC', 'MCRITICAL', 'MEVASION',
         'MOVE_SPD', 'BaseLOAD', 'X', 'Y', 'Z', 'M_UNK1', 'M_UNK2', 'M_COL_R', 'M_COL_H', 'F_UNK1', 'F_UNK2',
         'F_COL_R', 'F_COL_H', 'items1', 'items2', 'items3', 'items4', 'items5',]
 });

@@ -46,12 +46,13 @@ serverGamePackets.CharTemplates = function (sock, templates) { // NewCharacterSu
 serverGamePackets.TargetUnselected = function (sock, targetObj) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x2a);
+    p.writeC(0x24);
 
     p.writeD(targetObj.ObjectId);
     p.writeD(targetObj.X);
     p.writeD(targetObj.Y);
     p.writeD(targetObj.Z);
+    p.writeD(0x00); // иногда бывает 1
 
     return p;
 };
@@ -220,10 +221,23 @@ serverGamePackets.RestartResponse = function (res, text) {
     return p;
 }
 
+serverGamePackets.ClientSetTime = function (gameServer) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xf2);
+    p.writeD(gameServer.settings.gameTime); // time in
+    // client
+    // minutes
+    p.writeD(6); // constant to match the server time (this determines the speed of the client clock)
+
+    return p;
+}
+
 serverGamePackets.ActionFailed = function () {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x25);
+    p.writeC(0x1f);
+    p.writeD(0x00);
 
     return p;
 }
@@ -260,6 +274,119 @@ serverGamePackets.LeaveWorld = function () {
     return p;
 }
 
+serverGamePackets.SSQInfo = function (state) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x73);
+    p.writeH(256);
+
+    return p;
+}
+
+serverGamePackets.HennaInfo = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xE5);
+    p.writeC(char.INT); // equip INT
+    p.writeC(char.STR); // equip STR
+    p.writeC(char.CON); // equip CON
+    p.writeC(char.MEN); // equip MEM
+    p.writeC(char.DEX); // equip DEX
+    p.writeC(char.WIT); // equip WIT
+    p.writeC(char.LUC); // equip LUC
+    p.writeC(char.CHA); // equip CHA
+    p.writeD(3); // interlude, slots?
+
+    var count = 0;
+    p.writeD(count); // count
+    //for (var i = 0; i < count; i++)
+    //{
+    //    p.writeD(_hennas[i]._symbolId);
+    //    p.writeD(_hennas[i]._valid);
+    //}
+    p.writeD(0x00);
+    p.writeD(0x00);
+    p.writeD(0x00);
+
+    return p;
+}
+
+serverGamePackets.ItemList = function (char, showWindow) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x11);
+    p.writeH(showWindow);
+    p.writeH(0); // items count
+    // for =>
+
+    p.writeH(0); // special items count
+    // for =>
+    // or
+    p.writeH(0x00);
+
+    return p;
+}
+
+serverGamePackets.SkillList = function (char, lernedSkill) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x5f);
+    p.writeD(0); // skills count
+    // for =>
+
+    p.writeD(lernedSkill);
+
+    return p;
+}
+
+serverGamePackets.SkillCoolTime = function (char, lernedSkill) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xc7);
+    p.writeD(0); // skillCoolTime count
+    // for =>
+
+    return p;
+}
+
+serverGamePackets.ExPeriodicHenna = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x164);
+    p.writeD(0x00);
+    p.writeD(0x00);
+    p.writeD(0x00);
+
+    return p;
+}
+
+serverGamePackets.ExAcquireAPSkillList = function () {
+    var p = new protocol.BasePacket();
+
+    writeC(0xFE);
+    writeH(0x15F);
+    writeD(1);
+    writeQ(10000000);
+    writeQ(250000000);
+    writeD(16);
+    writeD(0);
+    writeD(0);
+    writeD(0);
+
+    return p;
+}
+
+serverGamePackets.ShortCutInit = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x45);
+    p.writeD(0); // ShortCuts count
+    // for =>
+
+    return p;
+}
+
 serverGamePackets.ExSendManorList = function () {
     var p = new protocol.BasePacket();
 
@@ -273,7 +400,59 @@ serverGamePackets.ExSendManorList = function () {
     return p;
 }
 
-serverGamePackets.ExLoginVitalityEffectInfo = function () {
+serverGamePackets.ExBR_NewIConCashBtnWnd = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x13A);
+
+    p.writeH(0);
+
+    return p;
+}
+
+serverGamePackets.ExShowFortressInfo = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x15);
+
+    p.writeD(0);
+
+    return p;
+}
+
+serverGamePackets.ExBR_PremiumState = function (char, state) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0xDA);
+
+    p.writeD(char.ObjectId);
+    p.writeC(state);
+
+    return p;
+}
+
+serverGamePackets.ExUISetting = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x71);
+
+    p.writeD(16); // buffsize
+    p.writeD(0); // categories
+    p.writeD(0); // _keyCount
+
+    // TODO: for (=>)
+
+    p.writeD(17);
+    p.writeD(16);
+
+    return p;
+}
+
+serverGamePackets.ExLoginVitalityEffectInfo = function (char) {
     var p = new protocol.BasePacket();
 
     p.writeC(0xFE);
@@ -281,7 +460,7 @@ serverGamePackets.ExLoginVitalityEffectInfo = function () {
 
     p.writeD(100); // TODO: charInfo.getVitalityPoints() == 0 ? 0 : Config.ALT_VITALITY_RATE * 100
     // bonus
-    p.writeD(5); // TODO: Remaining items count
+    p.writeD(char.Vitality); // TODO: Remaining items count
     p.writeD(0x00); // TODO: Max vitality items
     p.writeD(0x00); // TODO: Max vitality items allowed
 
@@ -291,59 +470,52 @@ serverGamePackets.ExLoginVitalityEffectInfo = function () {
 serverGamePackets.CharInfo = (char) => {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x03);
+    p.writeC(0x31);
 
     p.writeD(char.X);
     p.writeD(char.Y);
     p.writeD(char.Z);
-    p.writeD(char.Heading); // ??
+    p.writeD(0); // _clanBoatObjectId
     p.writeD(char.ObjectId); // ?
     p.writeS(char.Name);
-    p.writeD(char.RaceId);
+    p.writeH(char.RaceId);
     p.writeD(char.Sex);
 
-    p.writeD(char.ClassId);
+    p.writeD(char.BaseClassId);
 
     // 12 D
     for (var i = 0; i < 12; i++) {
         p.writeD(0x00);
     }
 
-    // c6 new h's
     p.writeH(0x00);
     p.writeH(0x00);
     p.writeH(0x00);
     p.writeH(0x00);
-    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_RHAND);
+    p.writeH(0x00);
 
-    // 12 H
-    for (var i = 0; i < 12; i++) {
-        p.writeH(0x00);
+    p.writeC(0); // talismans count
+
+    // 9 D
+    for (var i = 0; i < 9; i++) {
+        p.writeD(0x00);
     }
 
-    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_LRHAND);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-
     p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
-    p.writeD(char.Karma);
+    p.writeD(char.Karma); // TODO: var karma = 0 - char.Karma;
 
     p.writeD(char.MSpd);
     p.writeD(char.PSpd);
 
-    p.writeD(char.PvpFlag); // second ?
-    p.writeD(char.Karma); // second ?
+    p.writeH(char.RunSpd);
+    p.writeH(char.WalkSpd);
+    p.writeH(char.SwimRunSpd); // swimspeed 50
+    p.writeH(char.SwimWalkSpd); // swimspeed 50
+    p.writeH(char.FlRunSpd);
+    p.writeH(char.FlWalkSpd);
+    p.writeH(char.FlyRunSpd);
+    p.writeH(char.FlyWalkSpd);
 
-    p.writeD(char.RunSpd);
-    p.writeD(char.WalkSpd);
-    p.writeD(char.SwimRunSpd); // swimspeed 50
-    p.writeD(char.SwimWalkSpd); // swimspeed 50
-    p.writeD(char.FlRunSpd);
-    p.writeD(char.FlWalkSpd);
-    p.writeD(char.FlyRunSpd);
-    p.writeD(char.FlyWalkSpd);
     p.writeF(char.MoveMultiplier); // 1
     p.writeF(char.AttackSpeedMultiplier); // 1
 
@@ -389,15 +561,13 @@ serverGamePackets.CharInfo = (char) => {
 
     p.writeC(0x00); // 1-find party members
 
-    p.writeD(char.AbnormalEffect);  // ??
+    p.writeD(char.AbnormalEffect);  // isFlying = 2 | isInZone WATER = 1 | 0
 
-    p.writeC(char.RecomLeft); // c2 recommendations remaining
-    p.writeH(char.RecomHave); // c2 recommendations received
-
+    p.writeH(char.RecomHave); // recommendations received
+    p.writeD(0); // mount id => _activeChar.getMountNpcId() + 1000000
     p.writeD(char.ClassId);
 
-    p.writeD(char.MaxCP);
-    p.writeD(parseInt(char.CurCP));
+    p.writeD(0x00);
 
     p.writeC(0); // _activeChar.isMounted() ? 0 : char.EnchantEffect()
 
@@ -412,6 +582,7 @@ serverGamePackets.CharInfo = (char) => {
     }
 
     p.writeD(char.ClanCrestLargeId);
+
     p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
     p.writeC(char.IsHero); // 0x01: Hero Aura
 
@@ -421,11 +592,10 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.FishZ); // fishing z
     p.writeD(char.NameColor);
 
-    // new c5
-    p.writeD(0); // p.writeC(char.IsRunning); // changes the Speed display on Status Window
+    p.writeD(char.Heading);
 
     p.writeD(char.PledgeClass); // changes the text above CP on Status Window
-    p.writeD(0x00); // ??
+    p.writeD(char.PledgeType);
 
     p.writeD(char.TitleColor);
 
@@ -436,131 +606,32 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(0x00);
     //}
 
+    p.writeD(0); // _activeChar.getClanId() > 0 ? _activeChar.getClan().getReputationScore() : 
+
+    // T1
+    p.writeD(0); // _activeChar.getTransformation()
+    p.writeD(0); //_activeChar.getAgathionId()
+
+    // T2
+    p.writeC(0x01);
+
+    p.writeD(char.CurCP);
+    p.writeD(char.MaxHP);
+    p.writeD(char.CurHP);
+    p.writeD(char.MaxMP);
+    p.writeD(char.CurMP);
+
+    p.writeC(0); // _specialEffect
+
+    p.writeC(0);
+    p.writeC(1); //_showHairAccessory
+    p.writeC(0); //_abilityPoints
+
     return p;
 };
 
 serverGamePackets.UserInfo = function (char) {
     var p = new protocol.BasePacket();
-
-    p.writeC(0x04);
-
-    p.writeD(char.X);
-    p.writeD(char.Y);
-    p.writeD(char.Z);
-    p.writeD(char.Heading); // ??
-    p.writeD(char.ObjectId); // ?
-    p.writeS(char.Name);
-    p.writeD(char.RaceId);
-    p.writeD(char.Sex);
-
-    p.writeD(char.ClassId);
-
-    p.writeD(char.Level);
-    p.writeQ(char.EXP);
-
-    p.writeD(char.STR);
-    p.writeD(char.DEX);
-    p.writeD(char.CON);
-    p.writeD(char.INT);
-    p.writeD(char.WIT);
-    p.writeD(char.MEN);
-
-    p.writeD(char.MaxHP);
-    p.writeD(parseInt(char.CurHP));
-    p.writeD(char.MaxMP);
-    p.writeD(parseInt(char.CurMP));
-    p.writeD(char.SP);
-    p.writeD(char.Load);
-    p.writeD(char.MaxLoad);
-
-    p.writeD(0x28); // unknown
-
-    // 17 D
-    for (var i = 0; i < 17; i++) {
-        p.writeD(0x00);
-    }
-
-    // 17 D
-    for (var i = 0; i < 17; i++) {
-        p.writeD(0x00);
-    }
-
-    // c6 new h's
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_RHAND);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeD(0); // char.Inventory().getPaperdollAugmentationId(Inventory.PAPERDOLL_LRHAND);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    // end of c6 new h's
-
-    p.writeD(char.PAtk);
-    p.writeD(char.PSpd);
-    p.writeD(char.PDef);
-    p.writeD(char.EvasionRate);
-    p.writeD(char.Accuracy);
-    p.writeD(char.CriticalHit);
-    p.writeD(char.MAtk);
-
-    p.writeD(char.MSpd);
-    p.writeD(char.PSpd);
-
-    p.writeD(char.MDef);
-
-    p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
-    p.writeD(char.Karma);
-
-    p.writeD(char.RunSpd);
-    p.writeD(char.WalkSpd);
-    p.writeD(char.SwimRunSpd); // swimspeed
-    p.writeD(char.SwimWalkSpd); // swimspeed
-    p.writeD(char.FlRunSpd);
-    p.writeD(char.FlWalkSpd);
-    p.writeD(char.FlyRunSpd);
-    p.writeD(char.FlyWalkSpd);
-    p.writeF(char.MoveMultiplier);
-    p.writeF(char.AttackSpeedMultiplier);
-
-    // L2Summon pet = char.Pet();
-    //if ((char.MountType() != 0) && (pet != null)) {
-    //    writeF(pet.getTemplate().collisionRadius);
-    //    writeF(pet.getTemplate().collisionHeight);
-    //}
-    //else {
-    p.writeF(char.CollisionRadius);
-    p.writeF(char.CollisionHeight);
-    //}
-
-    p.writeD(char.HairStyle);
-    p.writeD(char.HairColor);
-    p.writeD(char.Face);
-    p.writeD(0); // builder level
 
     var title = char.Title;
     //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
@@ -572,12 +643,13 @@ serverGamePackets.UserInfo = function (char) {
     //        title += " - " + polyObj.name;
     //    }
     //}
-    p.writeS(title);
 
-    p.writeD(char.ClanId);
-    p.writeD(char.ClanCrestId);
-    p.writeD(char.AllyId);
-    p.writeD(char.AllyCrestId); // ally crest id
+    p.writeC(0x32);
+
+    p.writeD(char.ObjectId);
+
+    p.writeD(372 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
+    p.writeH(23); // structType const
 
     // 0x40 leader rights
     // siege flags: attacker - 0x180 sword over name, defender - 0x80 shield, 0xC0 crown (|leader), 0x1C0 flag (|leader)
@@ -588,74 +660,221 @@ serverGamePackets.UserInfo = function (char) {
     //if (_activeChar.getSiegeState() == 2) {
     //    _relation |= 0x80;
     //}
-    p.writeD(0);
+    p.writeD(0); // relation
 
-    p.writeC(char.MountType); // mount type
-    p.writeC(char.PrivateStoreType);
-    p.writeC(char.HasDwarvenCraft);
+    p.writeD(16 + char.Name.length * 2);
+    p.writeH(char.Name.length);
+    p.writeS2(char.Name);
+    p.writeC(0); // TODO: isGM - fix for use //admin
+
+    p.writeC(char.RaceId);
+    p.writeC(char.Sex);
+    p.writeD(char.BaseClassId); // 
+    p.writeD(char.ClassId); //     ^
+    p.writeС(char.Level);
+
+    p.writeH(18);
+    p.writeD(char.STR);
+    p.writeD(char.DEX);
+    p.writeD(char.CON);
+    p.writeD(char.INT);
+    p.writeD(char.WIT);
+    p.writeD(char.MEN);
+    p.writeD(char.LUC);
+    p.writeD(char.CHA);
+
+    p.writeH(14);
+    p.writeD(char.MaxHP);
+    p.writeD(char.MaxMP);
+    p.writeD(char.MaxCP);
+
+    p.writeH(38);
+    p.writeD(char.CurHP);
+    p.writeD(char.CurMP);
+    p.writeD(char.CurCP);
+    p.writeQ(char.EXP);
+    p.writeQ(char.SP);
+    p.writeF(0); // TODO: percent EXP to next level
+
+    p.writeH(4);
+    p.writeC(0); // enchant weapon glow
+    p.writeC(0); // enchant armor glow
+
+    p.writeH(15);
+    p.writeD(char.HairStyle);
+    p.writeD(char.HairColor);
+    p.writeD(char.Face);
+    p.writeD(1); // show hair accessory
+
+    p.writeH(6);
+    p.writeC(char.MountType); // mounte type
+    p.writeC(0); // private store
+    p.writeC(0); // can crystalize
+    p.writeC(0x00); // can Use Alchemy
+
+    p.writeH(56);
+    p.writeH(0x14); // weaponFLag 0x2B || 0x14 || 0
+    p.writeD(char.PAtk); // Physic --
+    p.writeD(char.PSpd);
+    p.writeD(char.PDef);
+    p.writeD(char.PEvasionRate);
+    p.writeD(char.PAccuracy);
+    p.writeD(char.PCriticalHit);
+    p.writeD(char.MAtk); // Magic --
+    p.writeD(char.MSpd);
+    p.writeD(char.PSpd);
+    p.writeD(char.MEvasionRate);
+    p.writeD(char.MDef);
+    p.writeD(char.MAccuracy);
+    p.writeD(char.MCriticalHit);
+    
+    p.writeH(14);
+    p.writeH(char.DefenceFire); // Resists --
+    p.writeH(char.DefenceWater);
+    p.writeH(char.DefenceWind);
+    p.writeH(char.DefenceEarth);
+    p.writeH(char.DefenceHoly);
+    p.writeH(char.DefenceUnholy);
+
+    p.writeH(18);
+    p.writeD(char.X);
+    p.writeD(char.Y);
+    p.writeD(char.Z);
+    p.writeD(char.BoatId);
+
+    p.writeH(18);
+    p.writeH(char.RunSpd);
+    p.writeH(char.WalkSpd);
+    p.writeH(char.SwimRunSpd); // swimspeed
+    p.writeH(char.SwimWalkSpd); // swimspeed
+    p.writeH(char.FlRunSpd); // mount
+    p.writeH(char.FlWalkSpd); // mount
+    p.writeH(char.FlyRunSpd);
+    p.writeH(char.FlyWalkSpd);
+
+
+    p.writeH(18);
+    p.writeF(char.MoveMultiplier);
+    p.writeF(char.AttackSpeedMultiplier);
+
+    p.writeH(18);
+    // L2Summon pet = char.Pet();
+    //if ((char.MountType() != 0) && (pet != null)) {
+    //    writeF(pet.getTemplate().collisionRadius);
+    //    writeF(pet.getTemplate().collisionHeight);
+    //}
+    //else {
+    p.writeF(char.CollisionRadius);
+    p.writeF(char.CollisionHeight);
+    //}
+
+    p.writeH(5);
+    p.writeC(char.AttackElement.Id);
+    p.writeH(char.AttackElement.Value);
+
+    p.writeH(32 + title.length * 2);
+    p.writeH(title.length);
+    p.writeS2(title);
+    p.writeH(char.PledgeType);
+    p.writeD(char.ClanId);
+    p.writeD(char.ClanCrestLargeId);
+    p.writeD(char.ClanCrestId);
+    p.writeD(char.ClanPrivileges);
+    p.writeC(char.IsClanLeader);
+    p.writeD(char.AllyId);
+    p.writeD(char.AllyCrestId); // ally crest id
+    p.writeC(0x00); // TODO: looking for party
+
+    p.writeH(22);
+    p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
+    p.writeD(char.Karma);
+    p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
+    p.writeC(char.IsHero); // 0x01: Hero Aura
+    p.writeC(char.PledgeClass); // changes the text above CP on Status Window
     p.writeD(char.PK);
     p.writeD(char.PVP);
-
-    p.writeH(char.Cubics.length);
-    for (var i = 0; i < char.Cubics.length; i++)
-    {
-        p.writeH(char.Cubics[i].KeySetId);
-    }
-
-    p.writeC(0x00); // 1-find party members
-
-    p.writeD(char.AbnormalEffect);  // ??
-    p.writeC(0x00);
-
-    p.writeD(char.ClanPrivileges);
-
     p.writeH(char.RecomLeft); // c2 recommendations remaining
     p.writeH(char.RecomHave); // c2 recommendations received
-    p.writeD(0x00);
-    p.writeH(char.InventoryLimit);
 
-    p.writeD(char.ClassId);
-    p. writeD(0x00); // special effects? circles around player...
-    p.writeD(char.MaxCP);
-    p.writeD(parseInt(char.CurCP));
-    p.writeC(0); // _activeChar.isMounted() ? 0 : char.EnchantEffect()
 
+    p.writeH(15);
+    p.writeD(char.Vitality);
+    p.writeC(0x01);
+    p.writeD(char.Fame);
+    p.writeD(char.RaidPoints); // Рейдовые Очки
+
+    p.writeH(9);
+    p.writeC(0); // talismans
+    p.writeC(0); // cloac|jewels
     if (char.Team == 1) {
         p.writeC(0x01); // team circle around feet 1= Blue, 2 = red
+        p.writeD(1); // Светится вокруг персонажа красный пунтктирный круг.
     }
     else if (char.Team == 2) {
         p.writeC(0x02); // team circle around feet 1= Blue, 2 = red
+        p.writeD(1); // Светится вокруг персонажа красный пунтктирный круг.
     }
     else {
         p.writeC(0x00); // team circle around feet 1= Blue, 2 = red
+        p.writeD(0); // Светится вокруг персонажа красный пунтктирный круг.
     }
 
-    p.writeD(char.ClanCrestLargeId);
-    p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
-    p.writeC(char.IsHero); // 0x01: Hero Aura
+    p.writeH(4);
+    p.writeC(0); // isFlying ? 0x02 : 0x00 // isSwiming ? 0x01 : 0x00
+    p.writeC(char.IsRunning);
 
-    p.writeC(char.IsFishing); // Fishing Mode
-    p.writeD(char.FishX); // fishing x
-    p.writeD(char.FishY); // fishing y
-    p.writeD(char.FishZ); // fishing z
+    p.writeH(10);
+    p.writeD(char.TitleColor);
     p.writeD(char.NameColor);
 
-    // new c5
-    p.writeC(char.IsRunning); // changes the Speed display on Status Window
+    p.writeH(9);
+    p.writeD(0); // mount id
+    p.writeH(char.InventoryLimit);
+    p.writeC(0); // hideTitle - при 1 не показывает титул - TODO: cursedWeaponEquiped
 
-    p.writeD(char.PledgeClass); // changes the text above CP on Status Window
-    p.writeD(0x00); // ??
+    p.writeH(9);
+    p.writeD(1);
+    p.writeH(0);
+    p.writeC(0)
+    
+    return p;
+}
 
-    p.writeD(char.TitleColor);
+serverGamePackets.MagicAndSkillList = function (char) {
+    var p = new protocol.BasePacket();
 
-    // writeD(0x00); // ??
+    p.writeC(0x40);
+    p.writeD(char.ObjectId);
+    p.writeD(0x00);
+    p.writeC(0x86);
+    p.writeC(0x25);
+    p.writeC(0x0B);
+    p.writeC(0x00);
 
-    //if (_activeChar.isCursedWeaponEquiped()) {
-    //    p.writeD(CursedWeaponsManager.getInstance().getLevel(char.CursedWeaponEquipedId()));
-    //}
-    //else {
-        p.writeD(0x00);
-    //}
+    return p;
+}
+
+serverGamePackets.ExVitalityEffectInfo = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xfe);
+    p.writeEx(0x118);
+    p.writeD(char.Vitality);
+    p.writeD(100); // TODO: vitality bonus - Config.ALT_VITALITY_RATE * 100
+    p.writeH(5); // TODO: Remaining items count  // Vitality items allowed???
+    p.writeH(5); // TODO: Remaining items count  // Total vitality items allowed???
+
+    return p;
+}
+
+serverGamePackets.ExUserInfoInvenWeight = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xFE);
+    p.writeH(0x166);
+    p.writeD(char.ObjectId);
+    p.writeD(char.Load);
+    p.writeD(char.InventoryLimit);
 
     return p;
 }
@@ -664,7 +883,7 @@ serverGamePackets.ExStorageMaxCount = function (char) {
     var p = new protocol.BasePacket();
 
     p.writeC(0xfe);
-    p.writeH(0x2e);
+    p.writeH(0x2f);
 
     p.writeD(char.Inventory);
     p.writeD(char.Warehouse);
@@ -673,31 +892,51 @@ serverGamePackets.ExStorageMaxCount = function (char) {
     p.writeD(char.PrivateBuy);
     p.writeD(char.ReceipeDwarf);
     p.writeD(char.Recipe);
+    p.writeD(char.InventoryExtraSlots); // belt inventory slots increase count
+    p.writeD(char.QuestItemsLimit); // quests list by off 100 maximum
+    p.writeD(40); // Unknown (40 - offlike)
+    p.writeD(40); // Unknown (40 - offlike)
 
     return p;
 }
 
+serverGamePackets.ExBasicActionList = function (basicActions, transformActions, type) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xfe);
+    p.writeH(0x60);
+
+    var actions = type ? transformActions : basicActions;
+
+    for (var i = 0; i < actions.length; i++) {
+        p.writeD(actions[i]);
+    }
+
+    return p;
+};
 
 serverGamePackets.EtcStatusUpdate = function (char) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0xF3);
+    p.writeC(0xf9);
 
-    p.writeD(char.IncreaseForce);  // 1-7 increase force, lvl //getFirstEffect(L2Effect.EffectType.CHARGE)
-    p.writeD(char.WeightPenalty); // 1-4 weight penalty, lvl (1=50%, 2=66.6%, 3=80%, 4=100%)
-    p.writeD(char.IsChatBanned); // 1 = block all chat
-    p.writeD(char.DangerArea); // 1 = danger area
-    p.writeD(Math.min(char.ExpertisePenalty, 1)); // 1 = grade penalty
-    p.writeD(char.CharmOfCourage); // 1 = charm of courage (no xp loss in siege..)
+    p.writeD(char.IncreaseForce);  // 1-7 increase force, lvl //getFirstEffect(L2Effect.EffectType.CHARGE)  // skill id 4271
+    p.writeD(char.WeightPenalty); // 1-4 weight penalty, lvl (1=50%, 2=66.6%, 3=80%, 4=100%) // skill id 4270
+    p.writeC(char.WeaponExpertisePenalty); // weapon grade penalty, skill 6209 in epilogue // Weapon Grade Penalty [1-4]
+    p.writeC(char.ArmorExpertisePenalty); // armor grade penalty, skill 6213 in epilogue // Armor Grade Penalty [1-4]
     p.writeD(char.DeathPenaltyBuffLevel); // 1-15 death penalty, lvl (combat ability decreased due to death)
+    p.writeC(char.ConsumedSouls);
+    p.writeD(char.DangerArea); // 1 = danger area
+
+
 
     return p;
 }
 
-serverGamePackets.CharSelected = function (session2_1, char) {
+serverGamePackets.CharSelected = function (gameServer, session2_1, char) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x15);
+    p.writeC(0x0B);
 
     p.writeS(char.Name);
     p.writeD(char.CharId); // ??
@@ -707,7 +946,7 @@ serverGamePackets.CharSelected = function (session2_1, char) {
     p.writeD(0x00); // ??
     p.writeD(char.Sex);
     p.writeD(char.RaceId);
-    p.writeD(char.Classid);
+    p.writeD(char.ClassId);
     p.writeD(0x01); // active ??
     p.writeD(char.X);
     p.writeD(char.Y);
@@ -715,44 +954,24 @@ serverGamePackets.CharSelected = function (session2_1, char) {
 
     p.writeF(char.CurHP);
     p.writeF(char.CurMP);
-    p.writeD(char.SP);
+    p.writeQ(char.SP);
     p.writeQ(char.EXP);
     p.writeD(char.Level);
     p.writeD(char.Karma); // thx evill33t
-    p.writeD(0x0); // ?
-    p.writeD(char.INT);
-    p.writeD(char.STR);
-    p.writeD(char.CON);
-    p.writeD(char.MEN);
-    p.writeD(char.DEX);
-    p.writeD(char.WIT);
-    for (var i = 0; i < 30; i++) {
-        p.writeD(0x00);
-    }
+    p.writeD(char.PK);
 
-    p.writeD(0x00); // c3 work
-    p.writeD(0x00); // c3 work
+    p.writeD(0); // Game Time
+    p.writeD(0);
+    p.writeD(char.BaseClassId);
 
-    // extra info
-    p.writeD(0); // in-game time
+    p.writeD(0); // gg1
+    p.writeD(0); // gg2
+    p.writeD(0); // gg3
+    p.writeD(0); // gg4
 
-    p.writeD(0x00); //
+    p.writeB(new Buffer(64));  // gg5
 
-    p.writeD(0x00); // c3
-
-    p.writeD(0x00); // c3 InspectorBin
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-
-    p.writeD(0x00); // c3 InspectorBin for 528 client
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
-    p.writeD(0x00); // c3
+    p.writeD(0);  // CM opcode shuffling seed
 
     return p;
 }

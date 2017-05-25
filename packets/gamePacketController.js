@@ -43,6 +43,16 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
     switch (packetId) {
 
+        case 0x03:
+
+            console.log('[GS] Recive packet RequestStartPledgeWar');
+
+            var pack = clientGamePackets.RequestStartPledgeWar(new Buffer(packetsArrayParse));
+
+
+
+            break;
+
         case 0x0e:
 
             if (sock.client.status != 0) {
@@ -170,6 +180,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             sock.client.status = 4;
 
+            // for (castles =>) 
+            // ExCastleState
+
             if (1 == 2) {// TODO: isGM
 
             }
@@ -179,11 +192,64 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: add spawn protection
             // setProtection();
 
+            helper.sendGamePacket('ExBR_PremiumState', sock, sock.client.char, 0);
+            console.log('[GS] Send packet: ExBR_PremiumState');
+
+            // TODO: Send macroses
+            // getMacroses().sendUpdate(0x01, 0, true);
 
             // TODO: seven signs status
             // if (SevenSigns.isSealValidationPeriod())
             // packet SignsSky
+            helper.sendGamePacket('SSQInfo', sock, 0);
+            console.log('[GS] Send packet: SSQInfo');
 
+            helper.sendGamePacket('HennaInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: HennaInfo');
+
+            helper.sendGamePacket('ItemList', sock, sock.client.char, false);
+            console.log('[GS] Send packet: ItemList');
+
+            helper.sendGamePacket('ShortCutInit', sock, sock.client.char);
+            console.log('[GS] Send packet: ShortCutInit');
+
+
+            helper.sendGamePacket('ExPeriodicHenna', sock);
+            console.log('[GS] Send packet: ExPeriodicHenna');
+
+            helper.sendGamePacket('ExAcquireAPSkillList', sock);
+            console.log('[GS] Send packet: ExAcquireAPSkillList');
+
+            helper.sendGamePacket('SkillCoolTime', sock);
+            console.log('[GS] Send packet: SkillCoolTime');
+
+            helper.sendGamePacket('UserInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: UserInfo');
+
+            helper.sendGamePacket('ExVitalityEffectInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: ExVitalityEffectInfo');
+
+            helper.sendGamePacket('ExUserInfoInvenWeight', sock, sock.client.char);
+            console.log('[GS] Send packet: ExUserInfoInvenWeight');
+
+            helper.sendGamePacket('MagicAndSkillList', sock, sock.client.char);
+            console.log('[GS] Send packet: MagicAndSkillList');
+
+            helper.doAction(gameServer, sock, null, -1); // cancel target
+
+            // TODO: Happy Birthday!
+
+            // Broadcast to clan members
+
+            // TODO: wedding engage and notify Partner
+            // engage
+
+            // TODO: notify friends
+
+            // TODO: load tutorial quest ?
+
+            // TODO: mentoring (notify, applyMentoringCond)
+            // mentoringLoginConditions
 
             // TODO: buff and status icons
 
@@ -205,6 +271,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                         } else {
                             // TODO: send char skills and buffs
                             // restoreEffects
+
+                            helper.sendGamePacket('SkillList', sock, sock.client.char, 0);
+                            console.log('[GS] Send packet: SkillList');
+
+                            helper.sendGamePacket('SkillCoolTime', sock);
+                            console.log('[GS] Send packet: SkillCoolTime');
+
                         }
 
                     });
@@ -213,12 +286,34 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             });
 
-            // TODO: EtcStatusUpdate
+            // TODO: FriendList
+
+            helper.sendGamePacket('ExStorageMaxCount', sock, sock.client.char);
+            console.log('[GS] Send packet: ExStorageMaxCount');
+
+            // TODO: QWuestList
+
+            helper.sendGamePacket('ExBasicActionList', sock, helper.BasicActions, helper.TransformationActions, false);
+            console.log('[GS] Send packet: ExBasicActionList');
+
             helper.sendGamePacket('EtcStatusUpdate', sock, sock.client.char);
             console.log('[GS] Send packet: EtcStatusUpdate');
 
-            // TODO: wedding engage and notify Partner
-            // engage
+            // TODO: checkHpMessages of effects
+
+            // TODO: checkDayNightMessages
+
+            // TODO: do userinfo task on interval
+            helper.sendGamePacket('UserInfo', sock, sock.client.char);
+            console.log('[GS] Send packet: UserInfo');
+
+            helper.sendGamePacket('ActionFailed', sock);
+            console.log('[GS] Send packet: ActionFailed');
+
+            helper.sendGamePacket('ClientSetTime', sock, gameServer);
+            console.log('[GS] Send packet: ClientSetTime');
+
+            // TODO: ExSetCompassZoneCode
 
 
             // TODO: disable effects 
@@ -228,20 +323,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             // TODO: apply augmentation boni for equipped items
             // getAugmentedItems
-
-
-            /* Expand Skills */
-            // Send storages
-            helper.sendGamePacket('ExStorageMaxCount', sock, sock.client.char);
-            console.log('[GS] Send packet: ExStorageMaxCount');
-
-            // TODO: Send macroses
-            // getMacroses().sendUpdate()
-
-
-            // Send UserInfo
-            helper.sendGamePacket('UserInfo', sock, sock.client.char);
-            console.log('[GS] Send packet: UserInfo');
 
             helper.sendGamePacket('CharInfo', sock, sock.client.char);
             console.log('[GS] Send CharInfo self to ' + sock.client.char.Name);
@@ -260,9 +341,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             });
 
-            // Send UserInfo
-            helper.sendGamePacket('UserInfo', sock, sock.client.char);
-            console.log('[GS] Send packet: UserInfo');
 
             break;
 
@@ -331,8 +409,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                             } else {
 
-								helper.sendGamePacket('LoginResultPacket', sock);
-							
+                                helper.sendGamePacket('LoginResultPacket', sock);
+
                                 gamePacketController.sendCharList(sock, gameServer);
 
 
@@ -696,39 +774,71 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
         case 0xD0:
 
-            if (sock.client.status == 2) { // AUTHED
+            var id2 = -1;
+            if (packetsArrayParse.length >= 1) {
 
-                var id2 = -1;
-                if (packetsArrayParse.length >= 1) {
+                id2 = packetsArrayParse[0] & 0xffff;
 
-                    id2 = packetsArrayParse[0] & 0xffff;
+                // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
 
-                    // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
+                console.log('[GS] id2: ' + id2);
 
-                    console.log('[GS] id2: ' + id2);
+                switch (id2) {
+                    case 0x01:
 
-                    switch (id2) {
-                        case 0x04:
+                        console.log('[GS] Recive packet RequestManorList');
 
-                            var pack = clientGamePackets.ExSendClientINI(new Buffer(packetsArrayParse));
+                        helper.sendGamePacket('ExSendManorList', sock);
 
-                            console.log('[GS] Recive packet ExSendClientINI');
+                        console.log('[GS] Send packet: ExSendManorList');
 
-                            break;
-                    }
+                        break;
 
-                } else {
-                    console.log('[GS] Client: sent a 0xd0 in lobby without the second opcode.');
+                    case 0xD1:
+
+                        console.log('[GS] Recive packet RequestBR_NewIConCashBtnWnd');
+
+                        helper.sendGamePacket('ExBR_NewIConCashBtnWnd', sock);
+
+                        console.log('[GS] Send packet: ExBR_NewIConCashBtnWnd');
+
+                        break;
+
+                    case 0x3A:
+
+                        console.log('[GS] Recive packet RequestAllFortressInfo');
+
+                        helper.sendGamePacket('ExShowFortressInfo', sock);
+
+                        console.log('[GS] Send packet: ExShowFortressInfo');
+
+                        break;
+
+                    case 0x21:
+
+                        console.log('[GS] Recive packet RequestKeyMapping');
+
+                        helper.sendGamePacket('ExUISetting', sock);
+
+                        console.log('[GS] Send packet: ExUISetting');
+
+                        break;
+
+
+                    case 0x104:
+
+                        console.log('[GS] Recive packet ExSendClientINI');
+
+                        var pack = clientGamePackets.ExSendClientINI(new Buffer(packetsArrayParse));
+                        
+
+                        break;
                 }
 
             } else {
 
-                // TODO: check to other D0 pakets !!! ( D0 it's not only manor list)
+                console.log('[GS] Client: sent a 0xd0 without the second opcode.');
 
-                console.log('[GS] Recive packet RequestManorList');
-
-                helper.sendGamePacket('ExSendManorList', sock);
-                console.log('[GS] Send packet: ExSendManorList');
             }
 
             break;
@@ -768,6 +878,24 @@ gamePacketController.sendCharList = (sock, gameServer) => {
                     _.each(result, (res) => {
                         var char = _.extend({
 
+                            DefenceFire: 0,
+                            DefenceWater: 0,
+                            DefenceWind: 0,
+                            DefenceEarth: 0,
+                            DefenceHoly: 0,
+                            DefenceUnholy: 0,
+
+                            BoatId: 0,
+
+                            AttackElement: { Id: 0, Value: 0 },
+
+                            Vitality: 5,
+                            Fame: 0,
+                            RaidPoints: 0,
+
+                            PledgeType: 0,
+                            IsClanLeader: 1,
+
                             ClanCrestId: 0,
                             ClanCrestLargeId: 0,
 
@@ -786,9 +914,11 @@ gamePacketController.sendCharList = (sock, gameServer) => {
                             IsChatBanned: 0,
 
                             WeightPenalty: 0,
-                            ExpertisePenalty: 0,
+                            WeaponExpertisePenalty: 0,
+                            ArmorExpertisePenalty: 0,
                             CharmOfCourage: 0,
                             DeathPenaltyBuffLevel: 0,
+                            ConsumedSouls: 19,
 
                             IncreaseForce: 0, // 0-7
 
@@ -801,6 +931,8 @@ gamePacketController.sendCharList = (sock, gameServer) => {
                             Recipe: 40,
                             PrivateStoreType: 0,
                             HasDwarvenCraft: 0,
+                            InventoryExtraSlots: 10,
+                            QuestItemsLimit: 10,
 
                             InventoryLimit: 90,
                             Load: 1,
@@ -855,7 +987,7 @@ gamePacketController.sendCharList = (sock, gameServer) => {
 
                     console.log('[GS] Send packet: CharSelectInfo');
 
-                    helper.sendGamePacket('ExLoginVitalityEffectInfo', sock);
+                    helper.sendGamePacket('ExLoginVitalityEffectInfo', sock, sock.client.char);
                     console.log('[GS] Send ExLoginVitalityEffectInfo');
 
                 }

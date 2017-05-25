@@ -40,6 +40,7 @@ gameDomain.run(() => {
         loginServerMasterIP: '192.168.0.100',
         loginServerMasterPort: 5555,
         settings: {
+            gameTime: 55,
             maxCharacters: 5,
             removeDisconnectedPlayerTimeout: 10, // seconds
         }
@@ -63,8 +64,9 @@ gameDomain.run(() => {
 
         sock.setKeepAlive(true, 5000); //
         sock.setTimeout(30000, () => {
-            console.log('[GS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
-            sock.destroy();
+            // TODO: NetPing + timeout
+            //console.log('[GS] TIMEOUT: ' + sock.remoteAddress + ' ' + sock.remotePort);
+            //sock.destroy();
         });
 
         sock.client = {

@@ -158,6 +158,15 @@ protocol.BasePacket.prototype.writeS = function (txt) {
     return this;
 };
 
+protocol.BasePacket.prototype.writeS2 = function (txt) {
+    var buf = Buffer.from(txt, 'ucs2');
+    _.each(buf, (b) => {
+        this._virtualBuffer.push(b & 0xff);
+    });
+    return this;
+};
+protocol.BasePacket.prototype.writeCutS = protocol.BasePacket.prototype.writeS2;
+
 protocol.BasePacket.prototype.getContent = function () {
     return this._virtualBuffer;
 };

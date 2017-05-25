@@ -45,3 +45,4 @@ Wireshark.lnk
 *.pcap
 RSAgenerator/
 *.lnk
+.vs/Lineage2.sqlite
