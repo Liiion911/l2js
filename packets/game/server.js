@@ -651,6 +651,10 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(372 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
     p.writeH(23); // structType const
 
+    p.writeC(0xFF);
+    p.writeC(0xFF);
+    p.writeC(0xFF);
+
     // 0x40 leader rights
     // siege flags: attacker - 0x180 sword over name, defender - 0x80 shield, 0xC0 crown (|leader), 0x1C0 flag (|leader)
     //_relation = _activeChar.isClanLeader() ? 0x40 : 0;
