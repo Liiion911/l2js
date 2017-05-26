@@ -192,6 +192,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: add spawn protection
             // setProtection();
 
+            helper.sendGamePacket('ChangeMoveType', sock, sock.client.char, 1);
+            console.log('[GS] Send packet: ChangeMoveType');
+
             helper.sendGamePacket('ExBR_PremiumState', sock, sock.client.char, 0);
             console.log('[GS] Send packet: ExBR_PremiumState');
 
@@ -291,7 +294,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('ExStorageMaxCount', sock, sock.client.char);
             console.log('[GS] Send packet: ExStorageMaxCount');
 
-            // TODO: QWuestList
+            helper.sendGamePacket('QuestList', sock, sock.client.char);
+            console.log('[GS] Send packet: QuestList');
 
             helper.sendGamePacket('ExBasicActionList', sock, helper.BasicActions, helper.TransformationActions, false);
             console.log('[GS] Send packet: ExBasicActionList');
@@ -307,8 +311,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             helper.sendGamePacket('UserInfo', sock, sock.client.char);
             console.log('[GS] Send packet: UserInfo');
 
-            helper.sendGamePacket('ActionFailed', sock);
-            console.log('[GS] Send packet: ActionFailed');
+            //helper.sendGamePacket('ActionFailed', sock);
+            //console.log('[GS] Send packet: ActionFailed');
 
             helper.sendGamePacket('ClientSetTime', sock, gameServer);
             console.log('[GS] Send packet: ClientSetTime');

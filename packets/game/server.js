@@ -210,6 +210,22 @@ serverGamePackets.MoveToLocation = function (char, coords) {
     return p;
 }
 
+serverGamePackets.ChangeMoveType = function (char, type) {
+    var p = new protocol.BasePacket();
+
+    // type
+    // 0 - walk, 1 - run
+
+    if (type.toLowerCase() != "run" || type != 1) type = 0; // WALK
+
+    p.writeC(0x28);
+    p.writeD(char.ObjectId);
+    p.writeD(type);
+    p.writeD(0); // c2
+
+    return p;
+}
+
 serverGamePackets.RestartResponse = function (res, text) {
     var p = new protocol.BasePacket();
 
@@ -245,12 +261,13 @@ serverGamePackets.ActionFailed = function () {
 serverGamePackets.QuestList = function () {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x80);
+    p.writeC(0x86);
 
-    p.writeH(0); // remove on real list
     p.writeH(0); // remove on real list
 
     // TODO: quest list
+
+    p.writeB(new Buffer(128));
 
     return p;
 }
