@@ -784,18 +784,17 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(0); // relation
 	
 
-    p.writeH(14 + char.Name.length * 2);
+    p.writeH(_appearanceBlockSize);
     p.writeH(char.Name.length);
     p.writeS2(char.Name);
     p.writeC(0); // TODO: isGM - fix for use //admin
-
     p.writeC(char.RaceId);
     p.writeC(char.Sex);
     p.writeD(char.BaseClassId); // 
     p.writeD(char.ClassId); //     ^
     p.writeC(char.Level);
 
-    p.writeH(18);
+    p.writeH(_baseStatsBlockSize);
     p.writeH(char.STR);
     p.writeH(char.DEX);
     p.writeH(char.CON);
@@ -805,36 +804,36 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(char.LUC);
     p.writeH(char.CHA);
 
-    p.writeH(14);
+    p.writeH(_maxStatsBlockSize);
     p.writeD(char.MaxHP);
     p.writeD(char.MaxMP);
     p.writeD(char.MaxCP);
 
-    p.writeH(38);
+    p.writeH(_currStatsBlockSize);
     p.writeD(char.CurHP);
     p.writeD(char.CurMP);
     p.writeD(char.CurCP);
-    p.writeQ(char.EXP);
     p.writeQ(char.SP);
+    p.writeQ(char.EXP);
     p.writeF(0); // TODO: percent EXP to next level
 
-    p.writeH(4);
+    p.writeH(_weaponGlowBlockSize);
     p.writeC(0); // enchant weapon glow
     p.writeC(0); // enchant armor glow
 
-    p.writeH(15);
+    p.writeH(_facialFeaturesBlockSize);
     p.writeD(char.HairStyle);
     p.writeD(char.HairColor);
     p.writeD(char.Face);
     p.writeC(1); // show hair accessory
 
-    p.writeH(6);
+    p.writeH(_personalStoreBlockSize);
     p.writeC(char.MountType); // mounte type
     p.writeC(0); // private store
     p.writeC(0); // can crystalize
     p.writeC(0x00); // can Use Alchemy
 
-    p.writeH(56);
+    p.writeH(_baseStatsv2BlockSize);
     p.writeH(0x14); // weaponFLag 0x2B || 0x14 || 0
     p.writeD(char.PAtk); // Physic --
     p.writeD(char.PSpd);
@@ -850,21 +849,21 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.MAccuracy);
     p.writeD(char.MCriticalHit);
     
-    p.writeH(14);
-    p.writeH(char.DefenceFire); // Resists --
+    p.writeH(_elemDefBlockSize); // Resists --
+    p.writeH(char.DefenceFire);
     p.writeH(char.DefenceWater);
     p.writeH(char.DefenceWind);
     p.writeH(char.DefenceEarth);
     p.writeH(char.DefenceHoly);
     p.writeH(char.DefenceUnholy);
 
-    p.writeH(18);
+    p.writeH(_locationBlockSize);
     p.writeD(char.X);
     p.writeD(char.Y);
     p.writeD(char.Z);
     p.writeD(char.BoatId);
 
-    p.writeH(18);
+    p.writeH(_moveSpeedBlockSize);
     p.writeH(char.RunSpd);
     p.writeH(char.WalkSpd);
     p.writeH(char.SwimRunSpd); // swimspeed
@@ -875,11 +874,11 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(char.FlyWalkSpd);
 
 
-    p.writeH(18);
+    p.writeH(_animSpeedBlockSize);
     p.writeF(char.MoveMultiplier);
     p.writeF(char.AttackSpeedMultiplier);
 
-    p.writeH(18);
+    p.writeH(_objBounBlockSize);
     // L2Summon pet = char.Pet();
     //if ((char.MountType() != 0) && (pet != null)) {
     //    writeF(pet.getTemplate().collisionRadius);
@@ -890,11 +889,11 @@ serverGamePackets.UserInfo = function (char) {
     p.writeF(char.CollisionHeight);
     //}
 
-    p.writeH(5);
+    p.writeH(_elemOffBlockSize);
     p.writeC(char.AttackElement.Id);
     p.writeH(char.AttackElement.Value);
 
-    p.writeH(30 + title.length * 2);
+    p.writeH(_pledgeInfoBlockSize);
     p.writeH(title.length);
     p.writeS2(title);
     p.writeH(char.PledgeType);
@@ -907,7 +906,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.AllyCrestId); // ally crest id
     p.writeC(0x00); // TODO: looking for party
 
-    p.writeH(22);
+    p.writeH(_statsv3BlockSize);
     p.writeC(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
     p.writeD(char.Karma);
     p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
@@ -919,13 +918,13 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(char.RecomHave); // c2 recommendations received
 
 
-    p.writeH(15);
+    p.writeH(_vitalityBlockSize);
     p.writeD(char.Vitality);
     p.writeC(0x01);
     p.writeD(char.Fame);
     p.writeD(char.RaidPoints); // Рейдовые Очки
 
-    p.writeH(9);
+    p.writeH(_talismansBlockSize);
     p.writeC(0); // talismans
     p.writeC(0); // cloac|jewels
     if (char.Team == 1) {
@@ -941,20 +940,20 @@ serverGamePackets.UserInfo = function (char) {
         p.writeD(0); // Светится вокруг персонажа красный пунтктирный круг.
     }
 
-    p.writeH(4);
+    p.writeH(_moveTypeBlockSize);
     p.writeC(0); // isFlying ? 0x02 : 0x00 // isSwiming ? 0x01 : 0x00
     p.writeC(char.IsRunning);
 
-    p.writeH(10);
+    p.writeH(_nameBlockSize);
     p.writeD(char.TitleColor);
     p.writeD(char.NameColor);
 
-    p.writeH(9);
+    p.writeH(_invBlockSize);
     p.writeD(0); // mount id
     p.writeH(char.InventoryLimit);
     p.writeC(0); // hideTitle - при 1 не показывает титул - TODO: cursedWeaponEquiped
 
-    p.writeH(9);
+    p.writeH(_unk1BlockSize);
     p.writeD(1);
     p.writeH(0);
     p.writeC(0)
