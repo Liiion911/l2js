@@ -520,15 +520,16 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.ObjectId); // ?
     p.writeS(char.Name);
     p.writeH(char.RaceId);
-    p.writeD(char.Sex);
+    p.writeC(char.Sex);
 
-    p.writeD(char.BaseClassId);
+    p.writeD(char.BaseClassId); // visible class
 
     // 12 D
     for (var i = 0; i < 12; i++) {
         p.writeD(0x00);
     }
 
+    p.writeH(0x00);
     p.writeH(0x00);
     p.writeH(0x00);
     p.writeH(0x00);
@@ -542,7 +543,7 @@ serverGamePackets.CharInfo = (char) => {
         p.writeD(0x00);
     }
 
-    p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
+    p.writeC(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
     p.writeD(char.Karma); // TODO: var karma = 0 - char.Karma;
 
     p.writeD(char.MSpd);
@@ -584,7 +585,7 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.AllyId);
     p.writeD(char.AllyCrestId); // ally crest id
 
-    p.writeD(0); // builder level
+    // p.writeD(0); // builder level
 
     p.writeC(!char.IsSiting); // standing - 1; sitting - 0 !!!
     p.writeC(char.IsRunning);
@@ -602,7 +603,7 @@ serverGamePackets.CharInfo = (char) => {
 
     p.writeC(0x00); // 1-find party members
 
-    p.writeD(char.AbnormalEffect);  // isFlying = 2 | isInZone WATER = 1 | 0
+    p.writeC(char.AbnormalEffect);  // isFlying = 2 | isInZone WATER = 1 | 0
 
     p.writeH(char.RecomHave); // recommendations received
     p.writeD(0); // mount id => _activeChar.getMountNpcId() + 1000000
@@ -644,7 +645,7 @@ serverGamePackets.CharInfo = (char) => {
     //    p.writeD(CursedWeaponsManager.getInstance().getLevel(char.CursedWeaponEquipedId()));
     //}
     //else {
-    p.writeD(0x00);
+    p.writeC(0x00);
     //}
 
     p.writeD(0); // _activeChar.getClanId() > 0 ? _activeChar.getClan().getReputationScore() : 
@@ -663,6 +664,8 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.CurMP);
 
     p.writeC(0); // _specialEffect
+
+    // for H -> getAveList
 
     p.writeC(0);
     p.writeC(1); //_showHairAccessory
