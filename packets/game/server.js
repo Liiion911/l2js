@@ -216,7 +216,8 @@ serverGamePackets.ChangeMoveType = function (char, type) {
     // type
     // 0 - walk, 1 - run
 
-    if (type.toLowerCase() != "run" || type != 1) type = 0; // WALK
+    if (!type) type = 0;
+    if ((typeof type == "string" && type.toLowerCase() != "run") || type != 1) type = 0; // WALK
 
     p.writeC(0x28);
     p.writeD(char.ObjectId);
