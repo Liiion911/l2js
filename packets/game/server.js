@@ -163,7 +163,7 @@ serverGamePackets.CreatureSay = function (sock, type, text) {
 serverGamePackets.ValidateLocation = function (char) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x61);
+    p.writeC(0x79);
 
     p.writeD(char.ObjectId);
 
@@ -172,6 +172,8 @@ serverGamePackets.ValidateLocation = function (char) {
     p.writeD(char.Z);
 
     p.writeD(char.Heading);
+
+    p.writeC(0xFF);
 
     return p;
 }
