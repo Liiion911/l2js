@@ -195,7 +195,7 @@ serverGamePackets.StopMove = function (char) {
 serverGamePackets.MoveToLocation = function (char, coords) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x01);
+    p.writeC(0x2f);
 
     p.writeD(char.ObjectId);
 
