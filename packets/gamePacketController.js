@@ -201,9 +201,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO: Send macroses
             // getMacroses().sendUpdate(0x01, 0, true);
 
-            // TODO: seven signs status
-            // if (SevenSigns.isSealValidationPeriod())
-            // packet SignsSky
+            helper.sendGamePacket('MacroListPacket', sock); // SendMacroList
+            console.log('[GS] Send packet: MacroListPacket');
+
             helper.sendGamePacket('SSQInfo', sock, 0);
             console.log('[GS] Send packet: SSQInfo');
 
@@ -215,7 +215,6 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             helper.sendGamePacket('ShortCutInit', sock, sock.client.char);
             console.log('[GS] Send packet: ShortCutInit');
-
 
             helper.sendGamePacket('ExPeriodicHenna', sock);
             console.log('[GS] Send packet: ExPeriodicHenna');
@@ -240,6 +239,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             helper.doAction(gameServer, sock, null, -1); // cancel target
 
+            //// TODO: seven signs status
+            //// if (SevenSigns.isSealValidationPeriod())
+            //// packet SignsSky
+
             // TODO: Happy Birthday!
 
             // Broadcast to clan members
@@ -256,6 +259,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             // TODO: buff and status icons
 
+            /*
             helper.poolGameServer.getConnection(function (err_con, connection) {
 
                 var query = db.skills.restorCharacterSkill(sock.client.char.CharId, sock.client.ClassId);
@@ -274,13 +278,13 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                         } else {
                             // TODO: send char skills and buffs
                             // restoreEffects
+            */
+            helper.sendGamePacket('SkillList', sock, sock.client.char, 0);
+            console.log('[GS] Send packet: SkillList');
 
-                            helper.sendGamePacket('SkillList', sock, sock.client.char, 0);
-                            console.log('[GS] Send packet: SkillList');
-
-                            helper.sendGamePacket('SkillCoolTime', sock);
-                            console.log('[GS] Send packet: SkillCoolTime');
-
+            helper.sendGamePacket('SkillCoolTime', sock);
+            console.log('[GS] Send packet: SkillCoolTime');
+            /*
                         }
 
                     });
@@ -288,8 +292,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                 }
 
             });
+            */
 
-            // TODO: FriendList
+            helper.sendGamePacket('FriendList', sock, sock.client.char);
+            console.log('[GS] Send packet: FriendList');
 
             helper.sendGamePacket('ExStorageMaxCount', sock, sock.client.char);
             console.log('[GS] Send packet: ExStorageMaxCount');
@@ -850,7 +856,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                         console.log('[GS] Recive packet ExSendClientINI');
 
                         var pack = clientGamePackets.ExSendClientINI(new Buffer(packetsArrayParse));
-                        
+
 
                         break;
                 }

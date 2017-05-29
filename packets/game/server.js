@@ -258,6 +258,18 @@ serverGamePackets.ActionFailed = function () {
     return p;
 }
 
+serverGamePackets.MacroListPacket = function () {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0xe8);
+    p.writeC(0); // _type
+    p.writeD(0); // _first ? 0x00 : _macroId
+    p.writeC(0); // _count
+    p.writeC(0); // ?? _macro != null ? 1 : 0
+
+    return p;
+}
+
 serverGamePackets.QuestList = function () {
     var p = new protocol.BasePacket();
 
@@ -365,6 +377,17 @@ serverGamePackets.SkillCoolTime = function (char, lernedSkill) {
 
     return p;
 }
+
+serverGamePackets.FriendList = function (char) {
+    var p = new protocol.BasePacket();
+
+    p.writeC(0x75);
+    p.writeD(0); // _friends count
+    // for =>
+
+    return p;
+}
+
 
 serverGamePackets.ExPeriodicHenna = function () {
     var p = new protocol.BasePacket();
@@ -683,7 +706,7 @@ serverGamePackets.UserInfo = function (char) {
     //}
     p.writeD(0); // relation
 
-    p.writeD(16 + char.Name.length * 2);
+    p.writeH(16 + char.Name.length * 2);
     p.writeH(char.Name.length);
     p.writeS2(char.Name);
     p.writeC(0); // TODO: isGM - fix for use //admin
@@ -695,14 +718,14 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(char.Level);
 
     p.writeH(18);
-    p.writeD(char.STR);
-    p.writeD(char.DEX);
-    p.writeD(char.CON);
-    p.writeD(char.INT);
-    p.writeD(char.WIT);
-    p.writeD(char.MEN);
-    p.writeD(char.LUC);
-    p.writeD(char.CHA);
+    p.writeH(char.STR);
+    p.writeH(char.DEX);
+    p.writeH(char.CON);
+    p.writeH(char.INT);
+    p.writeH(char.WIT);
+    p.writeH(char.MEN);
+    p.writeH(char.LUC);
+    p.writeH(char.CHA);
 
     p.writeH(14);
     p.writeD(char.MaxHP);
@@ -725,7 +748,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.HairStyle);
     p.writeD(char.HairColor);
     p.writeD(char.Face);
-    p.writeD(1); // show hair accessory
+    p.writeС(1); // show hair accessory
 
     p.writeH(6);
     p.writeC(char.MountType); // mounte type
@@ -807,7 +830,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(0x00); // TODO: looking for party
 
     p.writeH(22);
-    p.writeD(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
+    p.writeC(char.PvpFlag); // 0-non-pvp 1-pvp = violett name
     p.writeD(char.Karma);
     p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
     p.writeC(char.IsHero); // 0x01: Hero Aura
