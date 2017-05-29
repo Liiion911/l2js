@@ -677,6 +677,79 @@ serverGamePackets.CharInfo = (char) => {
 serverGamePackets.UserInfo = function (char) {
     var p = new protocol.BasePacket();
 	
+	var _fullBlockSize = 2 + 1 + 1 + 1;
+
+	var _blockSize = 2;
+
+	_appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
+	_fullBlockSize += _appearanceBlockSize - 2;
+
+	_baseStatsBlockSize = 16 + _blockSize;
+	_fullBlockSize += _baseStatsBlockSize;
+
+	_maxStatsBlockSize = 12 + _blockSize;
+	_fullBlockSize += _maxStatsBlockSize;
+
+	_currStatsBlockSize = 36 + _blockSize;
+	_fullBlockSize += _currStatsBlockSize;
+
+	_weaponGlowBlockSize = 2 + _blockSize;
+	_fullBlockSize += _weaponGlowBlockSize;
+
+	_facialFeaturesBlockSize = 13 + _blockSize;
+	_fullBlockSize += _facialFeaturesBlockSize;
+
+	_personalStoreBlockSize = 4 + _blockSize;
+	_fullBlockSize += _personalStoreBlockSize;
+
+	_baseStatsv2BlockSize = 54 + _blockSize;
+	_fullBlockSize += _baseStatsv2BlockSize;
+
+	_elemDefBlockSize = 12 + _blockSize;
+	_fullBlockSize += _elemDefBlockSize;
+
+	_locationBlockSize = 16 + _blockSize;
+	_fullBlockSize += _locationBlockSize;
+
+	_moveSpeedBlockSize = 16 + _blockSize;
+	_fullBlockSize += _moveSpeedBlockSize;
+
+	_animSpeedBlockSize = 16 + _blockSize;
+	_fullBlockSize += _animSpeedBlockSize;
+
+	_objBounBlockSize = 16 + _blockSize;
+	_fullBlockSize += _objBounBlockSize;
+
+	_elemOffBlockSize = 3 + _blockSize;
+	_fullBlockSize += _elemOffBlockSize;
+
+	_pledgeInfoBlockSize = (title.length * 2) + 30 + _blockSize;
+	_fullBlockSize += _pledgeInfoBlockSize - 2;
+
+	_statsv3BlockSize = 20 + _blockSize;
+	_fullBlockSize += _statsv3BlockSize;
+
+	_vitalityBlockSize = 13 + _blockSize;
+	_fullBlockSize += _vitalityBlockSize;
+
+	_talismansBlockSize = 7 + _blockSize;
+	_fullBlockSize += _talismansBlockSize;
+
+	_moveTypeBlockSize = 2 + _blockSize;
+	_fullBlockSize += _moveTypeBlockSize;
+
+	_nameBlockSize = 8 + _blockSize;
+	_fullBlockSize += _nameBlockSize;
+
+	_invBlockSize = 7 + _blockSize;
+	_fullBlockSize += _invBlockSize;
+
+	_unk1BlockSize = 7 + _blockSize;
+	_fullBlockSize += _unk1BlockSize;
+
+	console.log('[GS] -- FullBlockSize: ' + _fullBlockSize);
+	console.log('[GS] -- NodeBlockSize: ' + (373 + char.Name.length * 2 + title.length * 2));
+	
     var title = char.Title;
     //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
     //    title = "Invisible";
@@ -691,13 +764,13 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(0x32);
 
     p.writeD(char.ObjectId);
-
-    p.writeD(373 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
+	
+    p.writeD(_fullBlockSize); // blockSize (all info or small blocks info)
     p.writeH(23); // structType const
 
-    p.writeC(0xFF);
-    p.writeC(0xFF);
-    p.writeC(0xFF);
+    p.writeC(255);
+    p.writeC(255);
+    p.writeC(254);
 
     // 0x40 leader rights
     // siege flags: attacker - 0x180 sword over name, defender - 0x80 shield, 0xC0 crown (|leader), 0x1C0 flag (|leader)
