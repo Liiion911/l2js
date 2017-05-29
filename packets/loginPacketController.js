@@ -265,6 +265,8 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                 sock.destroy();
             }
 
+            pack.server_id = 1; // TODO: 1 // REMOVE: 2 // FIXIT: 3
+
             helper.poolLoginGameServer.getConnection(function (err_con, connection) {
 
                 if (err_con) {
