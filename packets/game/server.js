@@ -655,11 +655,11 @@ serverGamePackets.CharInfo = (char) => {
     // T2
     p.writeC(0x01);
 
-    p.writeD(char.CurCP + 1);
-    p.writeD(char.MaxHP + 1);
-    p.writeD(char.CurHP + 1);
-    p.writeD(char.MaxMP + 1);
-    p.writeD(char.CurMP + 1);
+    p.writeD(char.CurCP);
+    p.writeD(char.MaxHP);
+    p.writeD(char.CurHP);
+    p.writeD(char.MaxMP);
+    p.writeD(char.CurMP);
 
     p.writeC(0); // _specialEffect
 
@@ -688,7 +688,7 @@ serverGamePackets.UserInfo = function (char) {
 
     p.writeD(char.ObjectId);
 
-    p.writeD(372 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
+    p.writeD(373 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
     p.writeH(23); // structType const
 
     p.writeC(0xFF);
