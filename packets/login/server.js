@@ -155,8 +155,6 @@ serverLoginPackets.ServerList = function(servers) {
 
     });
 
-    console.log(p);
-
     return p;
 }
 

@@ -676,7 +676,7 @@ serverGamePackets.CharInfo = (char) => {
 
 serverGamePackets.UserInfo = function (char) {
     var p = new protocol.BasePacket();
-
+	
     var title = char.Title;
     //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
     //    title = "Invisible";
@@ -708,9 +708,11 @@ serverGamePackets.UserInfo = function (char) {
     //if (_activeChar.getSiegeState() == 2) {
     //    _relation |= 0x80;
     //}
+	
     p.writeD(0); // relation
+	
 
-    p.writeH(16 + char.Name.length * 2);
+    p.writeH(14 + char.Name.length * 2);
     p.writeH(char.Name.length);
     p.writeS2(char.Name);
     p.writeC(0); // TODO: isGM - fix for use //admin
@@ -820,7 +822,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(char.AttackElement.Id);
     p.writeH(char.AttackElement.Value);
 
-    p.writeH(32 + title.length * 2);
+    p.writeH(30 + title.length * 2);
     p.writeH(title.length);
     p.writeS2(title);
     p.writeH(char.PledgeType);
