@@ -859,6 +859,11 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
 
                         break;
+                    default:
+
+                        helper.unknownGamePacket(sock, packetId + " - " + id2, packetsArrayParse);
+
+                        break;
                 }
 
             } else {
