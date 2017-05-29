@@ -676,9 +676,19 @@ serverGamePackets.CharInfo = (char) => {
 
 serverGamePackets.UserInfo = function (char) {
     var p = new protocol.BasePacket();
+		
+    var title = char.Title;
+    //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
+    //    title = "Invisible";
+    //}
+    //if (char.Poly().isMorphed()) {
+    //    L2NpcTemplate polyObj = NpcTable.getInstance().getTemplate(char.Poly().getPolyId());
+    //    if (polyObj != null) {
+    //        title += " - " + polyObj.name;
+    //    }
+    //}
 	
 	var _fullBlockSize = 2 + 1 + 1 + 1;
-
 	var _blockSize = 2;
 
 	_appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
@@ -749,17 +759,6 @@ serverGamePackets.UserInfo = function (char) {
 
 	console.log('[GS] -- FullBlockSize: ' + _fullBlockSize);
 	console.log('[GS] -- NodeBlockSize: ' + (373 + char.Name.length * 2 + title.length * 2));
-	
-    var title = char.Title;
-    //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
-    //    title = "Invisible";
-    //}
-    //if (char.Poly().isMorphed()) {
-    //    L2NpcTemplate polyObj = NpcTable.getInstance().getTemplate(char.Poly().getPolyId());
-    //    if (polyObj != null) {
-    //        title += " - " + polyObj.name;
-    //    }
-    //}
 
     p.writeC(0x32);
 
