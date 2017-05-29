@@ -447,7 +447,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
                         gameServer.World.getInstance(sock).removePlayer(sock);
                         helper.syncPlayersCount(gameServer);
 
-                        helper.sendGamePacket('LeaveWorld', sock);
+                        //helper.sendGamePacket('LeaveWorld', sock);
 
                         console.log('[GS] Send packet LeaveWorld');
 

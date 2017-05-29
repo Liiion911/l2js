@@ -230,7 +230,7 @@ serverGamePackets.ChangeMoveType = function (char, type) {
 serverGamePackets.RestartResponse = function (res, text) {
     var p = new protocol.BasePacket();
 
-    p.writeC(0x5F);
+    p.writeC(0x71);
 
     p.writeD(res);
     p.writeS(text);
