@@ -748,7 +748,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.HairStyle);
     p.writeD(char.HairColor);
     p.writeD(char.Face);
-    p.writeС(1); // show hair accessory
+    p.writeC(1); // show hair accessory
 
     p.writeH(6);
     p.writeC(char.MountType); // mounte type
