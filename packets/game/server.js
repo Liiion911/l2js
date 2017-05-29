@@ -688,7 +688,7 @@ serverGamePackets.UserInfo = function (char) {
 
     p.writeD(char.ObjectId);
 
-    p.writeD(373 + char.Name.length * 2 + title.length * 2); // blockSize (all info or small blocks info)
+    p.writeD(373 + char.Name.length + title.length); // blockSize (all info or small blocks info)
     p.writeH(23); // structType const
 
     p.writeC(0xFF);
@@ -706,7 +706,7 @@ serverGamePackets.UserInfo = function (char) {
     //}
     p.writeD(0); // relation
 
-    p.writeH(16 + char.Name.length * 2);
+    p.writeH(16 + char.Name.length);
     p.writeH(char.Name.length);
     p.writeS2(char.Name);
     p.writeC(0); // TODO: isGM - fix for use //admin
@@ -816,7 +816,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(char.AttackElement.Id);
     p.writeH(char.AttackElement.Value);
 
-    p.writeH(32 + title.length * 2);
+    p.writeH(32 + title.length);
     p.writeH(title.length);
     p.writeS2(title);
     p.writeH(char.PledgeType);
