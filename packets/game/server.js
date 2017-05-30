@@ -694,7 +694,7 @@ serverGamePackets.UserInfo = function (char) {
 	var _blockSize = 2;
 
 	_appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
-	_fullBlockSize += _appearanceBlockSize - 2;
+    _fullBlockSize += _appearanceBlockSize;// - 2;
 
 	_baseStatsBlockSize = 16 + _blockSize;
 	_fullBlockSize += _baseStatsBlockSize;
@@ -736,7 +736,7 @@ serverGamePackets.UserInfo = function (char) {
 	_fullBlockSize += _elemOffBlockSize;
 
 	_pledgeInfoBlockSize = (title.length * 2) + 30 + _blockSize;
-	_fullBlockSize += _pledgeInfoBlockSize - 2;
+    _fullBlockSize += _pledgeInfoBlockSize;// - 2;
 
 	_statsv3BlockSize = 20 + _blockSize;
 	_fullBlockSize += _statsv3BlockSize;
@@ -836,7 +836,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeC(0x00); // can Use Alchemy
 
     p.writeH(_baseStatsv2BlockSize);
-    p.writeH(0x14); // weaponFLag 0x2B || 0x14 || 0
+    p.writeH(40); // weaponFLag 0x2B || 0x14 || 0
     p.writeD(char.PAtk); // Physic --
     p.writeD(char.PSpd);
     p.writeD(char.PDef);
