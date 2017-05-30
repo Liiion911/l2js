@@ -677,8 +677,7 @@ serverGamePackets.CharInfo = (char) => {
 };
 
 serverGamePackets.UserInfo = function (char) {
-    var p = new protocol.BasePacket();
-		
+
     var title = char.Title;
     //if (char.Appearance().getInvisible() && _activeChar.isGM()) {
     //    title = "Invisible";
@@ -760,13 +759,10 @@ serverGamePackets.UserInfo = function (char) {
 	_fullBlockSize += _unk1BlockSize;
 
 	console.log('[GS] -- FullBlockSize: ' + _fullBlockSize);
-	console.log('[GS] -- NodeBlockSize: ' + (373 + char.Name.length * 2 + title.length * 2));
+    console.log('[GS] -- NodeBlockSize: ' + (373 + char.Name.length * 2 + title.length * 2));
 
-    p.writeC(0x32);
+    var p = new protocol.BasePacket();
 
-    p.writeD(char.ObjectId);
-	
-    p.writeD(_fullBlockSize); // blockSize (all info or small blocks info)
     p.writeH(23); // structType const
 
     p.writeC(255);
@@ -958,9 +954,22 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(_unk1BlockSize);
     p.writeD(1);
     p.writeH(0);
-    p.writeC(0)
-    
-    return p;
+    p.writeC(0);
+
+
+
+
+    // --
+    var pd = new protocol.BasePacket();
+    pd.writeC(0x32);
+    pd.writeD(char.ObjectId);
+    pd.writeD(p._virtualBuffer.length);
+    pd.writeB(new Buffer(p._virtualBuffer));
+    // --
+
+    console.log('[GS] -- CalcBufferSize: ' + p._virtualBuffer.length);
+
+    return pd;
 }
 
 serverGamePackets.MagicAndSkillList = function (char) {
