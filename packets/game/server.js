@@ -689,7 +689,7 @@ serverGamePackets.UserInfo = function (char) {
     //    }
     //}
 	
-	var _fullBlockSize = 2 + 1 + 1 + 1;
+	var _fullBlockSize = 2 + 1 + 1 + 1; // + 4
 	var _blockSize = 2;
 
 	_appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
