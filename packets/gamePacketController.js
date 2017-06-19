@@ -112,7 +112,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // TODO:  Can't move if character is confused
             // activeChar.isOutOfControl() || 
 
-
+            console.log('[GS] cur: ' + curX + ' ' + curY + ' ' + curZ);
+            console.log('[GS] to: ' + pack.toX + ' ' + pack.toY + ' ' + pack.toZ);
 
             var distance = helper.getPlanDistanceSq(dx, dy);
 
@@ -128,6 +129,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // or trying to move a huge distance
             if (((dx * dx) + (dy * dy)) > 98010000 || distance > 9900) // 9900*9900 
             {
+                console.log('[GS] Distance: ' + distance + ' - is so big!');
                 helper.sendGamePacket('ActionFailed', sock);
                 helper.sendGamePacket('MoveToLocation', sock, sock.client.char, { X: sock.client.char.X, Y: sock.client.char.Y, Z: sock.client.char.Z }); // char stay and don't move
             } else {
@@ -143,9 +145,9 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
                 var heading = ((Math.atan2(-spx, -spy) * 10430.378350470452724949566316381) + 32768); // ? short.MaxValue 
 
-                //console.log('[GS] Move ticksToMove: ' + ticksToMove);
-                //console.log('[GS] Distance: ' + distance);
-                //console.log('[GS] Speed: ' + speed);
+                console.log('[GS] Move ticksToMove: ' + ticksToMove);
+                console.log('[GS] Speed: ' + speed);
+                console.log('[GS] Distance: ' + distance);
 
                 sock.client.char.Heading = heading;
 
