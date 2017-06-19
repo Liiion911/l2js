@@ -351,12 +351,12 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
 
             });
 
-            setInterval(() => {
+            setTimeout(() => {
 
                 helper.sendGamePacket('UserInfo', sock, sock.client.char);
                 console.log('[GS] Send packet: UserInfo');
 
-            }, 3000);
+            }, 1000);
 
 
             break;
