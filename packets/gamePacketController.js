@@ -117,6 +117,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             // activeChar.isOutOfControl() || 
 
             console.log('[GS] cur: ' + curX + ' ' + curY + ' ' + curZ);
+            console.log('[GS] orig: ' + pack.origX + ' ' + pack.origY + ' ' + pack.origZ);
             console.log('[GS] to: ' + pack.toX + ' ' + pack.toY + ' ' + pack.toZ);
 
             var distance = helper.getPlanDistanceSq(dx, dy);
