@@ -12,7 +12,7 @@ crypto.decrypt = function (sock, raw, offset, size) {
         var temp = 0;
         for (var i = 0; i < size; i++) {
             var temp2 = raw[offset + i] & 0xFF;
-            raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp);
+            raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp) & 0xff;
             temp = temp2;
         }
 
@@ -39,7 +39,7 @@ crypto.encrypt = function (sock, raw, offset, size) {
         var temp = 0;
         for (var i = 0; i < size; i++) {
             var temp2 = raw[offset + i] & 0xFF;
-            temp = temp2 ^ sock.client.newXorKeyEnc[i & 15] ^ temp;
+            temp = (temp2 ^ sock.client.newXorKeyEnc[i & 15] ^ temp) & 0xff;
             raw[offset + i] = temp;
         }
 
