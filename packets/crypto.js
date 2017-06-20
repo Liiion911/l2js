@@ -16,14 +16,14 @@ crypto.decrypt = function (sock, raw, offset, size) {
             temp = temp2;
         }
 
-        var old = sock.client.newXorKeyDec[8] & 0xff;
+        var old = (sock.client.newXorKeyDec[8] << 0) & 0xff;
         old |= (sock.client.newXorKeyDec[9] << 8) & 0xff00;
         old |= (sock.client.newXorKeyDec[10] << 0x10) & 0xff0000;
         old |= (sock.client.newXorKeyDec[11] << 0x18) & 0xff000000;
 
         old += size;
 
-        sock.client.newXorKeyDec[8] = (old & 0xff);
+        sock.client.newXorKeyDec[8] = ((old >> 0) & 0xff);
         sock.client.newXorKeyDec[9] = ((old >> 0x08) & 0xff);
         sock.client.newXorKeyDec[10] = ((old >> 0x10) & 0xff);
         sock.client.newXorKeyDec[11] = ((old >> 0x18) & 0xff);
@@ -43,14 +43,14 @@ crypto.encrypt = function (sock, raw, offset, size) {
             raw[offset + i] = temp;
         }
 
-        var old = sock.client.newXorKeyEnc[8] & 0xff;
+        var old = (sock.client.newXorKeyEnc[8] << 0) & 0xff;
         old |= (sock.client.newXorKeyEnc[9] << 8) & 0xff00;
         old |= (sock.client.newXorKeyEnc[10] << 0x10) & 0xff0000;
         old |= (sock.client.newXorKeyEnc[11] << 0x18) & 0xff000000;
 
         old += size;
 
-        sock.client.newXorKeyEnc[8] = (old & 0xff);
+        sock.client.newXorKeyEnc[8] = ((old >> 0) & 0xff);
         sock.client.newXorKeyEnc[9] = ((old >> 0x08) & 0xff);
         sock.client.newXorKeyEnc[10] = ((old >> 0x10) & 0xff);
         sock.client.newXorKeyEnc[11] = ((old >> 0x18) & 0xff);
