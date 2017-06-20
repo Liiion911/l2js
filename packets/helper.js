@@ -541,7 +541,7 @@ helper.preSendGame = function (array, sock) {
         }
 
         var len = array.length + 2;
-        newArray1[0] = (len & 0xff);
+        newArray1[0] = ((len >> 0) & 0xff);
         newArray1[1] = ((len >> 8) & 0xff);
 
         return newArray1;
@@ -560,7 +560,7 @@ helper.cryptPreSendGame = function (array, sock) {
         }
 
         var len = array.length + 2;
-        newArray1[0] = (len & 0xff);
+        newArray1[0] = ((len >> 0) & 0xff);
         newArray1[1] = ((len >> 8) & 0xff);
 
         return newArray1;
@@ -590,7 +590,7 @@ helper.preSendLogin = function (array, sock) {
 
         var newArray4 = new Uint8Array(newArray2.length + 2);
         var len = newArray2.length + 2;
-        newArray4[0] = (len & 0xff);
+        newArray4[0] = ((len >> 0) & 0xff);
         newArray4[1] = ((len >> 8) & 0xff);
         for (var i = 0; i < newArray2.length; i++) {
             newArray4[i + 2] = newArray2[i] || 0;
