@@ -39,7 +39,7 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
         packetsArrayParse[i - 1] = packetsArray[i] || 0;
     }
 
-    console.log('[GS] Recive packet: ' + packetId + ', OPcode: ' + packetId.toString('hex'));
+    console.log('[GS] Recive packet: ' + packetId + ', OPcode: ' + packetId.toString(16));
 
     switch (packetId) {
 
