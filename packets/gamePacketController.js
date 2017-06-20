@@ -108,10 +108,10 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var dx = pack.toX - curX;
             var dy = pack.toY - curY;
 
-            var toX1 = pack.toX - 33554432; // fix realX client bug ?!?!?!?!
-            var toX2 = pack.toX - 100663296; // fix realX client bug ?!?!?!?!
-            console.log('RealX 1: ' + toX1);
-            console.log('RealX 2: ' + toX2);
+            //var toX1 = pack.toX - 33554432; // fix realX client bug ?!?!?!?! not fixed
+            //var toX2 = pack.toX - 100663296; // fix realX client bug ?!?!?!?! not fixed
+            //console.log('RealX 1: ' + toX1);
+            //console.log('RealX 2: ' + toX2);
 
             // TODO:  Can't move if character is confused
             // activeChar.isOutOfControl() || 
