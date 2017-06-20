@@ -160,12 +160,21 @@ clientGamePackets.Say2 = function (buffer) {
 clientGamePackets.MoveBackwardToLocation = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
     p.readD();
+
+    console.log('ToX readD : ' + p._data[0]);
+
+    p.readD();
+
+    console.log('ToY readD : ' + p._data[1]);
+
     p.readD();
     p.readD();
     p.readD();
     p.readD();
     p.readD();
-    p.readD();
+
+    
+    
 
     p.toX = p._data[0];
     p.toY = p._data[1];
