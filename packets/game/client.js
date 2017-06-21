@@ -92,6 +92,11 @@ clientGamePackets.ValidatePosition = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
 
     console.log(p._buffer.toString('hex'));
+    console.log(p._buffer[7].toString(16));
+
+    if (p._buffer[7] != 0) {
+        p._buffer[7] = 0;
+    }
 
     p.readD();
     p.readD();
@@ -204,9 +209,6 @@ clientGamePackets.ProtocolVersion = function(buffer) {
 
 clientGamePackets.CharacterSelected = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
-
-    console.log(p._buffer.toString('hex'));
-
     p.readD();
     p.charIndex = p._data[0];
     return p;
@@ -214,9 +216,6 @@ clientGamePackets.CharacterSelected = function (buffer) {
 
 clientGamePackets.AuthLogin = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
-
-    console.log(p._buffer.toString('hex'));
-
     p.readS()
     p.readD();
     p.readD();
