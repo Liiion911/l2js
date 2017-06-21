@@ -160,7 +160,9 @@ clientGamePackets.Say2 = function (buffer) {
 clientGamePackets.MoveBackwardToLocation = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
 
+
     console.log(p._buffer.toString('hex'));
+    console.log(p._buffer[7].toString('hex') + ' ' + p._buffer[23]);
 
     if ((p._buffer[7] + p._buffer[23] == 255) && p._buffer[6] == 0 && p._buffer[2] == 255) {
         p._buffer[7] = 0;
