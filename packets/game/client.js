@@ -204,6 +204,9 @@ clientGamePackets.ProtocolVersion = function(buffer) {
 
 clientGamePackets.CharacterSelected = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
+
+    console.log(p._buffer.toString('hex'));
+
     p.readD();
     p.charIndex = p._data[0];
     return p;
@@ -211,6 +214,9 @@ clientGamePackets.CharacterSelected = function (buffer) {
 
 clientGamePackets.AuthLogin = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
+
+    console.log(p._buffer.toString('hex'));
+
     p.readS()
     p.readD();
     p.readD();
