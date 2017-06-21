@@ -91,8 +91,8 @@ clientGamePackets.RequestAction = function (buffer) {
 clientGamePackets.ValidatePosition = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
 
-    console.log(p._buffer.toString('hex'));
-    console.log(p._buffer[7].toString(16));
+    //console.log(p._buffer.toString('hex'));
+    //console.log(p._buffer[7].toString(16));
 
     if (p._buffer[7] != 0) {
         p._buffer[7] = 0;
@@ -168,9 +168,8 @@ clientGamePackets.Say2 = function (buffer) {
 clientGamePackets.MoveBackwardToLocation = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
 
-
-    console.log(p._buffer.toString('hex'));
-    console.log(p._buffer[7].toString(16) + ' ' + p._buffer[23].toString(16));
+    //console.log(p._buffer.toString('hex'));
+    //console.log(p._buffer[7].toString(16) + ' ' + p._buffer[23].toString(16));
 
     if ((p._buffer[7] + p._buffer[23] == 255) && p._buffer[6] == 0 && p._buffer[22] == 255) {
         p._buffer[7] = 0;
