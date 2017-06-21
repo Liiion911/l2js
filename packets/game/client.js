@@ -90,6 +90,9 @@ clientGamePackets.RequestAction = function (buffer) {
 
 clientGamePackets.ValidatePosition = function (buffer) {
     var p = new protocol.ClientPacket(buffer);
+
+    console.log(p._buffer.toString('hex'));
+
     p.readD();
     p.readD();
     p.readD();

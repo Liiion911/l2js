@@ -738,8 +738,8 @@ gamePacketController.onRecivePacket = function (data, sock, gameServer) {
             var dy = pack.Y - realY;
             var diffSq = ((dx * dx) + (dy * dy));
 
-            //console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
-            //console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
+            console.log("[GS] client pos: " + pack.X + " " + pack.Y + " " + pack.Z + " head " + pack.Heading);
+            console.log("[GS] server pos: " + realX + " " + realY + " " + realZ + " head " + sock.client.char.Heading); // TODO: may be not real heading xD
 
             if (!sock.client.char.moveObject) {
                 sock.client.char.moveObject = {};
