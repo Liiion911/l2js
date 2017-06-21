@@ -13,6 +13,9 @@ crypto.decrypt = function (sock, raw, offset, size) {
         for (var i = 0; i < size; i++) {
             var temp2 = raw[offset + i] & 0xFF;
             raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp) & 0xff;
+            if (i >= 6 && i <= 10) {
+                console.log((raw[offset + i]).toString(16));
+            }
             temp = temp2;
         }
 
