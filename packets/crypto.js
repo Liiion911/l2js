@@ -12,13 +12,13 @@ crypto.decrypt = function (sock, raw, offset, size) {
         var temp = 0;
         for (var i = 0; i < size; i++) {
             var temp2 = raw[offset + i] & 0xFF;
-            if (i == 8) {
-                console.log(temp2.toString(16) + ' ' + sock.client.newXorKeyDec[i & 15].toString(16) + ' ' + temp);
-            }
+            //if (i == 8) {
+            //    console.log(temp2.toString(16) + ' ' + sock.client.newXorKeyDec[i & 15].toString(16) + ' ' + temp);
+            //}
             raw[offset + i] = (temp2 ^ sock.client.newXorKeyDec[i & 15] ^ temp) & 0xff;
-            if (i == 8) {
-                console.log((raw[offset + i]).toString(16));
-            }
+            //if (i == 8) {
+            //    console.log((raw[offset + i]).toString(16));
+            //}
             temp = temp2;
         }
 
