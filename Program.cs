@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -79,14 +79,16 @@ namespace RSAGenerator
 
                     case "decode":
 
-                        var newKeys = JsonConvert.DeserializeObject<KeysModel>(File.ReadAllText(@"./RSAgenerator/keys/" + fileName + ".json"));
+                        var newKeys =
+                            JsonConvert.DeserializeObject<KeysModel>(
+                                File.ReadAllText(@"./RSAgenerator/keys/" + fileName + ".json"));
 
                         string username = "";
                         string password = "";
 
                         using (var txtreader = new StringReader(newKeys._privateKey))
                         {
-                            var newKeyPair = (AsymmetricCipherKeyPair)new PemReader(txtreader).ReadObject();
+                            var newKeyPair = (AsymmetricCipherKeyPair) new PemReader(txtreader).ReadObject();
                             RsaEngine rsaEng = new RsaEngine();
                             rsaEng.Init(false, newKeyPair.Private);
                             byte[] decryptBuff = rsaEng.ProcessBlock(newKeys.base64authString, 0, 128);
@@ -114,9 +116,19 @@ namespace RSAGenerator
 
                     default:
 
+                        Console.Write("not found action!");
+                        Console.ReadLine();
+
                         break;
 
                 }
+            }
+            else
+            {
+                
+                Console.Write("no action!");
+                Console.ReadLine();
+                        
             }
         }
 
