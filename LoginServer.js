@@ -105,7 +105,7 @@ loginDomain.run(() => {
 
             var pubKey = new Buffer(crypto.newPubKey());
 
-            var keygen = execFile(__dirname + "/RSAgenerator/RSAGenerator.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
+            var keygen = execFile(__dirname + "/RSAgenerator/RSAGen.exe", ["key", sock.client.sessionId.toString()], (error, stdout, stderr) => {
                 if (error) {
                     console.log(error);
                 }
