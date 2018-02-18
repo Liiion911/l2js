@@ -89,7 +89,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                 sock.client.login = sock.client.rsaKeyPairs.login.toLowerCase();
                 sock.client.pass = md5(btoa(sock.client.rsaKeyPairs.pass));
 
-                var query = db.getAccountByLoginPassword(sock.client.login, sock.client.pass);
+                var query = db.getAccountByLogin(sock.client.login);
                 helper.poolLoginServer.getConnection(function (err_con, connection) {
 
                     if (err_con) {
@@ -102,17 +102,27 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
                                 console.log(err);
                                 connection.release();
                             } else {
+                                var pass = sock.client.pass;
                                 if (result.length == 1) {
 
                                     connection.release();
 
-                                    sock.client.session1_1 = crypto.randomInteger(1000, 9999);
-                                    sock.client.session1_2 = crypto.randomInteger(1000, 9999);
+                                    var userPass = result[0].password;
 
-                                    sock.client.status = 4;
-                                    helper.sendLoginPacket('LoginOk', sock, sock.client.session1_1, sock.client.session1_2);
+                                    if (pass === userPass) {
 
-                                    console.log('[LS] Send packet LoginOk');
+                                        sock.client.session1_1 = crypto.randomInteger(1000, 9999);
+                                        sock.client.session1_2 = crypto.randomInteger(1000, 9999);
+
+                                        sock.client.status = 4;
+                                        helper.sendLoginPacket('LoginOk', sock, sock.client.session1_1, sock.client.session1_2);
+
+                                        console.log('[LS] Send packet LoginOk');
+                                    } else {
+                                        sock.client.status = 3;
+                                        helper.sendLoginPacket('LoginFail', sock, 3);
+                                        console.log('[LS] Send packet LoginFail');
+                                    }
 
                                 } else if (helper.autoCreate) {
 
@@ -127,6 +137,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
                                             sock.client.status = 3;
                                             helper.sendLoginPacket('LoginFail', sock, 3);
+                                            console.log('[LS] Send packet LoginFail');
 
                                         } else {
 

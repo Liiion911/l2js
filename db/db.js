@@ -5,10 +5,10 @@ var sqlModels = require('./models/base.js');
 var db = {};
 db.skills = require('./skills.js');
 
-db.getAccountByLoginPassword = function (login, pass) {
+db.getAccountByLogin = function (login) {
     return sqlModels.accounts
         .where(sqlModels.accounts.login.equals(login))
-        .and(sqlModels.accounts.password.equals(pass))
+        //.and(sqlModels.accounts.password.equals(pass))
         .toQuery();
 };
 

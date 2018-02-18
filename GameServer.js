@@ -37,7 +37,7 @@ gameDomain.run(() => {
         server_id: 1,
         clients: [],
         onlineSyncCount: -1,
-        loginServerMasterIP: '192.168.0.100',
+        loginServerMasterIP: '127.0.0.1',
         loginServerMasterPort: 5555,
         settings: {
             gameTime: 55,
@@ -50,11 +50,11 @@ gameDomain.run(() => {
 
     helper.poolGameServer = mysql.createPool({
         connectionLimit: 100,
-        host: '192.168.0.100', //ikonto.ddns.net
+        host: '127.0.0.1', //ikonto.ddns.net
         port: 3306,
         user: 'root',
-        password: 'iPRyRKu2',
-        database: 'l2jgs'
+        password: 'admin',
+        database: 'l2js'
     });
 
     gameServer.server = net.createServer();
@@ -199,7 +199,7 @@ gameDomain.run(() => {
                     return this.players;
                 },
                 getPlayerByObjectId: function (objectId) {
-                    var players = this.getPlayers();
+                    let players = this.getPlayers();
                     return _.find(players, (player) => { return player.client.char.ObjectId == objectId });
                 },
                 getPlayersInRadius: function (sock, radius, checkZ, strictCheck) {
@@ -215,7 +215,7 @@ gameDomain.run(() => {
             }
         ],
         getInstance: (sock) => {
-            var instanceId = 0;
+            let instanceId = 0;
             if (sock && sock.client.char && gameServer.World.instances.length > sock.client.char.Instance) instanceId = sock.client.char.Instance;
             return gameServer.World.instances[instanceId];
         }
@@ -231,7 +231,7 @@ gameDomain.run(() => {
 
     helper.getNextObjectId((res) => {
 
-        console.log('[GS] Next ObjectId: ' + res[0].nextObjectId)
+        console.log('[GS] Next ObjectId: ' + res[0].nextObjectId);
 
         gameServer.nextObjectId = res[0].nextObjectId;
 

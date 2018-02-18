@@ -42,20 +42,20 @@ loginDomain.run(() => {
 
     helper.poolLoginServer = mysql.createPool({
         connectionLimit: 100,
-        host: '192.168.0.100', //ikonto.ddns.net
+        host: '127.0.0.1', //ikonto.ddns.net
         port: 3306,
         user: 'root',
-        password: 'iPRyRKu2',
-        database: 'l2jls'
+        password: 'admin',
+        database: 'l2js'
     });
 
     helper.poolLoginGameServer = mysql.createPool({
         connectionLimit: 10,
-        host: '192.168.0.100', //ikonto.ddns.net
+        host: '127.0.0.1', //ikonto.ddns.net
         port: 3306,
         user: 'root',
-        password: 'iPRyRKu2',
-        database: 'l2jgs'
+        password: 'admin',
+        database: 'l2js'
     });
 
 
@@ -135,7 +135,7 @@ loginDomain.run(() => {
                 }
 
             });
-
+            
         } catch (ex) {
             loginServer.exceptionHandler(ex);
         }

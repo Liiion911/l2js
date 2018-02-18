@@ -518,7 +518,7 @@ serverGamePackets.CharInfo = (char) => {
     p.writeD(char.X);
     p.writeD(char.Y);
     p.writeD(char.Z);
-    p.writeD(0); // _clanBoatObjectId
+    p.writeD(0); // _clanBoatObjectId // _vehicleId
     p.writeD(char.ObjectId); // ?
     p.writeS(char.Name);
     p.writeH(char.RaceId);
@@ -531,14 +531,11 @@ serverGamePackets.CharInfo = (char) => {
         p.writeD(0x00);
     }
 
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
-    p.writeH(0x00);
+    p.writeQ(0x00);
+    p.writeQ(0x00);
+    p.writeQ(0x00);
 
-    p.writeC(0); // talismans count
+    p.writeC(0); // talismans count // getArmorEnchant()
 
     // 9 D
     for (var i = 0; i < 9; i++) {
@@ -592,10 +589,10 @@ serverGamePackets.CharInfo = (char) => {
     p.writeC(!char.IsSiting); // standing - 1; sitting - 0 !!!
     p.writeC(char.IsRunning);
     p.writeC(char.IsInCombat);
-    p.writeC(char.IsAlikeDead);
+    p.writeC(char.IsAlikeDead); // isInOlympiadMode() ? 1 : 0
     p.writeC(!char.Visible); // invis - 1, visible - 0 !!
 
-    p.writeC(char.MountType);
+    p.writeC(char.MountType); // 1-on Strider, 2-on Wyvern, 3-on Great Wolf, 0-no mount
     p.writeC(char.PrivateStoreType);
 
     p.writeH(char.Cubics.length);
@@ -608,12 +605,12 @@ serverGamePackets.CharInfo = (char) => {
     p.writeC(char.AbnormalEffect);  // isFlying = 2 | isInZone WATER = 1 | 0
 
     p.writeH(char.RecomHave); // recommendations received
-    p.writeD(0); // mount id => _activeChar.getMountNpcId() + 1000000
+    p.writeD(0); // mount id => getMountNpcId() + 1000000
     p.writeD(char.ClassId);
 
     p.writeD(0x00);
 
-    p.writeC(0); // _activeChar.isMounted() ? 0 : char.EnchantEffect()
+    p.writeC(0); // isMounted() ? 0 : char.EnchantEffect()
 
     if (char.Team == 1) {
         p.writeC(0x01); // team circle around feet 1= Blue, 2 = red
@@ -638,8 +635,8 @@ serverGamePackets.CharInfo = (char) => {
 
     p.writeD(char.Heading);
 
-    p.writeD(char.PledgeClass); // changes the text above CP on Status Window
-    p.writeD(char.PledgeType);
+    p.writeC(char.PledgeClass); // changes the text above CP on Status Window
+    p.writeH(char.PledgeType);
 
     p.writeD(char.TitleColor);
 
@@ -650,31 +647,35 @@ serverGamePackets.CharInfo = (char) => {
     p.writeC(0x00);
     //}
 
-    p.writeD(0); // _activeChar.getClanId() > 0 ? _activeChar.getClan().getReputationScore() : 
+    p.writeD(0); // getClanId() > 0 ? getClan().getReputationScore() : 
 
     // T1
-    p.writeD(0); // _activeChar.getTransformation()
-    p.writeD(0); //_activeChar.getAgathionId()
+    p.writeH(0); // getTransformation()
+    p.writeH(0);
+    p.writeH(0); //getAgathionId()
+    p.writeH(0);
 
     // T2
     p.writeC(0x01);
 
-    p.writeD(char.CurCP);
-    p.writeD(char.MaxHP);
+    p.writeD(0);
     p.writeD(char.CurHP);
-    p.writeD(char.MaxMP);
+    p.writeD(char.MaxHP);
     p.writeD(char.CurMP);
+    p.writeD(char.MaxMP);
 
-    p.writeC(0); // _specialEffect
+    p.writeC(0); // _showHairAccessory - isShowingHat
 
     // for H -> getAveList
+    p.writeD(0);
 
-    p.writeC(0);
-    p.writeC(1); //_showHairAccessory
-    p.writeC(0); //_abilityPoints
+    p.writeC(0); // hasCoCAura() ? 100 : 0
+    p.writeC(0); // getCloakStatus
+    p.writeC(0); //_abilityPoints // showWings ? getSpentAbilityPoints : 0
 
     return p;
 };
+
 
 serverGamePackets.UserInfo = function (char) {
 
@@ -688,99 +689,102 @@ serverGamePackets.UserInfo = function (char) {
     //        title += " - " + polyObj.name;
     //    }
     //}
-	
-	var _fullBlockSize = 2 + 1 + 1 + 1; // + 4
-	var _blockSize = 2;
 
-	_appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
+    var _fullBlockSize = 2 + 1 + 1 + 1; // + 4
+    var _blockSize = 2;
+
+    _appearanceBlockSize = (char.Name.length * 2) + 14 + _blockSize;
     _fullBlockSize += _appearanceBlockSize;// - 2;
 
-	_baseStatsBlockSize = 16 + _blockSize;
-	_fullBlockSize += _baseStatsBlockSize;
+    _baseStatsBlockSize = 16 + _blockSize;
+    _fullBlockSize += _baseStatsBlockSize;
 
-	_maxStatsBlockSize = 12 + _blockSize;
-	_fullBlockSize += _maxStatsBlockSize;
+    _maxStatsBlockSize = 12 + _blockSize;
+    _fullBlockSize += _maxStatsBlockSize;
 
-	_currStatsBlockSize = 36 + _blockSize;
-	_fullBlockSize += _currStatsBlockSize;
+    _currStatsBlockSize = 36 + _blockSize;
+    _fullBlockSize += _currStatsBlockSize;
 
-	_weaponGlowBlockSize = 2 + _blockSize;
-	_fullBlockSize += _weaponGlowBlockSize;
+    _weaponGlowBlockSize = 2 + _blockSize;
+    _fullBlockSize += _weaponGlowBlockSize;
 
-	_facialFeaturesBlockSize = 13 + _blockSize;
-	_fullBlockSize += _facialFeaturesBlockSize;
+    _facialFeaturesBlockSize = 13 + _blockSize;
+    _fullBlockSize += _facialFeaturesBlockSize;
 
-	_personalStoreBlockSize = 4 + _blockSize;
-	_fullBlockSize += _personalStoreBlockSize;
+    _personalStoreBlockSize = 4 + _blockSize;
+    _fullBlockSize += _personalStoreBlockSize;
 
-	_baseStatsv2BlockSize = 54 + _blockSize;
-	_fullBlockSize += _baseStatsv2BlockSize;
+    _baseStatsv2BlockSize = 54 + _blockSize;
+    _fullBlockSize += _baseStatsv2BlockSize;
 
-	_elemDefBlockSize = 12 + _blockSize;
-	_fullBlockSize += _elemDefBlockSize;
+    _elemDefBlockSize = 12 + _blockSize;
+    _fullBlockSize += _elemDefBlockSize;
 
-	_locationBlockSize = 16 + _blockSize;
-	_fullBlockSize += _locationBlockSize;
+    _locationBlockSize = 16 + _blockSize;
+    _fullBlockSize += _locationBlockSize;
 
-	_moveSpeedBlockSize = 16 + _blockSize;
-	_fullBlockSize += _moveSpeedBlockSize;
+    _moveSpeedBlockSize = 16 + _blockSize;
+    _fullBlockSize += _moveSpeedBlockSize;
 
-	_animSpeedBlockSize = 16 + _blockSize;
-	_fullBlockSize += _animSpeedBlockSize;
+    _animSpeedBlockSize = 16 + _blockSize;
+    _fullBlockSize += _animSpeedBlockSize;
 
-	_objBounBlockSize = 16 + _blockSize;
-	_fullBlockSize += _objBounBlockSize;
+    _objBounBlockSize = 16 + _blockSize;
+    _fullBlockSize += _objBounBlockSize;
 
-	_elemOffBlockSize = 3 + _blockSize;
-	_fullBlockSize += _elemOffBlockSize;
+    _elemOffBlockSize = 3 + _blockSize;
+    _fullBlockSize += _elemOffBlockSize;
 
-	_pledgeInfoBlockSize = (title.length * 2) + 30 + _blockSize;
+    _pledgeInfoBlockSize = (title.length * 2) + 30 + _blockSize;
     _fullBlockSize += _pledgeInfoBlockSize;// - 2;
 
-	_statsv3BlockSize = 20 + _blockSize;
-	_fullBlockSize += _statsv3BlockSize;
+    _statsv3BlockSize = 20 + _blockSize;
+    _fullBlockSize += _statsv3BlockSize;
 
-	_vitalityBlockSize = 13 + _blockSize;
-	_fullBlockSize += _vitalityBlockSize;
+    _vitalityBlockSize = 13 + _blockSize;
+    _fullBlockSize += _vitalityBlockSize;
 
-	_talismansBlockSize = 7 + _blockSize;
-	_fullBlockSize += _talismansBlockSize;
+    _talismansBlockSize = 7 + _blockSize;
+    _fullBlockSize += _talismansBlockSize;
 
-	_moveTypeBlockSize = 2 + _blockSize;
-	_fullBlockSize += _moveTypeBlockSize;
+    _moveTypeBlockSize = 2 + _blockSize;
+    _fullBlockSize += _moveTypeBlockSize;
 
-	_nameBlockSize = 8 + _blockSize;
-	_fullBlockSize += _nameBlockSize;
+    _nameBlockSize = 8 + _blockSize;
+    _fullBlockSize += _nameBlockSize;
 
-	_invBlockSize = 7 + _blockSize;
-	_fullBlockSize += _invBlockSize;
+    _invBlockSize = 7 + _blockSize;
+    _fullBlockSize += _invBlockSize;
 
-	_unk1BlockSize = 7 + _blockSize;
-	_fullBlockSize += _unk1BlockSize;
+    _unk1BlockSize = 7 + _blockSize;
+    _fullBlockSize += _unk1BlockSize;
 
-	console.log('[GS] -- FullBlockSize: ' + _fullBlockSize);
+    console.log('[GS] -- FullBlockSize: ' + _fullBlockSize);
     console.log('[GS] -- NodeBlockSize: ' + (373 + char.Name.length * 2 + title.length * 2));
 
     var p = new protocol.BasePacket();
 
     p.writeH(23); // structType const
 
-    p.writeC(255);
-    p.writeC(255);
-    p.writeC(254);
+    p.writeC(255); // 255
+    p.writeC(255); // 255
+    p.writeC(254); // 254
 
     // 0x40 leader rights
     // siege flags: attacker - 0x180 sword over name, defender - 0x80 shield, 0xC0 crown (|leader), 0x1C0 flag (|leader)
-    //_relation = _activeChar.isClanLeader() ? 0x40 : 0;
-    //if (_activeChar.getSiegeState() == 1) {
-    //    _relation |= 0x180;
+    //int relation = 0x00;
+    //if (player.getClan() != null) {
+    //    relation |= 0x20;
+    //    if (player.isClanLeader()) {
+    //        relation |= 0x40;
+    //    }
     //}
-    //if (_activeChar.getSiegeState() == 2) {
-    //    _relation |= 0x80;
+    //if (player.getSiegeState() == 1) {
+    //    relation |= 0x1000;
     //}
-	
+
     p.writeD(0); // relation
-	
+
 
     p.writeH(_appearanceBlockSize);
     p.writeH(char.Name.length);
@@ -816,20 +820,20 @@ serverGamePackets.UserInfo = function (char) {
     p.writeF(0); // TODO: percent EXP to next level
 
     p.writeH(_weaponGlowBlockSize);
-    p.writeC(0); // enchant weapon glow
-    p.writeC(0); // enchant armor glow
+    p.writeC(0); // enchant weapon glow // weapon ecnahnt, but hard rules on airship
+    p.writeC(0); // enchant armor glow // getArmorEnchant
 
     p.writeH(_facialFeaturesBlockSize);
     p.writeD(char.HairStyle);
     p.writeD(char.HairColor);
     p.writeD(char.Face);
-    p.writeC(1); // show hair accessory
+    p.writeC(0); // show hair accessory // isShowingHat
 
     p.writeH(_personalStoreBlockSize);
     p.writeC(char.MountType); // mounte type
-    p.writeC(0); // private store
-    p.writeC(0); // can crystalize
-    p.writeC(0x00); // can Use Alchemy
+    p.writeC(0); // private store // (player.getPrivateStoreType() != L2PcInstance.STORE_PRIVATE_CUSTOM_SELL ? player.getPrivateStoreType() : L2PcInstance.STORE_PRIVATE_SELL)
+    p.writeC(0); // can crystalize // (player.canCrystallize() ? 1 : 0)
+    p.writeC(0x00); // can Use Alchemy // getSpentAbilityPoints
 
     p.writeH(_baseStatsv2BlockSize);
     p.writeH(40); // weaponFLag 0x2B || 0x14 || 0
@@ -846,7 +850,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.MDef);
     p.writeD(char.MAccuracy);
     p.writeD(char.MCriticalHit);
-    
+
     p.writeH(_elemDefBlockSize); // Resists --
     p.writeH(char.DefenceFire);
     p.writeH(char.DefenceWater);
@@ -864,12 +868,12 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(_moveSpeedBlockSize);
     p.writeH(char.RunSpd);
     p.writeH(char.WalkSpd);
-    p.writeH(char.SwimRunSpd); // swimspeed
-    p.writeH(char.SwimWalkSpd); // swimspeed
-    p.writeH(char.FlRunSpd); // mount
-    p.writeH(char.FlWalkSpd); // mount
-    p.writeH(char.FlyRunSpd);
-    p.writeH(char.FlyWalkSpd);
+    p.writeH(char.SwimRunSpd); // swimspeed // runSpd
+    p.writeH(char.SwimWalkSpd); // swimspeed // walkSpd
+    p.writeH(char.FlRunSpd); // mount // 0
+    p.writeH(char.FlWalkSpd); // mount // 0
+    p.writeH(char.FlyRunSpd); // isFly ? runSpd : 0
+    p.writeH(char.FlyWalkSpd); // isFly ? walkSpd : 0
 
 
     p.writeH(_animSpeedBlockSize);
@@ -899,8 +903,8 @@ serverGamePackets.UserInfo = function (char) {
     p.writeD(char.ClanCrestLargeId);
     p.writeD(char.ClanCrestId);
     p.writeD(char.ClanPrivileges);
-    p.writeC(char.IsClanLeader);
-    p.writeD(char.AllyId);
+    p.writeH(char.IsClanLeader);
+    p.writeH(char.AllyId);
     p.writeD(char.AllyCrestId); // ally crest id
     p.writeC(0x00); // TODO: looking for party
 
@@ -918,33 +922,37 @@ serverGamePackets.UserInfo = function (char) {
 
     p.writeH(_vitalityBlockSize);
     p.writeD(char.Vitality);
-    p.writeC(0x01);
+    p.writeC(0x00);
     p.writeD(char.Fame);
     p.writeD(char.RaidPoints); // Рейдовые Очки
 
     p.writeH(_talismansBlockSize);
-    p.writeC(0); // talismans
-    p.writeC(0); // cloac|jewels
+    p.writeC(0); // max talismans
+    p.writeC(0); // max cloac|jewels
     if (char.Team == 1) {
-        p.writeC(0x01); // team circle around feet 1= Blue, 2 = red
-        p.writeD(1); // Светится вокруг персонажа красный пунтктирный круг.
+        p.writeC(0x01); // team circle around feet 1= Blue, 3 = red, 2 = white
+        p.writeC(1); // Светится вокруг персонажа красный пунтктирный круг.
     }
     else if (char.Team == 2) {
-        p.writeC(0x02); // team circle around feet 1= Blue, 2 = red
-        p.writeD(1); // Светится вокруг персонажа красный пунтктирный круг.
+        p.writeC(0x03); // team circle around feet 1= Blue, 3 = red, 2 = white
+        p.writeC(1); // Светится вокруг персонажа красный пунтктирный круг.
     }
     else {
-        p.writeC(0x00); // team circle around feet 1= Blue, 2 = red
-        p.writeD(0); // Светится вокруг персонажа красный пунтктирный круг.
+        p.writeC(0x00); // team circle around feet 1= Blue, 3 = red, 2 = white
+        p.writeC(0); // Светится вокруг персонажа красный пунтктирный круг.
     }
 
+    p.writeC(0);
+    p.writeC(0);
+    p.writeC(0);
+
     p.writeH(_moveTypeBlockSize);
-    p.writeC(0); // isFlying ? 0x02 : 0x00 // isSwiming ? 0x01 : 0x00
+    p.writeC(0); // isFlying ? 0x01 : 0x00
     p.writeC(char.IsRunning);
 
     p.writeH(_nameBlockSize);
-    p.writeD(char.TitleColor);
     p.writeD(char.NameColor);
+    p.writeD(char.TitleColor);
 
     p.writeH(_invBlockSize);
     p.writeD(0); // mount id
@@ -954,7 +962,7 @@ serverGamePackets.UserInfo = function (char) {
     p.writeH(_unk1BlockSize);
     p.writeD(1);
     p.writeH(0);
-    p.writeC(0);
+    p.writeC(0); // player.hasCoCAura() ? 100 : 0
 
 
 
@@ -1113,11 +1121,14 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
 
     p.writeC(0x09);
     p.writeD(chars.length);
-    p.writeD(gameServer.settings.maxCharacters);
+    p.writeD(7); //(gameServer.settings.maxCharacters);
     p.writeC(0); // _unk
-    p.writeC(0); // PLAY_FREE
-    p.writeD(0); // isKorean
+    p.writeD(1); // PLAY_FREE
+    p.writeC(1); // isKorean
     p.writeC(0); // gift
+
+    console.log(login);
+    console.log(chars.length);
 
     _.each(chars, (char) => {
 
@@ -1134,54 +1145,52 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
         p.writeD(char.RaceId);
         p.writeD(char.BaseClassId); // it's BaseClassId
 
-        p.writeD(gameServer.server_id); // serverId    // active - ??
+        p.writeD(1); //(gameServer.server_id); // serverId    // active - ?? // 1
 
         p.writeD(char.X);
         p.writeD(char.Y);
         p.writeD(char.Z);
 
-        p.writeF(char.CurHP);
-        p.writeF(char.CurMP);
+        p.writeF(char.CurHP); // char.CurHP
+        p.writeF(char.CurMP); //char.CurMP
 
         p.writeQ(char.SP);
         p.writeQ(char.EXP);
 
-        p.writeF(0); // TODO: percent EXPT to next level
+        p.writeF(Math.min(char.EXP/100, 100)); // TODO: percent EXPT to next level
         p.writeD(char.Level); // TODO: check for current SP >= nextLevelSP = increaseLevel()
 
         p.writeD(char.Karma);
         p.writeD(char.PK);
         p.writeD(char.PVP);
 
+        // D - 6
         for (var i = 0; i < 7; i++) { // trash
             p.writeD(0x00);
         }
-
+        // D - 2
         p.writeD(0x00);
         p.writeD(0x00);
 
 
-        for (var i = 0; i < 21; i++) { // paperdollOrder
+        for (var i = 0; i < 27; i++) { // paperdollOrder
             p.writeD(0);
         }
 
-        for (var i = 0; i < 21; i++) { //paperdollOrder 2
+        for (var i = 0; i < 16; i++) { //paperdollOrder 2
             p.writeD(0);
         }
 
         p.writeH(0);
         p.writeH(0);
         p.writeH(0);
-        p.writeH(0);
-        p.writeH(0);
-
 
         p.writeD(char.HairStyle);
         p.writeD(char.HairColor);
         p.writeD(char.Face);
 
-        p.writeF(char.MaxHP);
-        p.writeF(char.MaxMP);
+        p.writeF(char.MaxHP); // 
+        p.writeF(char.MaxMP); // 
 
         p.writeD(char.DeleteDays);
 
@@ -1191,27 +1200,27 @@ serverGamePackets.CharSelectInfo = function (gameServer, login, session2_1, char
 
         p.writeC(Math.min(char.EnchantEffect, 127));
 
-        p.writeD(char.AugmentationId); // LEFT_HANF
-        p.writeD(char.AugmentationId); // RIGHT_HAND
+        p.writeQ(char.AugmentationId); // RIGHT_HANF
 
         p.writeD(0); // getTransform: weaponId == 8190 => 301; weaponId == 8689 => 302;
 
         p.writeD(0); // _petObjectId
         p.writeD(0); // _petLvl
         p.writeD(0); // _petFood
-        p.writeD(9); // _petFoodLvl
+        p.writeD(0); // _petFoodLvl
         p.writeF(0); // _petHP
         p.writeF(0); // _petMP
 
-        p.writeD(1); // Vitality Level
+        p.writeD(2); // Vitality Level // Points
         p.writeD(200); // Vitality percent
-        p.writeD(5); // Vitality items count
+        p.writeD(5); // Vitality items count // 5
 
         p.writeD(1); // Available - active = not banned / suspended
 
-        p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
-        p.writeC(char.IsHero);
-        p.writeC(1); //_unk2 - Show Hair Accessory
+        //p.writeC(char.IsNoble); // 0x01: symbol on char menu ctrl+I
+        //p.writeC(char.IsHero);
+        p.writeH(0);
+        p.writeC(0); //_unk2 - Show Hair Accessory
 
     });
 

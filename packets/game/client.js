@@ -94,9 +94,9 @@ clientGamePackets.ValidatePosition = function (buffer) {
     //console.log(p._buffer.toString('hex'));
     //console.log(p._buffer[7].toString(16));
 
-    if (p._buffer[7] != 0) {
-        p._buffer[7] = 0;
-    }
+    //if (p._buffer[7] != 0) {
+    //    p._buffer[7] = 0;
+    //}
 
     p.readD();
     p.readD();
@@ -171,10 +171,10 @@ clientGamePackets.MoveBackwardToLocation = function (buffer) {
     //console.log(p._buffer.toString('hex'));
     //console.log(p._buffer[7].toString(16) + ' ' + p._buffer[23].toString(16));
 
-    if ((p._buffer[7] + p._buffer[23] == 255) && p._buffer[6] == 0 && p._buffer[22] == 255) {
-        p._buffer[7] = 0;
-        p._buffer[23] = 255;
-    }
+    //if ((p._buffer[7] + p._buffer[23] == 255) && p._buffer[6] == 0 && p._buffer[22] == 255) {
+    //    p._buffer[7] = 0;
+    //    p._buffer[23] = 255;
+    //}
 
     p.readD();
     p.readD();

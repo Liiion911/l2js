@@ -5,6 +5,7 @@
   "main": "LoginServer.js",
   "dependencies": {
     "mysql": "^2.14.1",
+    "rsa-compat": "^1.2.7",
     "sql": "^0.78.0",
     "underscore": "^1.8.3"
   },
