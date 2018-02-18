@@ -46,3 +46,5 @@ Wireshark.lnk
 RSAgenerator/
 *.lnk
 .vs/Lineage2.sqlite
+.idea/
+.vs/
