@@ -77,7 +77,7 @@ loginPacketController.onRecivePacket = function (data, sock, loginServer) {
 
             fs.writeFileSync(__dirname + "/../RSAgenerator/keys/" + sock.client.sessionId + ".json", util.inspect(sock.client.rsaKeyPairs), 'utf-8');
 
-            var decoder = execFile(__dirname + "/../RSAgenerator/RSAGenerator.exe", ["decode", sock.client.sessionId.toString()], function (error, stdout, stderr) {
+            var decoder = execFile(__dirname + "/../RSAgenerator/RSAGen.exe", ["decode", sock.client.sessionId.toString()], function (error, stdout, stderr) {
                 if (error) {
                     console.log(error);
                 }

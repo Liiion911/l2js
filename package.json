@@ -4,6 +4,8 @@
   "description": "l2js - lineage 2 JavaScript server",
   "main": "LoginServer.js",
   "dependencies": {
+    "btoa": "^1.1.2",
+    "md5": "^2.2.1",
     "mysql": "^2.14.1",
     "rsa-compat": "^1.2.7",
     "sql": "^0.78.0",
