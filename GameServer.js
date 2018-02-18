@@ -37,7 +37,7 @@ gameDomain.run(() => {
         server_id: 1,
         clients: [],
         onlineSyncCount: -1,
-        loginServerMasterIP: '192.168.0.100',
+        loginServerMasterIP: '127.0.0.1',
         loginServerMasterPort: 5555,
         settings: {
             gameTime: 55,
@@ -50,11 +50,11 @@ gameDomain.run(() => {
 
     helper.poolGameServer = mysql.createPool({
         connectionLimit: 100,
-        host: '192.168.0.100', //ikonto.ddns.net
+        host: '127.0.0.1', //ikonto.ddns.net
         port: 3306,
         user: 'root',
-        password: 'iPRyRKu2',
-        database: 'l2jgs'
+        password: 'admin',
+        database: 'l2js'
     });
 
     gameServer.server = net.createServer();
